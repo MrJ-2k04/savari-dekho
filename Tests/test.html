@@ -65,25 +65,8 @@
             transition: color 0.15s ease-in;
         }
 
-        .notification {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 2rem;
-            height: 2rem;
-            margin-left: 0.75rem;
-            border-radius: 50%;
-            background-color: var(--secondary-color);
-            transition: 0.15s ease-in;
-        }
-
         input[type="radio"]:checked+label {
             color: var(--primary-color);
-        }
-
-        input[type="radio"]:checked+label>.notification {
-            background-color: var(--primary-color);
-            color: #fff;
         }
 
         input[id="radio-1"]:checked~.glider {
