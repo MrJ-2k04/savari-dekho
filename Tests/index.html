@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .tab-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 200px;
+            height: 40px;
+            background-color: #eee;
+            border-radius: 50px;
+            border: 2px solid #888;
+            padding: 5px 0px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab-switch .tab {
+            flex: 1;
+            text-align: center;
+            color: #888;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab-switch .tab.active {
+            color: #fff;
+            z-index: 5;
+        }
+
+        .tab-switch .handle {
+            width: 50%;
+            height: 100%;
+            background-color: #888;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: absolute;
+        }
+
+        .tab-switch.yearly .handle {
+            transform: translateX(100%);
+            background-color: #888;
+        }
+
+        .tab-switch .tab.monthly.active~.handle {
+            transform: translateX(0%);
+            background-color: #888;
+        }
+
+        .tab-switch .tab.yearly.active~.handle {
+            transform: translateX(100%);
+            background-color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tab-switch" onclick="toggleTab()">
+        <div class="tab monthly active">Monthly</div>
+        <div class="tab yearly">Yearly</div>
+        <div class="handle"></div>
+    </div>
+
+    <script>
+        function toggleTab() {
+            const tabSwitch = document.querySelector('.tab-switch');
+            // tabSwitch.classList.toggle('yearly');
+            const tabs = document.querySelectorAll('.tab-switch .tab');
+            tabs.forEach(tab => tab.classList.toggle('active'));
+        }
+    </script>
+</body>
+
+</html>
