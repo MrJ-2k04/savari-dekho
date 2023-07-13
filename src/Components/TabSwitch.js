@@ -1,20 +1,12 @@
-import { Box } from '@mui/material';
-import { useState } from 'react';
-import styled from '@emotion/styled'
+import styled from '@emotion/styled';
 import { ROLES } from 'Store/constants';
+import { useState } from 'react';
 
 const backgroundColor = "#FFA629";
 const activeColor = "#FFFFFF";
 
 const TabsContainer = styled.div`
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    max-width: 400px;
 `
 
 const Tabs = styled.div`
