@@ -11,7 +11,7 @@ import typography from "./typography";
 import componentsOverride from "./overrides";
 import { shadows, shadowsDark, customShadows, customShadowsDark } from "./shadows";
 import mixins from "./mixins";
-import { THEME } from "../store/constants";
+import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------

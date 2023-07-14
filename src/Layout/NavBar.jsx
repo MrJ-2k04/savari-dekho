@@ -2,9 +2,11 @@ import {
   AccountCircle,
   AdminPanelSettings,
   Call,
+  DarkMode,
   EditNote,
   Email,
   Instagram,
+  LightMode,
   Menu
 } from "@mui/icons-material";
 import {
@@ -27,6 +29,7 @@ import { SITE_TITLE } from "Store/constants";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import {ReactComponent as Logo} from "Assets/brand/logo.svg";
 
 
 // Temp Stuff
@@ -47,11 +50,11 @@ const navItems = [
 ];
 
 const iconItems = [
-  { icon: Instagram, path: LINK_INSTAGRAM },
-  // { icon: YouTube, path: LINK_YOUTUBE },
+  { icon: DarkMode, path: LINK_INSTAGRAM },
+  { icon: LightMode, path: "" },
   // { icon: Facebook, path: LINK_FACEBOOK },
-  { icon: Email, path: LINK_EMAIL },
-  { icon: Call, path: LINK_CONTACT },
+  // { icon: Email, path: LINK_EMAIL },
+  // { icon: Call, path: LINK_CONTACT },
 ];
 
 export default function NavBar() {
@@ -81,7 +84,7 @@ export default function NavBar() {
             </ListItemButton>
           </ListItem>
         ))}
-        <ListItem>
+        {/* <ListItem>
           <Stack
             width={"100%"}
             direction={"row"}
@@ -104,7 +107,7 @@ export default function NavBar() {
               </IconButton>
             ))}
           </Stack>
-        </ListItem>
+        </ListItem> */}
       </List>
     </Box>
   );
@@ -114,8 +117,9 @@ export default function NavBar() {
 
   return (
     <>
-      <AppBar sx={{ backgroundColor: "#27374D" }} variant="elevation">
+      <AppBar variant="elevation">
         <Toolbar>
+          <Logo height={"3rem"} width={"6rem"} />
           <Typography
             variant="h6"
             noWrap
@@ -153,11 +157,12 @@ export default function NavBar() {
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {navItems.map((item) => (
               <Button
-                className="hover-underline-animation"
+                className="hover-underline-animation1"
                 key={item.label}
                 component={Link}
+                variant=""
                 to={item.path}
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{ my: 2, display: "block" }}
               >
                 {item.label}
               </Button>

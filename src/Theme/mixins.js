@@ -1,4 +1,4 @@
-import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "../store/constants";
+import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
 
 const mixins = {
   toolbar: {
