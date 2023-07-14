@@ -17,7 +17,7 @@ const Layout = ({ children }) => {
     overflow: "hidden",
   });
 
-  const MainStyle = styled("div")(({theme}) => ({
+  const MainStyle = styled("div")(({ theme }) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "center",
@@ -34,7 +34,11 @@ const Layout = ({ children }) => {
     <RootStyle>
       <NavBar />
       <MainStyle>
-        <Grid sx={{ backgroundColor: "#DDE6ED", flexGrow: "1", py: 2 }}>{children}</Grid>
+        <Grid sx={{
+          // backgroundColor: "#DDE6ED",
+          flexGrow: "1",
+          py: 2
+        }}>{children}</Grid>
         <CopyrightComp />
       </MainStyle>
     </RootStyle>
