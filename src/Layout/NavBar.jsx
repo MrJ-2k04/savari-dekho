@@ -25,11 +25,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { SITE_TITLE } from "Store/constants";
+import { SITE_TITLE, THEME } from "Store/constants";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {ReactComponent as Logo} from "Assets/brand/logo.svg";
+import { ReactComponent as Logo } from "Assets/brand/logo.svg";
+import { useDispatch, useSelector } from "react-redux";
+import { uiActions } from "Store/slices";
 
 
 // Temp Stuff
@@ -49,16 +51,18 @@ const navItems = [
   { label: "Admin Login", path: ROUTE_ADMIN, icon: AdminPanelSettings },
 ];
 
-const iconItems = [
-  { icon: DarkMode, path: LINK_INSTAGRAM },
-  { icon: LightMode, path: "" },
-  // { icon: Facebook, path: LINK_FACEBOOK },
-  // { icon: Email, path: LINK_EMAIL },
-  // { icon: Call, path: LINK_CONTACT },
-];
+// const iconItems = [
+//   { icon: DarkMode, path: LINK_INSTAGRAM },
+//   { icon: LightMode, path: "" },
+//   // { icon: Facebook, path: LINK_FACEBOOK },
+//   // { icon: Email, path: LINK_EMAIL },
+//   // { icon: Call, path: LINK_CONTACT },
+// ];
 
 export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const dispatch = useDispatch();
+  const modeIcon = useSelector(state => state.ui.themeMode === THEME.DARK ? <LightMode /> : <DarkMode />);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -138,21 +142,18 @@ export default function NavBar() {
             {SITE_TITLE}
           </Typography>
 
-          {iconItems.map((item, idx) => (
-            <IconButton
-              // size="large"
-              LinkComponent={Link}
-              to={item.path}
-              target="_blank"
-              rel="noopener noreferrer"
-              edge="end"
-              color="inherit"
-              key={idx}
-              sx={{ mx: 0.5, display: { xs: "none", md: "flex" } }}
-            >
-              <item.icon />
-            </IconButton>
-          ))}
+          {/* {iconItems.map((item, idx) => ( */}
+          <IconButton
+            // size="large"
+            edge="end"
+            // color="inherit"
+            // key={idx}
+            sx={{ mx: 0.5 }}
+            onClick={e => dispatch(uiActions.toggleThemeMode())}
+          >
+            {modeIcon}
+          </IconButton>
+          {/* ))} */}
 
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {navItems.map((item) => (

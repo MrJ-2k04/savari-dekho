@@ -18,8 +18,8 @@ const iconItems = [
 
 const CopyrightComp = () => {
   return (
-    <Box style={{ clipPath: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", background:"#DDE6ED" }}>
-      <Grid container spacing={2} p={"106px 20px 20px"}>
+    <Box sx={{ clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" }, background: "#DDE6ED" }}>
+      <Grid container spacing={2} p={{md:"106px 20px 20px", xs: "48px 16px 16px"}}>
         <Grid item xs={12} sm={6} md={3}>
           <Logo height="3rem" />
           <p>This is the first item in the grid.</p>
