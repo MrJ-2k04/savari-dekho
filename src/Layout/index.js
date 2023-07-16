@@ -1,10 +1,7 @@
 import CopyrightComp from "Layout/Footer";
 import { Grid, styled } from "@mui/material";
 import NavBar from "Layout/NavBar";
-
-
-const APP_BAR_MOBILE = 32;
-const APP_BAR_DESKTOP = 40;
+import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
 
 
 const Layout = ({ children }) => {
@@ -24,9 +21,9 @@ const Layout = ({ children }) => {
     flexDirection: "column",
     overflow: "auto",
     minHeight: "100vh",
-    paddingTop: APP_BAR_MOBILE + 24,
+    paddingTop: APP_BAR_MOBILE,
     [theme.breakpoints.up("sm")]: {
-      paddingTop: APP_BAR_DESKTOP + 24,
+      paddingTop: APP_BAR_DESKTOP,
     },
   }));
 
@@ -37,7 +34,7 @@ const Layout = ({ children }) => {
         <Grid sx={{
           // backgroundColor: "#DDE6ED",
           flexGrow: "1",
-          py: 2
+          // py: 2
         }}>{children}</Grid>
         <CopyrightComp />
       </MainStyle>

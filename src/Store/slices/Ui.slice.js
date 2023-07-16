@@ -13,6 +13,18 @@ const uiSlice = createSlice({
             const updatedTheme = state.themeMode === THEME.DARK ? THEME.LIGHT : THEME.DARK;
             return { ...state, themeMode: updatedTheme };
         },
+        setDarkTheme: (state, action) => {
+            state.themeMode = THEME.DARK;
+            return state;
+        },
+        setLightTheme: (state, action) => {
+            state.themeMode = THEME.LIGHT;
+            return state;
+        },
+        setTheme: (state, action)=>{
+            state.themeMode = action.payload;
+            return state;
+        }
     },
 })
 

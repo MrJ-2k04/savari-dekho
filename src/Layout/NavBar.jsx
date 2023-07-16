@@ -19,13 +19,15 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
+  alpha,
+  styled,
 } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { SITE_TITLE, THEME } from "Store/constants";
+import { DRAWER_WIDTH, SITE_TITLE, THEME } from "Store/constants";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -46,7 +48,7 @@ const ROUTE_REGISTRATION = "";
 
 const drawerWidth = 240;
 const navItems = [
-  { label: "Register", path: ROUTE_REGISTRATION, icon: EditNote },
+  { label: "Search", path: ROUTE_REGISTRATION, icon: EditNote },
   { label: "View Profile", path: ROUTE_PROFILE_LOGIN, icon: AccountCircle },
   { label: "Admin Login", path: ROUTE_ADMIN, icon: AdminPanelSettings },
 ];
@@ -59,6 +61,14 @@ const navItems = [
 //   // { icon: Call, path: LINK_CONTACT },
 // ];
 
+const RootStyle = styled(AppBar)(({ theme }) => ({
+  boxShadow: "none",
+  color: theme.palette.text.primary,
+  backdropFilter: "blur(6px)",
+  WebkitBackdropFilter: "blur(6px)", // Fix on Mobile
+  backgroundColor: alpha(theme.palette.background.default, 0.72),
+}));
+
 export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const dispatch = useDispatch();
@@ -69,7 +79,7 @@ export default function NavBar() {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", color: 'white' }}>
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Button LinkComponent={Link}
         to={"/"}
         sx={{ my: 2 }}
@@ -81,8 +91,8 @@ export default function NavBar() {
         {navItems.map((item) => (
           <ListItem key={item.label} disablePadding>
             <ListItemButton component={Link} to={item.path}>
-              <ListItemIcon sx={{ justifyContent: "center", color: 'white' }}>
-                <item.icon color="inherit" />
+              <ListItemIcon sx={{ justifyContent: "center" }}>
+                <item.icon />
               </ListItemIcon>
               <ListItemText primary={item.label} />
             </ListItemButton>
@@ -120,8 +130,11 @@ export default function NavBar() {
     window !== undefined ? () => window.document.body : undefined;
 
   return (
-    <>
-      <AppBar variant="elevation">
+    <RootStyle
+      // variant="elevation"
+      // color="transparent"
+    >
+      <>
         <Toolbar>
           <Logo height={"3rem"} width={"6rem"} />
           <Typography
@@ -181,7 +194,8 @@ export default function NavBar() {
             <Menu />
           </IconButton>
         </Toolbar>
-      </AppBar>
+      </>
+      {/* Sidebar for Smaller Screens */}
       <Box component="nav">
         <Drawer
           anchor="right"
@@ -196,13 +210,13 @@ export default function NavBar() {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
-              background: "linear-gradient(135deg, #2a374b, #27374D)"
+              // background: "linear-gradient(135deg, #2a374b, #27374D)"
             },
           }}
         >
           {drawer}
         </Drawer>
       </Box>
-    </>
+    </RootStyle>
   );
 }

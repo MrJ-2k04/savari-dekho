@@ -21,7 +21,7 @@ function responsiveFontSizes({ xs, sm, md, lg }) {
   };
 }
 
-const FONT_PRIMARY = "'Quicksand', sans-serif";
+const FONT_PRIMARY = 'GT Eesti Pro Display, Arial, sans-serif';
 
 const typography = {
   fontFamily: FONT_PRIMARY,
