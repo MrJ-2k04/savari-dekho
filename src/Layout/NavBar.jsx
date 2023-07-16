@@ -7,7 +7,9 @@ import {
   Email,
   Instagram,
   LightMode,
-  Menu
+  Login,
+  Menu,
+  PersonAdd
 } from "@mui/icons-material";
 import {
   Divider,
@@ -31,9 +33,11 @@ import { DRAWER_WIDTH, SITE_TITLE, THEME } from "Store/constants";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ReactComponent as Logo } from "Assets/brand/logo.svg";
+
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "Store/slices";
+import Logo from "Components/Logo";
+import ThemeModeSwitch from "Components/ThemeModeSwitch";
 
 
 // Temp Stuff
@@ -48,9 +52,11 @@ const ROUTE_REGISTRATION = "";
 
 const drawerWidth = 240;
 const navItems = [
-  { label: "Search", path: ROUTE_REGISTRATION, icon: EditNote },
-  { label: "View Profile", path: ROUTE_PROFILE_LOGIN, icon: AccountCircle },
-  { label: "Admin Login", path: ROUTE_ADMIN, icon: AdminPanelSettings },
+  { label: "Login", path: ROUTE_REGISTRATION, icon: Login },
+  { label: "Sign up", path: ROUTE_REGISTRATION, icon: PersonAdd },
+  // { label: "Search", path: ROUTE_REGISTRATION, icon: EditNote },
+  // { label: "View Profile", path: ROUTE_PROFILE_LOGIN, icon: AccountCircle },
+  // { label: "Admin Login", path: ROUTE_ADMIN, icon: AdminPanelSettings },
 ];
 
 // const iconItems = [
@@ -72,7 +78,8 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const dispatch = useDispatch();
-  const modeIcon = useSelector(state => state.ui.themeMode === THEME.DARK ? <LightMode /> : <DarkMode />);
+  const themeMode = useSelector(state => state.ui.themeMode);
+  const modeIcon = themeMode === THEME.DARK ? <LightMode /> : <DarkMode />
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -131,22 +138,22 @@ export default function NavBar() {
 
   return (
     <RootStyle
-      // variant="elevation"
-      // color="transparent"
+    // variant="elevation"
+    // color="transparent"
     >
       <>
         <Toolbar>
-          <Logo height={"3rem"} width={"6rem"} />
+          <Logo />
           <Typography
-            variant="h6"
+            variant="h3"
             noWrap
             component={Link}
             to={ROUTE_REGISTRATION}
             sx={{
               mr: 2,
-              fontWeight: 700,
-              fontSize: { xs: "medium", sm: "large", md: "larger" },
-              letterSpacing: { xs: ".1rem", sm: ".2rem", md: ".3rem" },
+              fontWeight: 500,
+              // fontSize: { xs: "medium", sm: "large", md: "larger" },
+              // letterSpacing: { xs: ".1rem", sm: ".2rem", md: ".3rem" },
               textDecoration: "none",
               color: "inherit",
             }}
@@ -155,26 +162,15 @@ export default function NavBar() {
             {SITE_TITLE}
           </Typography>
 
-          {/* {iconItems.map((item, idx) => ( */}
-          <IconButton
-            // size="large"
-            edge="end"
-            // color="inherit"
-            // key={idx}
-            sx={{ mx: 0.5 }}
-            onClick={e => dispatch(uiActions.toggleThemeMode())}
-          >
-            {modeIcon}
-          </IconButton>
-          {/* ))} */}
+          <ThemeModeSwitch sx={{ mx: {xs: 0.5, md: 2} }} />
 
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            {navItems.map((item) => (
+          <Box sx={{ display: { xs: "none", md: "flex" } }} gap={2}>
+            {navItems.map((item,index) => (
               <Button
-                className="hover-underline-animation1"
+                // className="hover-underline-animation1"
                 key={item.label}
                 component={Link}
-                variant=""
+                variant={index===0?"outlined":"contained"}
                 to={item.path}
                 sx={{ my: 2, display: "block" }}
               >

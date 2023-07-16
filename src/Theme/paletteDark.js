@@ -1,5 +1,5 @@
 const PRIMARY = {
-  main: "#ddd",
+  main: "#eee",
   contrastText: "#111",
 };
 const SECONDARY = {
@@ -11,7 +11,7 @@ const paletteDark = {
   mode: "dark",
   primary: { ...PRIMARY },
   secondary: { ...SECONDARY },
-  background: { default: "#254e71", paper: "#142a3e", disabled: "#415566" },
+  background: { default: "#27374D", paper: "#377996", disabled: "#526D82" },
 };
 
 export default paletteDark;

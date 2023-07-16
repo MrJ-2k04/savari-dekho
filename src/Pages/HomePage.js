@@ -1,10 +1,11 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Skeleton, Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
 import Payment from "Components/Payment";
 import Layout from "Layout";
 import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
 import heroImg from "Assets/images/hero.svg";
 import mobileHeroImg from "Assets/images/heroMobile.svg";
+import { ExpandMore } from "@mui/icons-material";
 
 
 function HomePage() {
@@ -97,7 +98,68 @@ function HomePage() {
                     }}
                 />
             </Box>
-            <Box mx={"auto"} maxWidth={500} gap={2} display={"flex"} flexDirection={"column"}>
+
+            <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"}>
+                <Stack spacing={2}>
+                    <Button>Test Button</Button>
+                    <Button variant="contained">Test Button</Button>
+                    <Button variant="outlined">Test Button</Button>
+                    <Button disabled>Test Button</Button>
+                    <Button variant="contained" disabled>Test Button</Button>
+                    <Button variant="outlined" disabled>Test Button</Button>
+                    <Divider sx={{ py: 4 }} />
+                    <Button>Test Button</Button>
+                    <Button color="secondary" variant="contained">Test Button</Button>
+                    <Button color="secondary" variant="outlined">Test Button</Button>
+                    <Button color="secondary" disabled>Test Button</Button>
+                    <Button color="secondary" variant="contained" disabled>Test Button</Button>
+                    <Button color="secondary" variant="outlined" disabled>Test Button</Button>
+                    <Divider sx={{ py: 4 }} />
+                    <TextField placeholder="Enter email"></TextField>
+                    <TextField disabled placeholder="This is disabled"></TextField>
+                </Stack>
+                <Box>
+                    <Accordion>
+                        <AccordionSummary
+                            expandIcon={<ExpandMore />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                        >
+                            <Typography>Accordion 1</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                malesuada lacus ex, sit amet blandit leo lobortis eget.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary
+                            expandIcon={<ExpandMore />}
+                            aria-controls="panel2a-content"
+                            id="panel2a-header"
+                        >
+                            <Typography>Accordion 2</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                malesuada lacus ex, sit amet blandit leo lobortis eget.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion disabled>
+                        <AccordionSummary
+                            expandIcon={<ExpandMore />}
+                            aria-controls="panel3a-content"
+                            id="panel3a-header"
+                        >
+                            <Typography>Disabled Accordion</Typography>
+                        </AccordionSummary>
+                    </Accordion>
+                </Box>
+
                 <h2>Search</h2>
                 <p>No matter where you’re going, by bus or <br /> carpool, find the perfect ride from our wide <br /> range of destinations and routes at low <br /> prices.</p>
                 <Card sx={{ maxWidth: 345 }}>

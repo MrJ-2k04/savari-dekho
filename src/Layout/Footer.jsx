@@ -6,8 +6,9 @@ import {
   Container,
   IconButton,
 } from "@mui/material";
-import { ReactComponent as Logo } from "Assets/brand/logo.svg";
+// import { ReactComponent as Logo } from "Assets/brand/logo.svg";
 import { Email, Facebook, Instagram, YouTube } from "@mui/icons-material";
+import Logo from "Components/Logo";
 
 const iconItems = [
   { icon: Instagram, path: "" },
@@ -21,7 +22,7 @@ const CopyrightComp = () => {
     <Box sx={{ clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" } }}>
       <Grid container spacing={2} p={{md:"106px 20px 20px", xs: "48px 16px 16px"}}>
         <Grid item xs={12} sm={6} md={3}>
-          <Logo height="3rem" />
+          <Logo />
           <p>This is the first item in the grid.</p>
           <Stack
             width={"100%"}
