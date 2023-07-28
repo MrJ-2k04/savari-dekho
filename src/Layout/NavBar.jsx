@@ -1,71 +1,37 @@
 import {
+  AccountBalance,
+  AccountBalanceWallet,
   AccountCircle,
-  AdminPanelSettings,
-  Call,
-  DarkMode,
-  EditNote,
-  Email,
-  Instagram,
-  LightMode,
   Login,
-  Menu,
-  PersonAdd
+  Logout,
+  PersonAdd,
+  Settings,
+  SwapHoriz,
+  Wallet
 } from "@mui/icons-material";
 import {
+  Avatar,
   Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
   ListItemIcon,
-  ListItemText,
-  Stack,
+  MenuItem,
   alpha,
-  styled,
+  styled
 } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { DRAWER_WIDTH, SITE_TITLE, THEME } from "Store/constants";
+import { ROLES, SITE_TITLE } from "Store/constants";
 
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useDispatch, useSelector } from "react-redux";
-import { uiActions } from "Store/slices";
+import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
 import Logo from "Components/Logo";
-import ThemeModeSwitch from "Components/ThemeModeSwitch";
+import AccountMenu from "Components/Other/AccountMenu";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 
-
-// Temp Stuff
-const LINK_CONTACT = "";
-const LINK_EMAIL = "";
-const LINK_INSTAGRAM = "";
-const ROUTE_ADMIN = "";
-const ROUTE_PROFILE_LOGIN = "";
-const ROUTE_REGISTRATION = "";
-
-
-
-const drawerWidth = 240;
-const navItems = [
-  { label: "Login", path: ROUTE_REGISTRATION, icon: Login },
-  { label: "Sign up", path: ROUTE_REGISTRATION, icon: PersonAdd },
-  // { label: "Search", path: ROUTE_REGISTRATION, icon: EditNote },
-  // { label: "View Profile", path: ROUTE_PROFILE_LOGIN, icon: AccountCircle },
-  // { label: "Admin Login", path: ROUTE_ADMIN, icon: AdminPanelSettings },
-];
-
-// const iconItems = [
-//   { icon: DarkMode, path: LINK_INSTAGRAM },
-//   { icon: LightMode, path: "" },
-//   // { icon: Facebook, path: LINK_FACEBOOK },
-//   // { icon: Email, path: LINK_EMAIL },
-//   // { icon: Call, path: LINK_CONTACT },
-// ];
 
 const RootStyle = styled(AppBar)(({ theme }) => ({
   boxShadow: "none",
@@ -75,66 +41,97 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.background.default, 0.72),
 }));
 
+
+
 export default function NavBar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+
   const dispatch = useDispatch();
   const themeMode = useSelector(state => state.ui.themeMode);
-  const modeIcon = themeMode === THEME.DARK ? <LightMode /> : <DarkMode />
+  const [user, setUser] = useState({ role: ROLES.USER });
 
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
+  const toggleRole = () => { setUser({ ...user, role: user.role === ROLES.RIDER ? ROLES.USER : ROLES.RIDER }); console.log("Switched"); }
 
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Button LinkComponent={Link}
-        to={"/"}
-        sx={{ my: 2 }}
-        color="inherit"
-      >{SITE_TITLE}
-      </Button>
-      <Divider color="white" sx={{ width: '90%', mx: "auto" }} />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton component={Link} to={item.path}>
-              <ListItemIcon sx={{ justifyContent: "center" }}>
-                <item.icon />
-              </ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        {/* <ListItem>
-          <Stack
-            width={"100%"}
-            direction={"row"}
-            justifyContent={"space-evenly"}
-            sx={{ ml: "3px" }}
-          >
-            {iconItems.map((item, idx) => (
-              <IconButton
-                // size="large"
-                LinkComponent={Link}
-                to={item.path}
-                target="_blank"
-                rel="noopener noreferrer"
-                edge="end"
-                color="inherit"
-                key={idx}
-                sx={{ mx: 0.5 }}
-              >
-                <item.icon />
-              </IconButton>
-            ))}
-          </Stack>
-        </ListItem> */}
-      </List>
-    </Box>
-  );
+  const logout = () => setUser({});
 
-  const container =
-    window !== undefined ? () => window.document.body : undefined;
+  const userMenuItems = <>
+    <MenuItem component={Link} to={"/profile"}>
+      <ListItemIcon>
+        <AccountCircle />
+      </ListItemIcon>
+      Profile
+    </MenuItem>
+    <MenuItem onClick={e => { }}>
+      <ListItemIcon>
+        <AccountBalanceWallet />
+      </ListItemIcon>
+      Wallet
+    </MenuItem>
+    <MenuItem component={Link} to={"/rides"}>
+      Your Rides
+    </MenuItem>
+    <Divider />
+    <MenuItem onClick={toggleRole}>
+      <ListItemIcon>
+        <SwapHoriz />
+      </ListItemIcon>
+      Switch to Rider
+    </MenuItem>
+    <MenuItem onClick={logout}>
+      <ListItemIcon>
+        <Logout />
+      </ListItemIcon>
+      Logout
+    </MenuItem>
+  </>;
+
+  const riderMenuItems = <>
+    <MenuItem onClick={e => { }}>
+      <ListItemIcon>
+        <AccountCircle />
+      </ListItemIcon>
+      Profile
+    </MenuItem>
+    <MenuItem onClick={e => { }}>
+      <ListItemIcon>
+        <AccountBalanceWallet />
+      </ListItemIcon>
+      Wallet
+    </MenuItem>
+    <MenuItem onClick={e => { }}>
+      <ListItemIcon>
+        
+      </ListItemIcon>
+      Your Rides
+    </MenuItem>
+    <Divider />
+    <MenuItem onClick={toggleRole}>
+      <ListItemIcon>
+        <SwapHoriz />
+      </ListItemIcon>
+      Switch to User
+    </MenuItem>
+    <MenuItem onClick={logout}>
+      <ListItemIcon>
+        <Logout />
+      </ListItemIcon>
+      Logout
+    </MenuItem>
+  </>;
+
+  const guestMenuItems = <>
+    <MenuItem onClick={e => { }}>
+      <ListItemIcon>
+        <Login />
+      </ListItemIcon>
+      Login
+    </MenuItem>
+    <MenuItem onClick={e => { }}>
+      <ListItemIcon>
+        <PersonAdd />
+      </ListItemIcon>
+      Sign Up
+    </MenuItem>
+  </>;
 
   return (
     <RootStyle
@@ -148,7 +145,7 @@ export default function NavBar() {
             variant="h3"
             noWrap
             component={Link}
-            to={ROUTE_REGISTRATION}
+            to={"/register"}
             sx={{
               mr: 2,
               fontWeight: 500,
@@ -162,57 +159,36 @@ export default function NavBar() {
             {SITE_TITLE}
           </Typography>
 
-          <ThemeModeSwitch sx={{ mx: {xs: 0.5, md: 2} }} />
 
-          <Box sx={{ display: { xs: "none", md: "flex" } }} gap={2}>
-            {navItems.map((item,index) => (
-              <Button
-                // className="hover-underline-animation1"
-                key={item.label}
-                component={Link}
-                variant={index===0?"outlined":"contained"}
-                to={item.path}
-                sx={{ my: 2, display: "block" }}
-              >
-                {item.label}
-              </Button>
-            ))}
-          </Box>
-
-          <IconButton
-            size="large"
-            edge="end"
-            color="inherit"
-            aria-label="menu"
-            sx={{ display: { xs: "flex", md: "none" } }}
-            onClick={handleDrawerToggle}
+          {user.role &&
+            <Button
+              // className="hover-underline-animation1"
+              onClick={toggleRole}
+              variant={"outlined"}
+              sx={{ my: 2, display: { xs: 'none', md: 'block' } }}
+            >
+              {user.role === ROLES.USER && `Become a Rider`}
+              {user.role === ROLES.RIDER && `Become a User`}
+            </Button>
+          }
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            columnGap={{ xs: 0.3, sm: 1, md: 1.5 }}
+            sx={{ ml: 2 }}
           >
-            <Menu />
-          </IconButton>
+            <ThemeModeSwitch />
+            <AccountMenu>
+              {!user.role ? guestMenuItems :
+                <>
+                  {user.role === ROLES.RIDER && riderMenuItems}
+                  {user.role === ROLES.USER && userMenuItems}
+                </>
+              }
+            </AccountMenu>
+          </Box>
         </Toolbar>
       </>
-      {/* Sidebar for Smaller Screens */}
-      <Box component="nav">
-        <Drawer
-          anchor="right"
-          container={container}
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-              // background: "linear-gradient(135deg, #2a374b, #27374D)"
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
     </RootStyle>
   );
 }

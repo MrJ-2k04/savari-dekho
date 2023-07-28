@@ -1,6 +1,6 @@
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
-import { ROUTE_HOME } from "Store/constants";
+import { Box, Button, Container, Typography } from "@mui/material";
 import Layout from "Layout";
+import { ROUTE_HOME } from "Store/constants";
 import { Link } from "react-router-dom";
 
 export default function NotFoundPage() {
@@ -17,7 +17,6 @@ export default function NotFoundPage() {
             textAlign: 'center'
           }}
         >
-          <TextField />
           <Typography variant="h1">404</Typography>
           <Typography variant="h6">
             The page you're looking for doesn't exist.
