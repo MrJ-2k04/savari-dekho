@@ -12,10 +12,23 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import inLocale from "date-fns/locale/en-IN"
 import { GENDER_OPTIONS } from 'Store/constants';
+import { IsEmptyString } from 'Utils';
 
 const steps = ['Mobile Verfication', 'Email Address', 'Basic Details'];
 
 export default function RegistrationStepper() {
+
+    // --------------------------- Form Fields ---------------------------
+
+    const [mobileNumber, setMobileNumber] = useState('');
+    const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [gender, setGender] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState(null);
+
+    // --------------------------- Stepper States ---------------------------
+
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
 
@@ -60,23 +73,39 @@ export default function RegistrationStepper() {
         switch (step) {
             case 0:
                 return (
-                    
-                    <MobileNumberOTP onSuccess={handleNext} />
+                    <MobileNumberOTP onSuccess={num => { setMobileNumber(num); handleNext() }} />
                 );
             case 1:
                 return (
                     <Box mx={"auto"} display={"flex"} maxWidth={"30rem"}>
-                        <TextField label="Email Address" variant='outlined' type='email' fullWidth />
+                        <TextField
+                            label="Email Address"
+                            variant='outlined'
+                            type='email'
+                            fullWidth
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                        />
                     </Box>
                 );
             case 2:
                 return (<Box mx={"auto"} display={"flex"} maxWidth={"30rem"}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
-                            <TextField label="First Name" fullWidth />
+                            <TextField
+                                label="First Name"
+                                fullWidth
+                                value={firstName}
+                                onChange={e => setFirstName(e.target.value)}
+                            />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField label="Last Name" fullWidth />
+                            <TextField
+                                label="Last Name"
+                                fullWidth
+                                value={lastName}
+                                onChange={e => setLastName(e.target.value)}
+                            />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <LocalizationProvider dateAdapter={AdapterDateFns} locale={inLocale}>
@@ -87,17 +116,17 @@ export default function RegistrationStepper() {
                                     openTo="day"
                                     views={["year", "month", "day"]}
                                     // name={ID_DATE_OF_BIRTH}
-                                    // value={DOB}
+                                    value={dateOfBirth}
                                     onChange={value => {
                                         // setDateError('');
-                                        // setDOB(value)
+                                        setDateOfBirth(value);
                                     }}
                                     renderInput={(params) => (
                                         <TextField
                                             // name={ID_DATE_OF_BIRTH}
-                                            // error={!IsEmptyString(dateError)}
+                                            error={!IsEmptyString('')}
                                             // size={INPUT_SIZE}
-                                            // helperText={dateError}
+                                            helperText={''}
                                             fullWidth
                                             variant="filled" {...params}
                                         />
