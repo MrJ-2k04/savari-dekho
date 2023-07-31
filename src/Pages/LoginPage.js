@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import Layout from "Layout";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import { useState } from "react";
 import { isNumeric } from "Utils";
@@ -15,7 +16,7 @@ function LoginPage() {
     }
 
     return (
-        <>
+        <Layout>
             <Box maxWidth={"40rem"}>
                 <MuiOtpInput
                     value={otp}
@@ -25,7 +26,7 @@ function LoginPage() {
                     validateChar={isNumeric}
                 />
             </Box>
-        </>
+        </Layout>
     );
 }
 

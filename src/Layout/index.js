@@ -36,8 +36,8 @@ const Layout = ({ children }) => {
           flexGrow: "1",
           // py: 2
         }}>{children}</Grid>
-        <CopyrightComp />
       </MainStyle>
+      <CopyrightComp />
     </RootStyle>
   );
 };

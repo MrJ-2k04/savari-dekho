@@ -5,6 +5,11 @@ body {
   font-family: 'GT Eesti Pro Display', Arial, sans-serif !important;
 }
 
+input[autocomplete="one-time-code"]{
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
 /* Scrollbar width */
 ::-webkit-scrollbar {
   width: 8px;

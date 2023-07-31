@@ -19,7 +19,7 @@ const iconItems = [
 
 const CopyrightComp = () => {
   return (
-    <Box sx={{ clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" } }}>
+    <Box sx={{ clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" } }} bgcolor={"rgb(0,0,0,0.2)"}>
       <Grid container spacing={2} p={{md:"106px 20px 20px", xs: "48px 16px 16px"}}>
         <Grid item xs={12} sm={6} md={3}>
           <Logo />
@@ -68,7 +68,7 @@ const CopyrightComp = () => {
           p: 2,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#27374D",
+          backgroundColor: "#252d35",
           color: "#FFF",
         }}
       >
