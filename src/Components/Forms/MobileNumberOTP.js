@@ -6,7 +6,7 @@ import { MuiOtpInput } from 'mui-one-time-password-input';
 import { MuiTelInput } from 'mui-tel-input';
 
 
-const COOLDOWN = 5; // seconds
+const COOLDOWN = 10; // seconds
 
 
 function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile", label = "Mobile Number", onSuccess }) {

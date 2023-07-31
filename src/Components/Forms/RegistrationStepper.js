@@ -7,7 +7,11 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MobileNumberOTP from './MobileNumberOTP';
 import { useState } from 'react';
-import { CardContent, CardHeader, Card, TextField } from '@mui/material';
+import { CardContent, CardHeader, Card, TextField, Stack, FormControl, InputLabel, Select, MenuItem, FormHelperText, Grid } from '@mui/material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import inLocale from "date-fns/locale/en-IN"
+import { GENDER_OPTIONS } from 'Store/constants';
 
 const steps = ['Mobile Verfication', 'Email Address', 'Basic Details'];
 
@@ -48,7 +52,7 @@ export default function RegistrationStepper() {
         setActiveStep(0);
     };
 
-    const handleSubmit = ()=>{
+    const handleSubmit = () => {
         console.log("update user obj in backend");
     };
 
@@ -56,18 +60,82 @@ export default function RegistrationStepper() {
         switch (step) {
             case 0:
                 return (
+                    
                     <MobileNumberOTP onSuccess={handleNext} />
                 );
             case 1:
                 return (
                     <Box mx={"auto"} display={"flex"} maxWidth={"30rem"}>
-                        <TextField label="Email Address" variant='outlined' type='email' fullWidth/>
+                        <TextField label="Email Address" variant='outlined' type='email' fullWidth />
                     </Box>
                 );
             case 2:
-                return (<>
-                    <Typography>Basic Details Form</Typography>
-                </>);
+                return (<Box mx={"auto"} display={"flex"} maxWidth={"30rem"}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField label="First Name" fullWidth />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField label="Last Name" fullWidth />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns} locale={inLocale}>
+                                <DatePicker
+                                    sx={{ width: "100%" }}
+                                    label={"Date of Birth"}
+                                    maxDate={new Date()}
+                                    openTo="day"
+                                    views={["year", "month", "day"]}
+                                    // name={ID_DATE_OF_BIRTH}
+                                    // value={DOB}
+                                    onChange={value => {
+                                        // setDateError('');
+                                        // setDOB(value)
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            // name={ID_DATE_OF_BIRTH}
+                                            // error={!IsEmptyString(dateError)}
+                                            // size={INPUT_SIZE}
+                                            // helperText={dateError}
+                                            fullWidth
+                                            variant="filled" {...params}
+                                        />
+                                    )}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth>
+                                <InputLabel id="gender">Gender</InputLabel>
+                                <Select
+                                    labelId="gender"
+                                    // name={ID_GENDER}
+                                    label="Gender"
+                                // value={gender}
+                                // onChange={(e) => {
+                                //     setGenderError('');
+                                //     setGender(e.target.value)
+                                // }}
+                                // error={!IsEmptyString(genderError)}
+                                >
+                                    {GENDER_OPTIONS.map((gender, index) => {
+                                        return (
+                                            <MenuItem key={index} value={gender}>
+                                                {gender}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                                <FormHelperText
+                                // error={!IsEmptyString(genderError)}
+                                >
+                                    {/* {genderError} */}
+                                </FormHelperText>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                </Box>);
             // Add more cases for additional steps
             default:
                 return null;
