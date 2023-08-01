@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 // import { ReactComponent as Logo } from "Assets/brand/logo.svg";
 import { Email, Facebook, Instagram, YouTube } from "@mui/icons-material";
-import Logo from "Components/Logo";
+import Logo from "Components/Common/Logo";
 
 const iconItems = [
   { icon: Instagram, path: "" },

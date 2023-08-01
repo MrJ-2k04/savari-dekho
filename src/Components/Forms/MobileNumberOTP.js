@@ -4,6 +4,8 @@ import { SendToMobile } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { MuiOtpInput } from 'mui-one-time-password-input';
 import { MuiTelInput } from 'mui-tel-input';
+import { formatMobileNumber, isEmptyString } from 'Utils';
+import useFetch from 'Components/Hooks/useFetch';
 
 
 const COOLDOWN = 10; // seconds
@@ -11,14 +13,17 @@ const COOLDOWN = 10; // seconds
 
 function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile", label = "Mobile Number", onSuccess }) {
 
-    const [mobileNumber, setMobileNumber] = useState();
+    const { validateOtp, generateOtp, loading: otpSending } = useFetch();
+    const [mobileNumber, setMobileNumber] = useState('');
+    const [formattedMobileNumber, setFormattedMobileNumber] = useState('');
 
     const [otp, setOtp] = useState('');
-    const [otpSending, setOtpSending] = useState(false);
+    const [otpError, setOtpError] = useState('');
     const [canSendOtp, setCanSendOtp] = useState(true);
     const [cooldownSeconds, setCooldownSeconds] = useState(COOLDOWN); // Set the cooldown duration in seconds
     const [isOtpSent, setIsOtpSent] = useState(false);  // Checks once in lifetime of component
 
+    const [mobileNumberError, setMobileNumberError] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
 
     useEffect(() => {
@@ -35,41 +40,68 @@ function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile"
         return () => clearTimeout(cooldownTimer);
     }, [canSendOtp, cooldownSeconds]);
 
+    useEffect(() => {
+        setFormattedMobileNumber(formatMobileNumber(mobileNumber));
+    }, [mobileNumber])
 
 
     const handleOtpComplete = (value) => {
+        if (isEmptyString(value) && isOtpSent) {
+            setOtpError('Please fill the OTP properly');
+            return;
+        }
         setIsVerifying(true);
-        setTimeout(() => {
+
+        validateOtp(value).then(res => {
             setIsVerifying(false);
-            onSuccess();
-        }, 1000);
-        console.log('Completed:', value);
+            onSuccess(formattedMobileNumber);
+        }).catch(() => {
+            setOtp('');
+            setIsVerifying(false);
+        });
     };
 
     const sendOtp = () => {
-        setOtpSending(true);
+
+        if (isEmptyString(formattedMobileNumber)) {
+            setMobileNumberError('Please enter a valid mobile number');
+            return;
+        }
+
+        setMobileNumberError('');
+
+        // setOtpSending(true);
         setCanSendOtp(false);
 
-        // On Successfully Sending OTP
-        setTimeout(() => {
+        generateOtp(formattedMobileNumber).then(() => {
+
+            // On Successfully Sending OTP
             setOtp('');
-            setOtpSending(false);
+            // setOtpSending(false);
             setIsOtpSent(true);
-        }, 1000);
+        }).catch(() => {
+            setOtp('');
+            // setOtpSending(false);
+        });
+
+
     };
 
     return (
         <Box display={"flex"} flexDirection={"column"} gap={2} maxWidth={maxWidth} mx={"auto"}>
-            <Box display={'flex'} columnGap={2} alignItems={'center'}>
+            <Box display={'flex'} columnGap={2} alignItems={'start'}>
+
                 <MuiTelInput
-                    sx={{ display: 'flex', gap: 5, flexGrow: 1 }}
+                    sx={{ display: 'flex', flexGrow: 1 }}
                     defaultCountry="IN"
                     value={mobileNumber}
                     onChange={(num) => setMobileNumber(num)}
                     placeholder={placeholder}
                     label={label}
+                    error={!isEmptyString(mobileNumberError)}
+                    helperText={mobileNumberError}
                 />
-                <Box>
+                <Box mt={{ xs: 0, sm: 1 }}>
                     <LoadingButton
                         startIcon={<SendToMobile />}
                         loading={otpSending}
@@ -88,9 +120,12 @@ function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile"
             {isOtpSent && <Box minWidth={"20rem"} display={"flex"} flexDirection={"column"} rowGap={2} alignItems={"start"}>
                 <MuiOtpInput
                     value={otp}
-                    onChange={newOtp => setOtp(newOtp)}
+                    onChange={newOtp => { setOtp(newOtp); setOtpError(''); }}
                     length={6}
-                    onComplete={handleOtpComplete}
+                    onComplete={finalOtp => isVerifying ? '' : handleOtpComplete(finalOtp)}
+                    TextFieldsProps={{
+                        error: !isEmptyString(otpError),
+                    }}
                 />
                 <LoadingButton loading={isVerifying} variant='outlined' onClick={e => handleOtpComplete(otp)}>
                     Validate OTP

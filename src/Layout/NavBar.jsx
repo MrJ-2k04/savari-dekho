@@ -25,7 +25,7 @@ import { ROLES, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE, ROUTE_REGISTER, ROUTE_RI
 import { Link } from "react-router-dom";
 
 import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
-import Logo from "Components/Logo";
+import Logo from "Components/Common/Logo";
 import AccountMenu from "Components/Other/AccountMenu";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

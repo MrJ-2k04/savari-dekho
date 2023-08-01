@@ -2,6 +2,8 @@
 
 // ############################################## SITE SETTINGS ##############################################
 
+// ############################################## SITE SETTINGS ##############################################
+
 export const SITE_TITLE = "Savari Dekho";
 
 export const USER = "User";
@@ -11,18 +13,12 @@ export const ROLES = {
     RIDER
 };
 
-// ################################ API ENDPOINTS ################################
+// ############################################## RESPONSE TYPES ##############################################
 
-export const API_ENDPOINT = process.env.NODE_ENV === 'production' ?
-    process.env.REACT_APP_API_ENDPOINT : "http://localhost:8080";
-
-export const API_REGISTER = `${API_ENDPOINT}/register`;
-export const API_LOGIN = `${API_ENDPOINT}/login`;
-export const API_USERS = `${API_ENDPOINT}/users`;
-export const API_PAYMENT_CREATE = `${API_ENDPOINT}/payment/create`;
-export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/payment/validate`;
-export const API_CHECKOUT_SCRIPT = `https://checkout.razorpay.com/v1/checkout.js`;
-
+export const RES = {
+  ERROR: 'error',
+  SUCCESS: 'success',
+};
 
 // ############################################## UI Constants ##############################################
 

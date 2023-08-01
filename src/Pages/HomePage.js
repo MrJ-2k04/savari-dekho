@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
-import Payment from "Components/Payment";
+// import Payment from "Components/Payment";
 import Layout from "Layout";
 import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
