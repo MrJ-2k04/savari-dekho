@@ -16,6 +16,7 @@ import { isEmptyString, isValidDateObject, is18Plus, jsonToFormData, parseFormDa
 import AvatarSection from './AvatarSection';
 import { LoadingButton } from '@mui/lab';
 import { Close, Done, Visibility, VisibilityOff } from '@mui/icons-material';
+import useFetch from 'Components/Hooks/useFetch';
 
 const steps = ['Mobile Verfication', 'Basic Details', 'Create Password'];
 
@@ -29,6 +30,8 @@ function ValidationText({ children, isValid = false }) {
 }
 
 export default function RegistrationStepper() {
+
+    const { registerUser, loading: submitting } = useFetch();
 
     // --------------------------- Form Fields ---------------------------
 
@@ -60,7 +63,6 @@ export default function RegistrationStepper() {
     });
 
     // --------------------------- Other States ---------------------------
-    const [submitting, setSubmitting] = useState(false)
     const [activeStep, setActiveStep] = useState(0);
 
 
@@ -99,7 +101,8 @@ export default function RegistrationStepper() {
             gender,
             email,
             dateOfBirth,
-            profilePicture
+            profilePicture,
+            password
         }
 
         if (!isValid) {
@@ -107,14 +110,13 @@ export default function RegistrationStepper() {
             return;
         }
 
-        const payload = jsonToFormData(userObj);
-        // Submit to Backend
-        console.log("Submitted");
 
-        setSubmitting(true);
-        setTimeout(() => {
-            setSubmitting(false);
-        }, 1000);
+        // Submit to Backend
+        registerUser(userObj).then((user) => {
+            
+        }).catch((err) => {
+            console.error(err.message);
+        });
     };
     const validateStep = (stepIndex) => {
         let isValid = true;
