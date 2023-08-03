@@ -8,7 +8,7 @@ import { formatMobileNumber, isEmptyString } from 'Utils';
 import useFetch from 'Components/Hooks/useFetch';
 
 
-const COOLDOWN = 10; // seconds
+const COOLDOWN = 60 * 1; // 1 minute
 
 
 function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile", label = "Mobile Number", onSuccess }) {
@@ -52,7 +52,7 @@ function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile"
         }
         setIsVerifying(true);
 
-        validateOtp(value).then(res => {
+        validateOtp(value, formattedMobileNumber).then(res => {
             setIsVerifying(false);
             onSuccess(formattedMobileNumber);
         }).catch(() => {

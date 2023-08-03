@@ -26,9 +26,10 @@ const useFetch = () => {
     }
   };
 
-  const validateOtp = async (otp) => {
+  const validateOtp = async (otp, mobileNumber) => {
     const formData = new FormData();
     formData.append('otp', otp);
+    formData.append('mobileNumber',mobileNumber);
 
     try {
       const resp = await apiRequest(API_VALIDATE_OTP, formData);
