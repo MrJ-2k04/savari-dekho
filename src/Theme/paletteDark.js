@@ -3,7 +3,7 @@ const PRIMARY = {
   contrastText: "#111",
 };
 const SECONDARY = {
-  main: "#4DEEEA",
+  main: "#e1a853",
   contrastText: "#000",
 };
 
