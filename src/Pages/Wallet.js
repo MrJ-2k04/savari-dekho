@@ -1,7 +1,10 @@
 import { Close, CurrencyRupee, ExpandMore } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, Container, Divider, IconButton, InputAdornment, Modal, Stack, TextField, Typography } from "@mui/material";
+import EditAmountModal from "Components/Common/EditAmountModal";
+import Payment from "Components/Other/Payment";
 import Layout from "Layout";
 import { ADD_FUND_AMOUNTS, THEME, WALLET_FAQS } from "Store/constants";
+import { showError, showSuccess } from "Utils";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -13,6 +16,16 @@ function Wallet() {
 
     const handleAddFundsOpen = e => setShowAddFunds(true);
     const handleAddFundsClose = e => setShowAddFunds(false);
+
+    const handleAddFundsSuccess = e => {
+        handleAddFundsClose();
+        showSuccess({ message: 'Funds Added Successfully' })
+    }
+    
+    const handleAddFundsFailure = e=>{
+        handleAddFundsClose();
+        showError({message:'Failed to add funds!'});
+    }
 
     const cardStyle = {
         background: themeMode === THEME.LIGHT ? `linear-gradient(0deg, rgb(246, 246, 246), rgba(255, 255, 255, 0.5)), linear-gradient(315deg, rgb(255, 255, 255) 0%, rgb(203, 203, 203) 50%, rgb(238, 238, 238) 50%, rgb(246, 246, 246) 100%)`
@@ -27,7 +40,7 @@ function Wallet() {
                         <Typography textTransform="none" variant="h5" color={"primary"}>Current Balance:</Typography>
                         <Typography variant="h1" color={"primary"}>₹250</Typography>
                     </CardContent>
-                    <CardActions sx={{p:2}}>
+                    <CardActions sx={{ p: 2 }}>
                         <Button sx={{ ml: "auto" }} variant="outlined">Withdraw Funds</Button>
                         <Button variant="contained" onClick={handleAddFundsOpen}>Add Funds</Button>
                     </CardActions>
@@ -52,44 +65,13 @@ function Wallet() {
                     </Box>
                 </Stack>
             </Container>
-            <Modal open={showAddFunds} onClose={handleAddFundsClose}>
-                <Box display={"flex"} alignItems={"center"} height={"100%"} maxHeight={"100vh"} width={"90%"} maxWidth={'460px'} mx={"auto"}>
-                    <Card sx={{ width: '100%' }}>
-                        <CardHeader
-                            title="Add Funds"
-                            action={<IconButton onClick={handleAddFundsClose}><Close /></IconButton>}
-                        />
-                        <CardContent>
-                            <Stack spacing={2}>
-                                <Box>
-                                    <TextField
-                                        InputProps={{
-                                            startAdornment: <InputAdornment><CurrencyRupee /></InputAdornment>
-                                        }}
-                                        label='Enter amount'
-                                        type="number"
-                                        variant="outlined"
-                                        fullWidth
-                                    />
-                                </Box>
-                                <Box display={"flex"} width={"100%"} gap={1} flexWrap={'wrap'}>
-                                    {ADD_FUND_AMOUNTS.map(amt => (
-                                        <Chip
-                                            color="primary"
-                                            variant="filled"
-                                            label={`+₹${amt}`}
-                                            onClick={e => { }}
-                                        />
-                                    ))}
-                                </Box>
-                            </Stack>
-                        </CardContent>
-                        <CardActions sx={{p:2}}>
-                            <Button sx={{ ml: "auto" }} variant="contained">Proceed to Pay</Button>
-                        </CardActions>
-                    </Card>
-                </Box>
-            </Modal>
+            <EditAmountModal 
+                onClose={handleAddFundsClose}
+                onSubmit={handleAddFundsSuccess}
+                onCancel={handleAddFundsFailure}
+                open={showAddFunds}
+                title="Add Funds"
+            />
         </Layout>
     );
 }
