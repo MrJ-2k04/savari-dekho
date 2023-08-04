@@ -85,6 +85,12 @@ export default function NavBar() {
       </ListItemIcon>
       Login
     </MenuItem>
+    <MenuItem component={Link} to={ROUTE_LOGIN}>
+      <ListItemIcon>
+        <Login fontSize="small" />
+      </ListItemIcon>
+      LoginPage
+    </MenuItem>
     <MenuItem component={Link} to={ROUTE_REGISTER}>
       <ListItemIcon>
         <PersonAdd fontSize="small" />

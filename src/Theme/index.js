@@ -21,7 +21,7 @@ ThemeConfig.propTypes = {
 };
 
 export default function ThemeConfig({ children }) {
-  const mode = useSelector((state) => state.ui.themeMode || localStorage.getItem("theme-mode"));
+  const mode = useSelector((state) => state.ui.themeMode);
 
   const themeOptions = useMemo(
     () => ({

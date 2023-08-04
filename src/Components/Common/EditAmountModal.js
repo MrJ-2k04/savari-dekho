@@ -37,7 +37,7 @@ function EditAmountModal({
                                         max: maxLimit,
                                     }}
                                     InputProps={{
-                                        startAdornment: <InputAdornment><CurrencyRupee /></InputAdornment>,
+                                        startAdornment: <InputAdornment position="start"><CurrencyRupee /></InputAdornment>,
                                     }}
                                     helperText={helperText}
                                     label={inputLabel}
@@ -51,7 +51,7 @@ function EditAmountModal({
                                     <Chip
                                         color="primary"
                                         variant="filled"
-
+                                        key={amt}
                                         label={`+₹${amt}`}
                                         onClick={e => { }}
                                     />

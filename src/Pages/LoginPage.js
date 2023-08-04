@@ -1,8 +1,10 @@
-import { Box } from "@mui/material";
+import { Box, Container, Grid } from "@mui/material";
+import LoginForm from "Components/Forms/LoginForm";
 import Layout from "Layout";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import { useState } from "react";
 import { isNumeric } from "Utils";
+import {ReactComponent as Illustration} from "Assets/images/login.svg";
 
 function LoginPage() {
     const [otp, setOtp] = useState('')
@@ -17,15 +19,14 @@ function LoginPage() {
 
     return (
         <Layout>
-            <Box maxWidth={"40rem"}>
-                <MuiOtpInput
-                    value={otp}
-                    onChange={handleChange}
-                    length={6}
-                    onComplete={handleComplete}
-                    validateChar={isNumeric}
-                />
-            </Box>
+            <Grid container>
+                <Grid item xs={12} md={6}>
+                    <Illustration />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <LoginForm />
+                </Grid>
+            </Grid>
         </Layout>
     );
 }
