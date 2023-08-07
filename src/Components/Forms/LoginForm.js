@@ -1,15 +1,63 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
-import { isEmptyString } from "Utils";
+import useFetch from "Components/Hooks/useFetch";
+import { formatMobileNumber, isEmptyString } from "Utils";
 import { useState } from "react";
 
 function LoginForm() {
+    const { loginUser, loading } = useFetch();
 
     const [credential, setCredential] = useState('');
     const [password, setPassword] = useState('');
 
     const [showPassword, setShowPassword] = useState(false);
+
     const [credentialError, setCredentialError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    const getInputType = (inputValue) => {
+        // Regular expressions for email and mobile number validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const mobileRegex = /^\d{10}$/;
+
+        if (emailRegex.test(inputValue)) {
+            return "email";
+        }
+        if (mobileRegex.test(inputValue)) {
+            return "mobileNumber";
+        }
+        return "";
+    };
+
+    const handleSubmit = () => {
+        var isValid = true;
+        const inputType = getInputType(credential);
+
+        const payload = {
+            type: inputType,
+            value: credential,
+            password: password,
+        };
+
+        // Credential Type check
+        if (isEmptyString(inputType)) {
+            setCredentialError('Please enter a valid mobile number or email');
+            isValid = false;
+        }
+
+        // Password check
+        if (isEmptyString(password)) {
+            setPasswordError('Please enter a password');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Submit to Backend API
+        loginUser(payload).then(user => {
+
+        }).catch(err => console.log(err.message))
+    };
 
     return (
         <Card>
@@ -34,9 +82,9 @@ function LoginForm() {
                             type={showPassword ? 'text' : 'password'}
                             fullWidth
                             value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            // error={!IsEmptyString(emailError)}
-                            // helperText={emailError}
+                            onChange={e => { setPasswordError(''); setPassword(e.target.value) }}
+                            error={!isEmptyString(passwordError)}
+                            helperText={passwordError}
                             required
                             InputProps={{
                                 endAdornment: <InputAdornment position='end'>
@@ -53,12 +101,12 @@ function LoginForm() {
                         />
                         <Button sx={{ width: 'fit-content' }} color="secondary">
                             <Typography>
-
                                 Forgot Password
                             </Typography>
                         </Button>
                         <Button
-                            sx={{ maxWidth:'16rem', mx: 'auto' }}
+                            onClick={handleSubmit}
+                            sx={{ maxWidth: '16rem', mx: 'auto' }}
                             variant="contained">
                             Login
                         </Button>

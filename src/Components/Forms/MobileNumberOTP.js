@@ -100,6 +100,7 @@ function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile"
                     label={label}
                     error={!isEmptyString(mobileNumberError)}
                     helperText={mobileNumberError}
+                    onKeyDown={e => e.key.toLowerCase() === 'enter' ? sendOtp() : ""}
                 />
                 <Box mt={{ xs: 0, sm: 1 }}>
                     <LoadingButton

@@ -178,7 +178,6 @@ export default function RegistrationStepper() {
     // --------------------------- Step Handlers ---------------------------
 
     const handleNext = () => {
-        console.log("next");
         if (activeStep === steps.length - 1) {
             handleSubmit();
             return;
@@ -410,7 +409,7 @@ export default function RegistrationStepper() {
                         </LoadingButton>
                     </Box>}
 
-                    <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button>
+                    {/* <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button> */}
                 </CardContent>
             </Card>
 
