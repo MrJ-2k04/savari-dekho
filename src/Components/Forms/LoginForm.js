@@ -55,7 +55,7 @@ function LoginForm() {
 
         // Submit to Backend API
         loginUser(payload).then(user => {
-
+            
         }).catch(err => console.log(err.message))
     };
 

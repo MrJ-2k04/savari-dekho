@@ -45,21 +45,32 @@ const useFetch = () => {
     // credentials = {type, value, password}
     const userFormData = jsonToFormData(credentials);
     try {
-      const user = await apiRequest(API_LOGIN, userFormData);
-      dispatch(authActions.login(user));
-      return user;
+      const data = await apiRequest(API_LOGIN, userFormData);
+      if(data.type==='success'){
+        dispatch(authActions.login(data.user));
+        return data.user;
+      }
+      throw new Error(data.message);
     } catch (error) {
       showError({ message: error.message });
       throw new Error(error.message);
     }
   }
 
+  const logoutUser = ()=>{
+    console.log("Logged Out");
+    dispatch(authActions.logout());
+  }
+
   const registerUser = async (userObj) => {
     const userFormData = jsonToFormData(userObj);
     try {
-      const user = await apiRequest(API_REGISTER, userFormData);
-      dispatch(authActions.login(user));
-      return user;
+      const data = await apiRequest(API_REGISTER, userFormData);
+      if(data.type==='success'){
+        dispatch(authActions.login(data.user));
+        return data.user;
+      }
+      throw new Error(data.message);
     } catch (error) {
       showError({ message: error.message });
       throw new Error(error.message);
@@ -123,6 +134,7 @@ const useFetch = () => {
     generateOtp,
     validateOtp,
     loginUser,
+    logoutUser,
     registerUser,
     resetPassword
   };

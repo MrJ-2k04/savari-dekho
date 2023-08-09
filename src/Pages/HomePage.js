@@ -99,8 +99,11 @@ function HomePage() {
                 />
             </Box>
 
-            <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"}>
-                <Stack spacing={2}>
+            <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"} justifyContent={'center'} alignItems={'center'}>
+                <Box py={4}>
+                    <img width={"100%"} height={"100%"} src="https://dyvak8rtbn5om.cloudfront.net/wp-content/uploads/2022/01/website-under-construction-1.jpg" alt="" />
+                </Box>
+                {/* <Stack spacing={2}>
                     <Button>Test Button</Button>
                     <Button variant="contained">Test Button</Button>
                     <Button variant="outlined">Test Button</Button>
@@ -187,7 +190,7 @@ function HomePage() {
                     <Skeleton variant="circular" width={40} height={40} />
                     <Skeleton variant="rectangular" width={210} height={60} />
                     <Skeleton variant="rounded" width={210} height={60} />
-                </Stack>
+                </Stack> */}
             </Box>
         </Layout>
     );

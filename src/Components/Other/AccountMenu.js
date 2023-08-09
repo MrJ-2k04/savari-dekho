@@ -5,8 +5,10 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import { Fragment, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function AccountMenu({ children }) {
+    const user = useSelector(state => state.auth.USER);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -27,8 +29,10 @@ export default function AccountMenu({ children }) {
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                     >
-                        {/* <AccountCircle sx={{ width: 32, height: 32 }} /> */}
-                        <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                        {user ?
+                            <Avatar src={user.profilePicture} sx={{ width: 32, height: 32 }}>{user.firstName ? user.firstName[0] : <AccountCircle />}</Avatar> :
+                            <AccountCircle sx={{ width: 32, height: 32 }} />
+                        }
                     </IconButton>
                 </Tooltip>
             </Box>
