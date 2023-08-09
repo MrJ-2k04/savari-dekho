@@ -17,17 +17,9 @@ import AvatarSection from './AvatarSection';
 import { LoadingButton } from '@mui/lab';
 import { Close, Done, Visibility, VisibilityOff } from '@mui/icons-material';
 import useFetch from 'Components/Hooks/useFetch';
+import ValidationText from 'Components/Common/ValidationText';
 
 const steps = ['Mobile Verfication', 'Basic Details', 'Create Password'];
-
-function ValidationText({ children, isValid = false }) {
-    return <Box display={"flex"} alignItems={'center'} justifyContent={'start'} width={'100%'} columnGap={1}>
-        {isValid ? <Done color='success' /> : <Close color='error' />}
-        <Typography color={'inherit'}>
-            {children}
-        </Typography>
-    </Box>
-}
 
 export default function RegistrationStepper() {
 
@@ -113,7 +105,7 @@ export default function RegistrationStepper() {
 
         // Submit to Backend
         registerUser(userObj).then((user) => {
-            
+
         }).catch((err) => {
             console.error(err.message);
         });
@@ -368,9 +360,6 @@ export default function RegistrationStepper() {
 
 
 
-
-
-
     return (
         <Box sx={{ width: '100%' }} maxWidth={"600px"} mx={"auto"}>
             <Card>
@@ -404,7 +393,8 @@ export default function RegistrationStepper() {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <LoadingButton loading={submitting} onClick={handleNext} variant='contained' disabled={submitting}>
+                        <LoadingButton loading={submitting} onClick={handleNext} variant='contained'
+                            disabled={submitting || !Object.values(passwordValidation).every(bool => bool)}>
                             {"Let's Go!"}
                         </LoadingButton>
                     </Box>}

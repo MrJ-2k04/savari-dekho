@@ -1,5 +1,5 @@
 
-import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP } from "Store/constants";
+import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP, API_RESET_PASSWORD, ROUTE_HOME, ROUTE_LOGIN } from "Store/constants";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
 import { useState } from "react";
@@ -54,7 +54,6 @@ const useFetch = () => {
     }
   }
 
-
   const registerUser = async (userObj) => {
     const userFormData = jsonToFormData(userObj);
     try {
@@ -65,6 +64,21 @@ const useFetch = () => {
       showError({ message: error.message });
       throw new Error(error.message);
     }
+  }
+
+  const resetPassword = async (newPassword, userId) => {
+    const json = {
+      password: newPassword,
+      userId,
+    }
+    const formData = jsonToFormData(json);
+    apiRequest(API_RESET_PASSWORD, formData).then(ack => {
+      showSuccess({ message: ack.message }).then(()=>{
+        nav(ROUTE_LOGIN);
+      });
+    }).catch(err => {
+      showError({ message: err.message });
+    })
   }
 
   const apiRequest = async (url, data = null, method = 'POST') => {
@@ -110,6 +124,7 @@ const useFetch = () => {
     validateOtp,
     loginUser,
     registerUser,
+    resetPassword
   };
 };
 

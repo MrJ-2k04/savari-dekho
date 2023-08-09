@@ -4,6 +4,7 @@
 export const ROUTE_HOME = "/";
 export const ROUTE_LOGIN = "/login";
 export const ROUTE_REGISTER = "/register";
+export const ROUTE_RESET_PASSWORD = "/reset-password/:userId";
 
 export const ROUTE_WALLET = "/wallet";
 export const ROUTE_PROFILE = "/profile";
@@ -22,6 +23,8 @@ export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 export const API_ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ENDPOINT : `http://localhost:8080`;
 export const API_REGISTER = `${API_ENDPOINT}/register`;
 export const API_LOGIN = `${API_ENDPOINT}/login`;
+export const API_RESET_PASSWORD = `${API_ENDPOINT}/reset-password`;
+export const API_FORGOT_PASSWORD = `${API_ENDPOINT}/forgot-password`;
 export const API_USERS = `${API_ENDPOINT}/users`;
 export const API_GENERATE_OTP = `${API_ENDPOINT}/generate-otp`;
 export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
