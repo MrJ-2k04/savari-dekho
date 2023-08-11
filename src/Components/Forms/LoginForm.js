@@ -1,8 +1,10 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import useFetch from "Components/Hooks/useFetch";
+import { ROUTE_REGISTER } from "Store/constants";
 import { formatMobileNumber, isEmptyString } from "Utils";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function LoginForm() {
     const { loginUser, loading } = useFetch();
@@ -55,7 +57,7 @@ function LoginForm() {
 
         // Submit to Backend API
         loginUser(payload).then(user => {
-            
+
         }).catch(err => console.log(err.message))
     };
 
@@ -113,8 +115,11 @@ function LoginForm() {
                     </Stack>
                 </Box>
             </CardContent>
-            <CardActions>
-
+            <CardActions sx={{p:2, justifyContent:'center'}}>
+                <Stack direction={'row'} spacing={1} justifyContent={'center'}>
+                    <Typography>Don't have an account?</Typography>
+                    <Link to={ROUTE_REGISTER}>Sign up</Link>
+                </Stack>
             </CardActions>
         </Card>
     );

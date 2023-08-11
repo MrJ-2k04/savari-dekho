@@ -20,10 +20,10 @@ function LoginPage() {
     return (
         <Layout>
             <Grid container>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={7} md={8}>
                     <Illustration />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={5} md={4}>
                     <LoginForm />
                 </Grid>
             </Grid>

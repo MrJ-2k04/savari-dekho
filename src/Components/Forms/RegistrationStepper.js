@@ -11,13 +11,14 @@ import { CardContent, CardHeader, Card, TextField, Stack, FormControl, InputLabe
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import inLocale from "date-fns/locale/en-IN"
-import { GENDER_OPTIONS } from 'Store/constants';
+import { GENDER_OPTIONS, ROUTE_LOGIN } from 'Store/constants';
 import { isEmptyString, isValidDateObject, is18Plus, jsonToFormData, parseFormData, isValidEmail } from 'Utils';
 import AvatarSection from './AvatarSection';
 import { LoadingButton } from '@mui/lab';
 import { Close, Done, Visibility, VisibilityOff } from '@mui/icons-material';
 import useFetch from 'Components/Hooks/useFetch';
 import ValidationText from 'Components/Common/ValidationText';
+import { Link } from 'react-router-dom';
 
 const steps = ['Mobile Verfication', 'Basic Details', 'Create Password'];
 
@@ -376,6 +377,12 @@ export default function RegistrationStepper() {
                         {renderStepContent(activeStep)}
                     </Box>
 
+                    {activeStep === 0 &&
+                        <Stack direction={'row'} spacing={1} justifyContent={'center'}>
+                            <Typography>Already have an account?</Typography>
+                            <Link to={ROUTE_LOGIN}>Sign in</Link>
+                        </Stack>
+                    }
 
                     {activeStep === 1 && <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Box sx={{ flex: '1 1 auto' }} />
