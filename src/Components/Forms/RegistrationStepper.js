@@ -406,7 +406,7 @@ export default function RegistrationStepper() {
                         </LoadingButton>
                     </Box>}
 
-                    {/* <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button> */}
+                    <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button>
                 </CardContent>
             </Card>
 
