@@ -1,12 +1,14 @@
-import { Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import Layout from "Layout";
 
 function Profile() {
-    return ( 
+    return (
         <Layout>
-            <Typography variant="h3">This is Profile Page</Typography>
+            <Container sx={{ my: 4 }}>
+                <Typography variant="h3">This is Profile Page</Typography>
+            </Container>
         </Layout>
-     );
+    );
 }
 
 export default Profile;

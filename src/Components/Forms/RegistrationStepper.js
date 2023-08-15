@@ -19,11 +19,12 @@ import { Close, Done, Visibility, VisibilityOff } from '@mui/icons-material';
 import useFetch from 'Components/Hooks/useFetch';
 import ValidationText from 'Components/Common/ValidationText';
 import { Link } from 'react-router-dom';
+import { useTheme } from '@emotion/react';
 
 const steps = ['Mobile Verfication', 'Basic Details', 'Create Password'];
 
 export default function RegistrationStepper() {
-
+    const theme = useTheme();
     const { registerUser, loading: submitting } = useFetch();
 
     // --------------------------- Form Fields ---------------------------
@@ -380,7 +381,7 @@ export default function RegistrationStepper() {
                     {activeStep === 0 &&
                         <Stack direction={'row'} spacing={1} justifyContent={'center'}>
                             <Typography>Already have an account?</Typography>
-                            <Link to={ROUTE_LOGIN}>Sign in</Link>
+                            <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_LOGIN}>Sign in</Typography>
                         </Stack>
                     }
 

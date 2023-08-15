@@ -1,4 +1,6 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useTheme } from "@emotion/react";
+import { Login, Visibility, VisibilityOff } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import useFetch from "Components/Hooks/useFetch";
 import { ROUTE_REGISTER } from "Store/constants";
@@ -7,6 +9,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 function LoginForm() {
+    const theme = useTheme();
     const { loginUser, loading } = useFetch();
 
     const [credential, setCredential] = useState('');
@@ -110,20 +113,22 @@ function LoginForm() {
                                     </Typography>
                                 </Button>
                             </Stack>
-                            <Button
+                            <LoadingButton
                                 onClick={handleSubmit}
+                                loading={loading}
+                                startIcon={<Login />}
                                 // sx={{ maxWidth: '16rem', mx: 'auto' }}
                                 fullWidth
                                 variant="contained">
                                 Login
-                            </Button>
+                            </LoadingButton>
                         </Stack>
                     </Box>
                 </CardContent>
-                <CardActions sx={{p:2, justifyContent:'center'}}>
+                <CardActions sx={{ p: 2, justifyContent: 'center' }}>
                     <Stack direction={'row'} spacing={1} justifyContent={'center'}>
                         <Typography>Don't have an account?</Typography>
-                        <Link to={ROUTE_REGISTER}>Sign up</Link>
+                        <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_REGISTER}>Sign up</Typography>
                     </Stack>
                 </CardActions>
             </Box>
