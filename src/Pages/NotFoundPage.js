@@ -1,42 +1,51 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Layout from "Layout";
 import { ROUTE_HOME } from "Store/constants";
 import { Link } from "react-router-dom";
+import { ReactComponent as Illustration } from "Assets/SVGs/404.svg";
+import { useTheme } from "@emotion/react";
 
 export default function NotFoundPage() {
   return (
-    <Layout>
-      <Container>
+    <>
+      <Container sx={{ maxWidth: { xs: 'sm', md: 'lg' } }}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             flexDirection: "column",
-            height: 'calc(100vh - 200px)',
+            height: 'calc(100vh)',
             textAlign: 'center'
           }}
         >
-          <Typography variant="h1">404</Typography>
-          <Typography variant="h6">
-            The page you're looking for doesn't exist.
-          </Typography>
-          <Button
-            LinkComponent={Link}
-            to={ROUTE_HOME}
-            variant="contained"
-            sx={{
-              mt: 2,
-              backgroundColor: '#27374D',
-              ":hover": {
-                backgroundColor: '#4c5c72'
-              }
-            }}
-          >
-            Back Home
-          </Button>
+          <Grid container spacing={{xs: 5, md:15}}>
+            <Grid item xs={12} md={6}>
+              <Box maxWidth={'sm'}>
+                <Illustration height={'100%'} width={'100%'} />
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={6} maxWidth={'sm'}>
+              <Stack spacing={3} height={'100%'} justifyContent={'center'}>
+                <Typography variant="h2" textAlign={'left'} color={'primary'}>Something is not right...</Typography>
+                <Typography variant="body" maxWidth={'500px'} textAlign={'justify'} color={'textSecondary'}>
+                  Page you are trying to open does not exist. You may have mistyped the address, or the page has been moved to another URL. If you think this is an error contact support.
+                </Typography>
+                <Button
+                  LinkComponent={Link}
+                  to={ROUTE_HOME}
+                  variant="outlined"
+                  sx={{ width: { xs: "100%", md: 'fit-content' } }}
+                  size="large"
+                >
+                  Back Home
+                </Button>
+              </Stack>
+            </Grid>
+          </Grid>
         </Box>
       </Container>
-    </Layout>
+    </>
   );
 }

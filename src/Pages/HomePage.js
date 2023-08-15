@@ -3,10 +3,10 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardA
 import Layout from "Layout";
 import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
-import heroImg from "Assets/images/hero.svg";
-import mobileHeroImg from "Assets/images/heroMobile.svg";
+import heroImg from "Assets/SVGs/hero.svg";
+import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
 import { ExpandMore } from "@mui/icons-material";
-
+import ConstructionSrc from "Assets/images/UnderConstruction.png";
 
 function HomePage() {
 
@@ -101,7 +101,7 @@ function HomePage() {
 
             <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"} justifyContent={'center'} alignItems={'center'}>
                 <Box py={4}>
-                    <img width={"100%"} height={"100%"} src="https://dyvak8rtbn5om.cloudfront.net/wp-content/uploads/2022/01/website-under-construction-1.jpg" alt="" />
+                    <img width={"100%"} height={"100%"} src={ConstructionSrc} alt="" />
                 </Box>
                 {/* <Stack spacing={2}>
                     <Button>Test Button</Button>
