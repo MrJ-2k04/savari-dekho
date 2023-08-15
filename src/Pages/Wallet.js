@@ -2,7 +2,7 @@ import { Close, CurrencyRupee, ExpandMore } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, Container, Divider, IconButton, InputAdornment, Modal, Stack, TextField, Typography } from "@mui/material";
 import EditAmountModal from "Components/Common/EditAmountModal";
 import Payment from "Components/Other/Payment";
-import Layout from "Layout";
+import UserLayout from "Layout/User";
 import { ADD_FUND_AMOUNTS, THEME, WALLET_FAQS } from "Store/constants";
 import { showError, showSuccess } from "Utils";
 import { useState } from "react";
@@ -33,7 +33,7 @@ function Wallet() {
     }
 
     return (
-        <Layout>
+        <UserLayout>
             <Container sx={{ my: 4 }}>
                 <Card sx={{ ...cardStyle }}>
                     <CardContent>
@@ -72,7 +72,7 @@ function Wallet() {
                 open={showAddFunds}
                 title="Add Funds"
             />
-        </Layout>
+        </UserLayout>
     );
 }
 

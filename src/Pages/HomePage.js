@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
 // import Payment from "Components/Payment";
-import Layout from "Layout";
+import UserLayout from "Layout/User";
 import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
 import heroImg from "Assets/SVGs/hero.svg";
@@ -13,7 +13,7 @@ function HomePage() {
     const themeMode = useSelector(state => state.ui.themeMode);
 
     return (
-        <Layout>
+        <UserLayout>
             {/* <Payment /> */}
             <Box
                 component="section"
@@ -192,7 +192,7 @@ function HomePage() {
                     <Skeleton variant="rounded" width={210} height={60} />
                 </Stack> */}
             </Box>
-        </Layout>
+        </UserLayout>
     );
 }
 

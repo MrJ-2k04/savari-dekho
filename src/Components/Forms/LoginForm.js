@@ -2,8 +2,9 @@ import { useTheme } from "@emotion/react";
 import { Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import Logo from "Components/Common/Logo";
 import useFetch from "Components/Hooks/useFetch";
-import { ROUTE_REGISTER } from "Store/constants";
+import { ROUTE_HOME, ROUTE_REGISTER } from "Store/constants";
 import { formatMobileNumber, isEmptyString } from "Utils";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -68,8 +69,12 @@ function LoginForm() {
         <>
             <Box height={'100%'} display={'flex'} flexDirection={'column'} justifyContent={'center'} maxWidth={'500px'} mx={'auto'}>
                 {/* <CardHeader
-                    title={<Typography variant="h3" textAlign={'center'}>Login</Typography>}
-                /> */}
+                    // title={<Typography variant="h3" textAlign={'center'}>Login</Typography>}
+                    title={<>
+
+                    </>}
+                />
+                 */}
                 <CardContent>
                     <Box maxWidth={'sm'} mx={'auto'}>
                         <Stack spacing={3}>

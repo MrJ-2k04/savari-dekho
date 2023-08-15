@@ -1,9 +1,7 @@
 import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
-import Layout from "Layout";
+import { ReactComponent as Illustration } from "Assets/SVGs/404.svg";
 import { ROUTE_HOME } from "Store/constants";
 import { Link } from "react-router-dom";
-import { ReactComponent as Illustration } from "Assets/SVGs/404.svg";
-import { useTheme } from "@emotion/react";
 
 export default function NotFoundPage() {
   return (

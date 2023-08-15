@@ -1,7 +1,7 @@
 import { TabContext, TabPanel } from "@mui/lab";
 import { Box, Container, Tab, Tabs, Typography } from "@mui/material";
 import RideCard from "Components/Common/RideCard";
-import Layout from "Layout";
+import UserLayout from "Layout/User";
 import { useState } from "react";
 
 const defBookedRides = [
@@ -41,7 +41,7 @@ function RidesHistory() {
         setActiveTab(newValue);
     };
     return (
-        <Layout>
+        <UserLayout>
             <Container maxWidth={'md'}>
                 <TabContext value={activeTab}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -62,7 +62,7 @@ function RidesHistory() {
                     </Box>
                 </TabContext>
             </Container>
-        </Layout>
+        </UserLayout>
     );
 }
 

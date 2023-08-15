@@ -20,7 +20,7 @@ const iconItems = [
   { icon: Email, path: "" },
 ];
 
-const CopyrightComp = () => {
+const UserFooter = () => {
   const theme = useTheme();
   const isDark = useSelector(state => state.ui.themeMode) === THEME.DARK;
 
@@ -109,4 +109,4 @@ const CopyrightComp = () => {
   );
 };
 
-export default CopyrightComp;
+export default UserFooter;

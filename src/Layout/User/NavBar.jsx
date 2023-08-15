@@ -64,7 +64,7 @@ export default function NavBar() {
   return (
     <RootStyle
     // variant="elevation"
-    // color="transparent"
+    color="transparent"
     >
       <Toolbar>
         <Logo />
