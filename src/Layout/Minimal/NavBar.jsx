@@ -17,9 +17,9 @@ import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
 const RootStyle = styled(AppBar)(({ theme }) => ({
   boxShadow: "none",
   color: theme.palette.text.primary,
-  backdropFilter: "blur(6px)",
-  WebkitBackdropFilter: "blur(6px)", // Fix on Mobile
-  backgroundColor: alpha(theme.palette.background.default, 0.72),
+  // backdropFilter: "blur(6px)",
+  // WebkitBackdropFilter: "blur(6px)", // Fix on Mobile
+  // backgroundColor: alpha(theme.palette.background.default, 0.72),
 }));
 
 

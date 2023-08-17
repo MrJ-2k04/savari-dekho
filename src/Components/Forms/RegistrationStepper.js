@@ -11,7 +11,7 @@ import { CardContent, CardHeader, Card, TextField, Stack, FormControl, InputLabe
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import inLocale from "date-fns/locale/en-IN"
-import { GENDER_OPTIONS, ROUTE_LOGIN } from 'Store/constants';
+import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_LOGIN, STATE_OPTIONS } from 'Store/constants';
 import { isEmptyString, isValidDateObject, is18Plus, jsonToFormData, parseFormData, isValidEmail } from 'Utils';
 import AvatarSection from './AvatarSection';
 import { LoadingButton } from '@mui/lab';
@@ -21,7 +21,7 @@ import ValidationText from 'Components/Common/ValidationText';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 
-const steps = ['Mobile Verfication', 'Basic Details', 'Create Password'];
+const steps = ['Mobile Verfication', 'Basic Details', 'Location Details', 'Create Password'];
 
 export default function RegistrationStepper() {
     const theme = useTheme();
@@ -30,12 +30,19 @@ export default function RegistrationStepper() {
     // --------------------------- Form Fields ---------------------------
 
     const [mobileNumber, setMobileNumber] = useState('');
+    // Basic Details
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [gender, setGender] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState(null);
     const [profilePicture, setProfilePicture] = useState('');
+    // Location Details
+    const [city, setCity] = useState('');
+    const [state, setState] = useState('');
+    const [zipcode, setZipcode] = useState('');
+    const [address, setAddress] = useState('');
+    // Password
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -48,6 +55,9 @@ export default function RegistrationStepper() {
     const [emailError, setEmailError] = useState('');
     const [genderError, setGenderError] = useState('');
     const [dobError, setDobError] = useState('');
+    const [cityError, setCityError] = useState('');
+    const [stateError, setStateError] = useState('');
+    const [addressError, setAddressError] = useState('');
     const [passwordValidation, setPasswordValidation] = useState({
         isMinLength: false,
         hasNumber: false,
@@ -137,6 +147,21 @@ export default function RegistrationStepper() {
                 }
                 if (!isValidEmail(email)) {
                     setEmailError('Please enter a valid email address');
+                    isValid = false;
+                }
+                break;
+
+            case 2:
+                if (isEmptyString(state)) {
+                    setStateError('Please select a state');
+                    isValid = false;
+                }
+                if (isEmptyString(city)) {
+                    setCityError('Please select a city');
+                    isValid = false;
+                }
+                if (isEmptyString(address)) {
+                    setAddressError('Please enter a proper address');
                     isValid = false;
                 }
                 break;
@@ -295,7 +320,92 @@ export default function RegistrationStepper() {
                         </Grid>
                     </Grid>
                 </Box>);
+
             case 2:
+                return (<Box mx={"auto"} display={"flex"} maxWidth={"30rem"}>
+                    <Grid container columnSpacing={2} rowSpacing={3}>
+                        <Grid item xs={12} md={6}>
+                            <FormControl fullWidth required>
+                                <InputLabel id="state" error={!isEmptyString(stateError)}>State</InputLabel>
+                                <Select
+                                    labelId="state"
+                                    label="State"
+                                    value={state}
+                                    onChange={(e) => {
+                                        setStateError('');
+                                        setState(e.target.value)
+                                    }}
+                                    error={!isEmptyString(stateError)}
+                                >
+                                    {STATE_OPTIONS.map((state, index) => {
+                                        return (
+                                            <MenuItem key={index} value={state}>
+                                                {state}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                                <FormHelperText
+                                    error={!isEmptyString(stateError)}
+                                >
+                                    {stateError}
+                                </FormHelperText>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <FormControl fullWidth required disabled={isEmptyString(state)}>
+                                <InputLabel id="city" error={!isEmptyString(cityError)}>City</InputLabel>
+                                <Select
+                                    labelId="city"
+                                    label="City"
+                                    value={city}
+                                    onChange={(e) => {
+                                        setCityError('');
+                                        setCity(e.target.value)
+                                    }}
+                                    error={!isEmptyString(cityError)}
+                                // disabled={isEmptyString(state)}
+                                >
+                                    {CITY_OPTIONS[state] && CITY_OPTIONS[state].map((city, index) => {
+                                        return (
+                                            <MenuItem key={index} value={city}>
+                                                {city}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                                <FormHelperText
+                                    error={!isEmptyString(cityError)}
+                                >
+                                    {cityError}
+                                </FormHelperText>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Address"
+                                multiline
+                                rows={4}
+                                fullWidth
+                                value={address}
+                                onChange={e => { setAddressError(''); setAddress(e.target.value) }}
+                                required
+                                error={!isEmptyString(addressError)}
+                                helperText={addressError}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Zip code"
+                                fullWidth
+                                value={zipcode}
+                                onChange={e => setZipcode(e.target.value)}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>)
+
+            case 3:
                 return (<Box mx={"auto"} display={"flex"} maxWidth={"30rem"} flexDirection={"column"} rowGap={3}>
                     <Stack width={"100%"} spacing={2}>
                         {/* <Typography variant='h3'>Now let's create a Strong Password</Typography> */}
@@ -393,6 +503,20 @@ export default function RegistrationStepper() {
                     </Box>}
 
                     {activeStep === 2 && <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                        <Button
+                            color="inherit"
+                            onClick={handleBack}
+                            sx={{ mr: 1 }}
+                        >
+                            Back
+                        </Button>
+                        <Box sx={{ flex: '1 1 auto' }} />
+                        <Button onClick={handleNext} variant='contained'>
+                            {'Next'}
+                        </Button>
+                    </Box>}
+
+                    {activeStep === 3 && <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Button
                             color="inherit"
                             onClick={handleBack}
