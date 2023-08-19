@@ -1,31 +1,22 @@
-import { Box } from "@mui/material";
-import { MuiOtpInput } from "mui-one-time-password-input";
-import { useState } from "react";
-import { isNumeric } from "Utils";
+import { Box, Grid } from "@mui/material";
+import { ReactComponent as Illustration } from "Assets/SVGs/Booking.svg";
+import LoginForm from "Components/Forms/LoginForm";
+import MinimalLayout from "Layout/Minimal";
 
 function LoginPage() {
-    const [otp, setOtp] = useState('')
-
-    const handleChange = (newValue) => {
-        setOtp(newValue);
-    }
-
-    const handleComplete = (value) => {
-        console.log("Completed:", value);
-    }
-
     return (
-        <>
-            <Box maxWidth={"40rem"}>
-                <MuiOtpInput
-                    value={otp}
-                    onChange={handleChange}
-                    length={6}
-                    onComplete={handleComplete}
-                    validateChar={isNumeric}
-                />
-            </Box>
-        </>
+        <MinimalLayout>
+            <Grid container height={`100%`} overflow={"hidden"} justifyContent={'start'} alignContent={'center'} alignItems={{ xs: 'start', md: 'center' }}>
+                <Grid item xs={12} sm={12} lg={8} height={'fit-content'}>
+                    <Box width={{ xs: '100%', sm: '600px', md: '750px', lg: '100%' }} mx={'auto'}>
+                        <Illustration width={'100%'} />
+                    </Box>
+                </Grid>
+                <Grid item xs={12} sm={12} lg={4} px={4}>
+                    <LoginForm />
+                </Grid>
+            </Grid>
+        </MinimalLayout>
     );
 }
 

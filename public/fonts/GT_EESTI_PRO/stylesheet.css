@@ -1,0 +1,133 @@
+
+/* Thin */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Thin'), local('GTEestiProDisplay-Thin'),
+        url('GTEestiProDisplay-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Thin Italic'), local('GTEestiProDisplay-ThinItalic'),
+        url('GTEestiProDisplay-ThinItalic.woff2') format('woff2');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* UltraLight */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display UltraLight'), local('GTEestiProDisplay-UltraLight'),
+        url('GTEestiProDisplay-UltraLight.woff2') format('woff2');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display UltraLight Italic'), local('GTEestiProDisplay-UltraLightItalic'),
+        url('GTEestiProDisplay-UltraLightItalic.woff2') format('woff2');
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Light */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Light'), local('GTEestiProDisplay-Light'),
+        url('GTEestiProDisplay-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Light Italic'), local('GTEestiProDisplay-LightItalic'),
+        url('GTEestiProDisplay-LightItalic.woff2') format('woff2');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Regular */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Regular'), local('GTEestiProDisplay-Regular'),
+        url('GTEestiProDisplay-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Regular Italic'), local('GTEestiProDisplay-RegularItalic'),
+        url('GTEestiProDisplay-RegularItalic.woff2') format('woff2');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Medium */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Medium'), local('GTEestiProDisplay-Medium'),
+        url('GTEestiProDisplay-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Medium Italic'), local('GTEestiProDisplay-MediumItalic'),
+        url('GTEestiProDisplay-MediumItalic.woff2') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Bold */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Bold'), local('GTEestiProDisplay-Bold'),
+        url('GTEestiProDisplay-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display Bold Italic'), local('GTEestiProDisplay-BoldItalic'),
+        url('GTEestiProDisplay-BoldItalic.woff2') format('woff2');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* UltraBold */
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display UltraBold'), local('GTEestiProDisplay-UltraBold'),
+        url('GTEestiProDisplay-UltraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Eesti Pro Display';
+    src: local('GT Eesti Pro Display UltraBold Italic'), local('GTEestiProDisplay-UltraBoldItalic'),
+        url('GTEestiProDisplay-UltraBoldItalic.woff2') format('woff2');
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+}

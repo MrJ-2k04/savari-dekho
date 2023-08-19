@@ -1,5 +1,5 @@
 const PRIMARY = {
-  main: "#254e71",
+  main: "#27374D",
   contrastText: "#fff",
 };
 const SECONDARY = {

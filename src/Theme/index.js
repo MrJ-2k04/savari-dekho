@@ -11,7 +11,7 @@ import typography from "./typography";
 import componentsOverride from "./overrides";
 import { shadows, shadowsDark, customShadows, customShadowsDark } from "./shadows";
 import mixins from "./mixins";
-import { THEME } from "../store/constants";
+import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
@@ -21,7 +21,7 @@ ThemeConfig.propTypes = {
 };
 
 export default function ThemeConfig({ children }) {
-  const mode = useSelector((state) => state.ui.themeMode || localStorage.getItem("theme-mode"));
+  const mode = useSelector((state) => state.ui.themeMode);
 
   const themeOptions = useMemo(
     () => ({
