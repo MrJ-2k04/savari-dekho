@@ -1,5 +1,5 @@
 
-import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP, API_RESET_PASSWORD, ROUTE_HOME, ROUTE_LOGIN } from "Store/constants";
+import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP, API_RESET_PASSWORD, ROUTE_HOME, ROUTE_LOGIN, API_FORGOT_PASSWORD } from "Store/constants";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
 import { useState } from "react";
@@ -46,7 +46,7 @@ const useFetch = () => {
     const userFormData = jsonToFormData(credentials);
     try {
       const data = await apiRequest(API_LOGIN, userFormData);
-      if(data.type==='success'){
+      if (data.type === 'success') {
         dispatch(authActions.login(data.user));
         return data.user;
       }
@@ -57,7 +57,7 @@ const useFetch = () => {
     }
   }
 
-  const logoutUser = ()=>{
+  const logoutUser = () => {
     console.log("Logged Out");
     dispatch(authActions.logout());
   }
@@ -66,7 +66,7 @@ const useFetch = () => {
     const userFormData = jsonToFormData(userObj);
     try {
       const data = await apiRequest(API_REGISTER, userFormData);
-      if(data.type==='success'){
+      if (data.type === 'success') {
         dispatch(authActions.login(data.user));
         return data.user;
       }
@@ -74,6 +74,18 @@ const useFetch = () => {
     } catch (error) {
       showError({ message: error.message });
       throw new Error(error.message);
+    }
+  }
+
+  const forgotPassword = async (credentials) => {
+    try {
+      const res = await apiRequest(API_FORGOT_PASSWORD, jsonToFormData(credentials));
+      if (res.type === 'success') {
+        return showSuccess({ message: res.message });
+      }
+      return showError({ message: res.message || 'Server Error' });
+    } catch (error) {
+      return showError({ message: error.message });
     }
   }
 
@@ -84,7 +96,7 @@ const useFetch = () => {
     }
     const formData = jsonToFormData(json);
     apiRequest(API_RESET_PASSWORD, formData).then(ack => {
-      showSuccess({ message: ack.message }).then(()=>{
+      showSuccess({ message: ack.message }).then(() => {
         nav(ROUTE_LOGIN);
       });
     }).catch(err => {
@@ -136,7 +148,8 @@ const useFetch = () => {
     loginUser,
     logoutUser,
     registerUser,
-    resetPassword
+    forgotPassword,
+    resetPassword,
   };
 };
 

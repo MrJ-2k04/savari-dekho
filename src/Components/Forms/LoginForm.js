@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 
 function LoginForm() {
     const theme = useTheme();
-    const { loginUser, loading } = useFetch();
+    const { loginUser, forgotPassword,loading } = useFetch();
 
     const [credential, setCredential] = useState('');
     const [password, setPassword] = useState('');
@@ -65,6 +65,25 @@ function LoginForm() {
         }).catch(err => console.log(err.message))
     };
 
+    const handleForgotPassword = ()=>{
+        var isValid = true;
+        const inputType = getInputType(credential);
+
+        // Credential Type check
+        if (isEmptyString(inputType)) {
+            setCredentialError('Please enter a valid mobile number or email');
+            isValid = false;
+        }
+
+        if(!isValid) return;
+
+        const payload = {
+            type: inputType,
+            value: credential,
+        };
+        forgotPassword(payload)
+    }
+
     return (
         <>
             <Box height={'100%'} display={'flex'} flexDirection={'column'} justifyContent={'center'} maxWidth={'500px'} mx={'auto'}>
@@ -112,7 +131,7 @@ function LoginForm() {
                                         </InputAdornment>,
                                     }}
                                 />
-                                <Button sx={{ width: 'fit-content' }} color="secondary">
+                                <Button sx={{ width: 'fit-content' }} color="secondary" onClick={handleForgotPassword}>
                                     <Typography>
                                         Forgot Password?
                                     </Typography>
