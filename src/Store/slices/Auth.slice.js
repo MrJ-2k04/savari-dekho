@@ -6,9 +6,9 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: {
     user: null,
-    accessToken: null,
-    refreshToken: null,
-    authReady: true,
+    accessToken: Cookies.get('accessToken') || null,
+    refreshToken: Cookies.get('refreshToken') || null,
+    authReady: false,
   },
   reducers: {
     setTokens: (state, action) => {

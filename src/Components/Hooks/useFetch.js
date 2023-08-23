@@ -41,19 +41,28 @@ const useFetch = () => {
     }
   };
 
-  const loginUser = async (credentials) => {
-    // credentials = {type, value, password}
-    const userFormData = jsonToFormData(credentials);
+  const getUserDetails = async () => {
     try {
-      const ack = await apiRequest(API_LOGIN, userFormData);
-      if (ack.type === 'success') {
-        dispatch(authActions.setTokens(ack.payload));
-        return ack;
-      }
-      return showError({ message: ack.message });
+      console.log("Fetch user details using token");
     } catch (error) {
-      showError({ message: error.message });
+      
     }
+  }
+
+  const loginUser = async (credentials) => {
+    dispatch(authActions.setTokens({ accessToken: "abc", refreshToken: "def" }));
+    // credentials = {type, value, password}
+    // const userFormData = jsonToFormData(credentials);
+    // try {
+    //   const ack = await apiRequest(API_LOGIN, userFormData);
+    //   if (ack.type === 'success') {
+    //     dispatch(authActions.setTokens(ack.payload));
+    //     return ack;
+    //   }
+    //   return showError({ message: ack.message });
+    // } catch (error) {
+    //   showError({ message: error.message });
+    // }
   }
 
   const logoutUser = () => {
@@ -69,7 +78,7 @@ const useFetch = () => {
         dispatch(authActions.setTokens(ack.payload));
         return ack;
       }
-      return showError({message: ack.message});
+      return showError({ message: ack.message });
     } catch (error) {
       showError({ message: error.message });
     }
@@ -150,6 +159,9 @@ const useFetch = () => {
         error: (err) => {
           setLoading(false);
           if (err.status === 401) {
+            if (err.responseJSON?.code === 'AUTH_EXPIRED') {
+              console.log("Send Request for new access token using refresh token");
+            }
             console.log("Unauthorized! Token expired!");
             dispatch(authActions.logout())
             reject({ type: 'error', message: 'Token expired! Please login again' });
@@ -174,6 +186,7 @@ const useFetch = () => {
     result,
     generateOtp,
     validateOtp,
+    getUserDetails,
     loginUser,
     logoutUser,
     registerUser,
