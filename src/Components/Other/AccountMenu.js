@@ -4,11 +4,13 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
+import { selectIsAuthenticated, selectUser } from 'Store/selectors';
 import { Fragment, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export default function AccountMenu({ children }) {
-    const user = useSelector(state => state.auth.USER);
+    const user = useSelector(selectUser);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -29,7 +31,7 @@ export default function AccountMenu({ children }) {
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                     >
-                        {user ?
+                        {isAuthenticated ?
                             <Avatar src={user.profilePicture} sx={{ width: 32, height: 32 }}>{user.firstName ? user.firstName[0] : <AccountCircle />}</Avatar> :
                             <AccountCircle sx={{ width: 32, height: 32 }} />
                         }

@@ -116,11 +116,7 @@ export default function RegistrationStepper() {
 
 
         // Submit to Backend
-        registerUser(userObj).then((user) => {
-
-        }).catch((err) => {
-            console.error(err.message);
-        });
+        registerUser(userObj);
     };
     const validateStep = (stepIndex) => {
         let isValid = true;
@@ -474,7 +470,7 @@ export default function RegistrationStepper() {
 
     return (
         <Box sx={{ width: '100%' }} maxWidth={"600px"} mx={"auto"}>
-            <Card>
+            <>
                 <CardContent>
                     <Stepper activeStep={activeStep} alternativeLabel>
                         {steps.map(label => (
@@ -533,7 +529,7 @@ export default function RegistrationStepper() {
 
                     <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button>
                 </CardContent>
-            </Card>
+            </>
 
 
         </Box>

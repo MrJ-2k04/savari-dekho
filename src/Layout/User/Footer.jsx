@@ -1,17 +1,16 @@
 import {
   Box,
-  Stack,
-  Typography,
   Grid,
-  Container,
   IconButton,
+  Stack,
+  Typography
 } from "@mui/material";
 // import { ReactComponent as Logo } from "Assets/brand/logo.svg";
+import { useTheme } from "@emotion/react";
 import { Email, Facebook, Instagram, YouTube } from "@mui/icons-material";
 import Logo from "Components/Common/Logo";
-import { useTheme } from "@emotion/react";
+import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
-import { THEME } from "Store/constants";
 
 const iconItems = [
   { icon: Instagram, path: "" },
@@ -22,7 +21,7 @@ const iconItems = [
 
 const UserFooter = () => {
   const theme = useTheme();
-  const isDark = useSelector(state => state.ui.themeMode) === THEME.DARK;
+  const isDark = useSelector(selectIsDarkMode);
 
   return (
     <Box

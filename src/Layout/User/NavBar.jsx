@@ -1,13 +1,10 @@
 import {
   AccountBalanceWallet,
   AccountCircle,
-  Close,
-  DirectionsCar,
   Login,
   Logout,
   PersonAdd,
   Route,
-  SwapHoriz,
   TimeToLeave
 } from "@mui/icons-material";
 import {
@@ -22,17 +19,17 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { ROLES, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE, ROUTE_REGISTER, ROUTE_RIDES, ROUTE_RIDE_PUBLISH, ROUTE_WALLET, SITE_TITLE } from "Store/constants";
+import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE, ROUTE_REGISTER, ROUTE_RIDES, ROUTE_RIDE_PUBLISH, ROUTE_WALLET, SITE_TITLE } from "Store/constants";
 
 import { Link } from "react-router-dom";
 
-import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
-import Logo from "Components/Common/Logo";
-import AccountMenu from "Components/Other/AccountMenu";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import useFetch from "Components/Hooks/useFetch";
 import { MHidden } from "Components/@Material-Extend";
+import Logo from "Components/Common/Logo";
+import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
+import useFetch from "Components/Hooks/useFetch";
+import AccountMenu from "Components/Other/AccountMenu";
+import { selectIsAuthenticated } from "Store/selectors";
+import { useSelector } from "react-redux";
 
 
 const RootStyle = styled(AppBar)(({ theme }) => ({
@@ -46,7 +43,7 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 
 export default function NavBar() {
 
-  const user = useSelector(state => state.auth.USER);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const { logoutUser } = useFetch();
 
   const userMenuItems = [
@@ -118,7 +115,7 @@ export default function NavBar() {
               </MenuItem>
               <Divider />
             </MHidden>
-            {(user ? userMenuItems : guestMenuItems).map(item => (
+            {(isAuthenticated ? userMenuItems : guestMenuItems).map(item => (
               <MenuItem
                 key={item.label}
                 component={Boolean(item.to) ? Link : undefined}

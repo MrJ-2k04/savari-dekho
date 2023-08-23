@@ -60,9 +60,7 @@ function LoginForm() {
         if (!isValid) return;
 
         // Submit to Backend API
-        loginUser(payload).then(user => {
-
-        }).catch(err => console.log(err.message))
+        loginUser(payload);
     };
 
     const handleForgotPassword = ()=>{
