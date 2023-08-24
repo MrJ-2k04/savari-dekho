@@ -5,6 +5,7 @@ import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormCo
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { GENDER_OPTIONS } from "Store/constants";
+import { selectUser } from "Store/selectors";
 import { showSuccess } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput } from "mui-tel-input";
@@ -12,7 +13,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 
 function ProfileSection() {
-    const user = useSelector((state) => state.auth.USER);
+    const user = useSelector(selectUser);
     const [loading, setLoading] = useState(false);
 
     const handleUpdateUser = ()=>{

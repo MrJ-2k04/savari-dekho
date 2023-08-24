@@ -1,25 +1,27 @@
 
-import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP, API_RESET_PASSWORD, ROUTE_HOME, ROUTE_LOGIN, API_FORGOT_PASSWORD, API_USER_ME, API_REFRESH_TOKEN } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_USER_ME, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 const useFetch = () => {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const dispatch = useDispatch();
+
   const accessToken = useSelector(selectAccessToken);
   const refreshToken = useSelector(selectRefreshToken);
+  const dispatch = useDispatch();
+
+
+
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
     formData.append('mobileNumber', mobileNumber);
 
     try {
-      const resp = await apiRequest(API_GENERATE_OTP, formData);
+      const resp = await apiRequestWithReauth(API_GENERATE_OTP, formData);
       showSuccess({ message: resp.message });
       return resp;
     } catch (error) {
@@ -34,7 +36,7 @@ const useFetch = () => {
     formData.append('mobileNumber', mobileNumber);
 
     try {
-      const resp = await apiRequest(API_VALIDATE_OTP, formData);
+      const resp = await apiRequestWithReauth(API_VALIDATE_OTP, formData);
       showSuccess({ message: resp.message });
       return resp;
     } catch (error) {
@@ -43,19 +45,12 @@ const useFetch = () => {
     }
   };
 
-  const getUserDetails = async (accessToken) => {
-    console.log("Fetch user details using token:", accessToken);
-    const ack = await apiRequest(API_USER_ME)
+  const getUserDetails = async () => {
+    const ack = await apiRequestWithReauth(API_USER_ME)
     if (ack.type === 'success') {
       return ack.payload;
-    } else {
-      throw new Error('Cannot fetch user details');
     }
-    // return new Promise((res, rej) => {
-    //   setTimeout(() => {
-    //     res(true);
-    //   }, 2000);
-    // })
+    throw new Error('Cannot fetch user details');
   }
 
   const loginUser = async (credentials) => {
@@ -63,7 +58,7 @@ const useFetch = () => {
     // credentials = {type, value, password}
     const userFormData = jsonToFormData(credentials);
     try {
-      const ack = await apiRequest(API_LOGIN, userFormData);
+      const ack = await apiRequestWithReauth(API_LOGIN, userFormData);
       if (ack.type === 'success') {
         dispatch(authActions.setTokens(ack.payload));
         return ack;
@@ -74,15 +69,14 @@ const useFetch = () => {
     }
   }
 
-  const logoutUser = () => {
-    console.log("Logged Out");
+  const logoutUser = async () => {
     dispatch(authActions.logout());
   }
 
   const registerUser = async (userObj) => {
     const userFormData = jsonToFormData(userObj);
     try {
-      const ack = await apiRequest(API_REGISTER, userFormData);
+      const ack = await apiRequestWithReauth(API_REGISTER, userFormData);
       if (ack.type === 'success') {
         dispatch(authActions.setTokens(ack.payload));
         return ack;
@@ -95,7 +89,7 @@ const useFetch = () => {
 
   const forgotPassword = async (credentials) => {
     try {
-      const res = await apiRequest(API_FORGOT_PASSWORD, jsonToFormData(credentials));
+      const res = await apiRequestWithReauth(API_FORGOT_PASSWORD, jsonToFormData(credentials));
       if (res.type === 'success') {
         return showSuccess({ message: res.message });
       }
@@ -112,41 +106,58 @@ const useFetch = () => {
     }
     const formData = jsonToFormData(json);
     try {
-      const ack = await apiRequest(API_RESET_PASSWORD, formData);
+      const ack = await apiRequestWithReauth(API_RESET_PASSWORD, formData);
       return ack;
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  const apiRequest = async (url, data = null, method = 'POST') => {
+  const apiRequestWithReauth = async (url, data = null, method = 'POST') => {
     setLoading(true);
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await apiRequest(url, data, method);
+        resolve(res);
+      } catch (error) {
+        if (error.code === 'AUTH_EXPIRED') {
+          try {
+            // Generate new Access Token using Refresh Token
+            const ack = await apiRequest(API_REFRESH_TOKEN, jsonToFormData({ refreshToken }))
+            if (ack.type !== 'success') throw new Error(ack.message);
 
-    // If Access Token has expired, it will automatically renew using refresh token
-    // if (!accessToken) {
-    //   // Fetch new token using refresh token
-    //   const refreshToken = Cookies.get("refreshToken"); // Retrieve the refresh token from storage mechanism
-    //   const reqOptions = {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ refresh_token: refreshToken }),
-    //   }
-    //   // Making a request to server's token refresh endpoint
-    //   var { access_token, refresh_token } = await apiRequest(API_REFRESH_TOKEN_ENDPOINT, reqOptions);
-    //   accessToken = access_token;
-    //   dispatch(renewTokens({
-    //     accessToken: access_token,
-    //     refreshToken: refresh_token,
-    //   }));
+            // Store New Tokens in Local State
+            dispatch(authActions.setTokens(ack.payload));
 
-    //   if (!accessToken) {
-    //     console.log("Error refreshing token");
-    //     setError("Error occured while refreshing access token");
-    //     return;
-    //   }
-    // }
+            // Avoid resending /me request
+            if (url === API_USER_ME) return;
+
+            // Resend the original API request
+            try {
+              const newHeader = { 'Authorization': `Bearer ${ack?.payload?.accessToken}` }
+              const res = await apiRequest(url, data, method, newHeader);
+              resolve(res);
+            } catch (err) { reject(err) }
+          } catch (error) {
+            // If Refresh Token is also expired
+            dispatch(authActions.logout());
+            reject({ type: 'error', message: error.message });
+          }
+        } else {
+          reject(error);
+        }
+      }
+    });
+  };
+
+  const apiRequest = async (url, data = null, method = 'POST', headerOptions = {}) => {
+    setLoading(true);
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+      'Authorization': `Bearer ${accessToken}`,
+      ...headerOptions,
+    };
 
     return new Promise((resolve, reject) => {
       window.jQuery.ajax({
@@ -156,57 +167,25 @@ const useFetch = () => {
         processData: false,
         contentType: false,
         cache: false,
-        headers: {
-          'Access-Control-Allow-Origin': '*', // or specific origin URL
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', // specify the allowed methods
-          'Authorization': `Bearer ${accessToken}`,
-        },
+        headers,
         success: (data) => {
           setLoading(false);
           resolve(data);
         },
-        error: (err) => {
+        error: async (err) => {
           setLoading(false);
-          if (err.status === 401) {
-            if (err.responseJSON?.code === 'AUTH_EXPIRED') {
-              // console.log("Send Request for new access token using refresh token");
-              apiRequest(API_REFRESH_TOKEN, jsonToFormData({ refreshToken })).then(ack => {
-                if (ack.type === 'success') {
-                  dispatch(authActions.setTokens(ack.payload));
-                  // apiRequest(url, data, method).then(ack => {
-                  //   resolve(ack)
-                  // }).catch(err => {
-                  //   reject({ type: 'error', message: err.message })
-                  // })
-                } else {
-                  dispatch(authActions.logout());
-                }
-              }).catch(err => {
-                dispatch(authActions.logout());
-              });
-            } else {
-              reject({ type: 'error', message: 'Token expired! Please login again' });
-              dispatch(authActions.logout())
-            }
-          }
-          if (err.status === 0) {
-            reject({ type: 'error', message: 'Server unreachable' });
-          }
-          if (err.responseJSON) {
-            reject(err.responseJSON);
-          }
-          if (err.status !== 200) {
-            reject({ type: 'error', message: err.statusText });
-          }
-          reject({ type: 'error', message: 'Unexpected Error' });
+
+          if (err.status === 0) return reject({ type: 'error', message: 'Server unreachable' });
+          if (!err.responseJSON) return reject({ type: 'error', message: err.responseText || err.statusText });
+
+          reject(err.responseJSON);
         }
       });
     });
-  };
+  }
 
   return {
     loading,
-    result,
     generateOtp,
     validateOtp,
     getUserDetails,

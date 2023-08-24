@@ -89,6 +89,19 @@ export default function RegistrationStepper() {
             setGenderError('Please select a valid gender');
             isValid = false;
         }
+        if (isEmptyString(city)) {
+            setCityError('Please select a city');
+            isValid = false;
+        }
+        if (isEmptyString(state)) {
+            setStateError('Please select a state');
+            isValid = false;
+        }
+        if(isEmptyString(address)){
+            setAddressError('Please enter a valid address');
+            isValid = false;
+        }
+        
         if (!isValidDateObject(dateOfBirth)) {
             setDobError('Please enter a valid birth date');
             isValid = false;
@@ -105,6 +118,10 @@ export default function RegistrationStepper() {
             gender,
             email,
             dateOfBirth,
+            city,
+            state,
+            address,
+            zipcode,
             profilePicture,
             password
         }

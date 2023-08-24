@@ -19,7 +19,7 @@ const authSlice = createSlice({
       return { ...state, user: action.payload, authReady: true };
     },
     logout: (state, action) => {
-      return { ...state, USER: null, accessToken: null, refreshToken: null };
+      return { ...state, user: null, accessToken: null, refreshToken: null };
     },
     setAuthReadyStatus: (state, action) => {
       return { ...state, authReady: action.payload }
