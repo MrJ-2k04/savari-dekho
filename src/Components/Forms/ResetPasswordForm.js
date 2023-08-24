@@ -3,13 +3,15 @@ import { LoadingButton } from "@mui/lab";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import ValidationText from "Components/Common/ValidationText";
 import useFetch from "Components/Hooks/useFetch";
-import { isEmptyString, showError } from "Utils";
+import { ROUTE_LOGIN } from "Store/constants";
+import { isEmptyString, showError, showSuccess } from "Utils";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function ResetPasswordForm() {
     const { userId } = useParams();
     const { resetPassword, loading } = useFetch();
+    const nav = useNavigate();
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -52,7 +54,13 @@ function ResetPasswordForm() {
             return;
         }
 
-        resetPassword(password, userId);
+        resetPassword(password, userId).then((ack)=>{
+            showSuccess({ message: ack.message }).then(() => {
+                nav(ROUTE_LOGIN);
+            });
+        }).catch(err=>{
+            showError({ message: err.message });
+        });
     }
 
     return (

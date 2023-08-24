@@ -11,6 +11,11 @@ export const authMiddleware =
                 Cookies.set('refreshToken', refreshToken);
                 break;
 
+            case authActions.logout.type:
+                Cookies.remove('accessToken');
+                Cookies.remove('refreshToken');
+                break;
+
             default:
                 break;
         }

@@ -1,9 +1,12 @@
+import { Box } from "@mui/material";
 import useFetch from "Components/Hooks/useFetch";
 import Routes from "Routes";
 import { selectAccessToken, selectIsAuthReady, selectRefreshToken } from "Store/selectors";
+import { authActions } from "Store/slices";
 import ThemeConfig from 'Theme';
+import { showError } from "Utils";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
 
@@ -13,23 +16,38 @@ function App() {
   const refreshToken = useSelector(selectRefreshToken);
   const isAuthReady = useSelector(selectIsAuthReady);
   const {getUserDetails} = useFetch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(authActions.setAuthReadyStatus(false));
     if(accessToken&&refreshToken){
-      getUserDetails();
+      getUserDetails(accessToken).then((userDetails)=>{
+        console.log("test");
+        dispatch(authActions.setUser(userDetails));
+      }).catch(err=>{
+        console.log(err);
+        showError({message:err.message})
+      dispatch(authActions.setAuthReadyStatus(true));
+      });
     }else{
-      console.log("Tokens changed, do something",accessToken, refreshToken);
+      console.log("No tokens found, Logout!",accessToken, refreshToken);
+      dispatch(authActions.setAuthReadyStatus(true));
     }
   }, [accessToken, refreshToken])
   
 
   return (
     <div className="App">
+      {isAuthReady?
       <ThemeConfig>
         <BrowserRouter>
           <Routes />
         </BrowserRouter>
       </ThemeConfig>
+      :<Box>
+        Loading...
+      </Box>
+    }
     </div>
   );
 }

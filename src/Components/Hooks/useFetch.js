@@ -1,16 +1,18 @@
 
-import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP, API_RESET_PASSWORD, ROUTE_HOME, ROUTE_LOGIN, API_FORGOT_PASSWORD } from "Store/constants";
+import { API_LOGIN, API_REGISTER, API_, API_GENERATE_OTP, RES, API_VALIDATE_OTP, API_RESET_PASSWORD, ROUTE_HOME, ROUTE_LOGIN, API_FORGOT_PASSWORD, API_USER_ME, API_REFRESH_TOKEN } from "Store/constants";
+import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const useFetch = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  const nav = useNavigate();
   const dispatch = useDispatch();
+  const accessToken = useSelector(selectAccessToken);
+  const refreshToken = useSelector(selectRefreshToken);
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
@@ -41,28 +43,35 @@ const useFetch = () => {
     }
   };
 
-  const getUserDetails = async () => {
-    try {
-      console.log("Fetch user details using token");
-    } catch (error) {
-      
+  const getUserDetails = async (accessToken) => {
+    console.log("Fetch user details using token:", accessToken);
+    const ack = await apiRequest(API_USER_ME)
+    if (ack.type === 'success') {
+      return ack.payload;
+    } else {
+      throw new Error('Cannot fetch user details');
     }
+    // return new Promise((res, rej) => {
+    //   setTimeout(() => {
+    //     res(true);
+    //   }, 2000);
+    // })
   }
 
   const loginUser = async (credentials) => {
-    dispatch(authActions.setTokens({ accessToken: "abc", refreshToken: "def" }));
+    // dispatch(authActions.setTokens({ accessToken: "abc", refreshToken: "def" }));
     // credentials = {type, value, password}
-    // const userFormData = jsonToFormData(credentials);
-    // try {
-    //   const ack = await apiRequest(API_LOGIN, userFormData);
-    //   if (ack.type === 'success') {
-    //     dispatch(authActions.setTokens(ack.payload));
-    //     return ack;
-    //   }
-    //   return showError({ message: ack.message });
-    // } catch (error) {
-    //   showError({ message: error.message });
-    // }
+    const userFormData = jsonToFormData(credentials);
+    try {
+      const ack = await apiRequest(API_LOGIN, userFormData);
+      if (ack.type === 'success') {
+        dispatch(authActions.setTokens(ack.payload));
+        return ack;
+      }
+      return showError({ message: ack.message });
+    } catch (error) {
+      showError({ message: error.message });
+    }
   }
 
   const logoutUser = () => {
@@ -102,13 +111,12 @@ const useFetch = () => {
       userId,
     }
     const formData = jsonToFormData(json);
-    apiRequest(API_RESET_PASSWORD, formData).then(ack => {
-      showSuccess({ message: ack.message }).then(() => {
-        nav(ROUTE_LOGIN);
-      });
-    }).catch(err => {
-      showError({ message: err.message });
-    })
+    try {
+      const ack = await apiRequest(API_RESET_PASSWORD, formData);
+      return ack;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   const apiRequest = async (url, data = null, method = 'POST') => {
@@ -151,6 +159,7 @@ const useFetch = () => {
         headers: {
           'Access-Control-Allow-Origin': '*', // or specific origin URL
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', // specify the allowed methods
+          'Authorization': `Bearer ${accessToken}`,
         },
         success: (data) => {
           setLoading(false);
@@ -160,11 +169,25 @@ const useFetch = () => {
           setLoading(false);
           if (err.status === 401) {
             if (err.responseJSON?.code === 'AUTH_EXPIRED') {
-              console.log("Send Request for new access token using refresh token");
+              // console.log("Send Request for new access token using refresh token");
+              apiRequest(API_REFRESH_TOKEN, jsonToFormData({ refreshToken })).then(ack => {
+                if (ack.type === 'success') {
+                  dispatch(authActions.setTokens(ack.payload));
+                  // apiRequest(url, data, method).then(ack => {
+                  //   resolve(ack)
+                  // }).catch(err => {
+                  //   reject({ type: 'error', message: err.message })
+                  // })
+                } else {
+                  dispatch(authActions.logout());
+                }
+              }).catch(err => {
+                dispatch(authActions.logout());
+              });
+            } else {
+              reject({ type: 'error', message: 'Token expired! Please login again' });
+              dispatch(authActions.logout())
             }
-            console.log("Unauthorized! Token expired!");
-            dispatch(authActions.logout())
-            reject({ type: 'error', message: 'Token expired! Please login again' });
           }
           if (err.status === 0) {
             reject({ type: 'error', message: 'Server unreachable' });

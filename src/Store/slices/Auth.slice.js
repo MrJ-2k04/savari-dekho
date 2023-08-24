@@ -16,11 +16,14 @@ const authSlice = createSlice({
       return { ...state, accessToken, refreshToken };
     },
     setUser: (state, action) => {
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, authReady: true };
     },
     logout: (state, action) => {
-      return { ...state, USER: null };
-    }
+      return { ...state, USER: null, accessToken: null, refreshToken: null };
+    },
+    setAuthReadyStatus: (state, action) => {
+      return { ...state, authReady: action.payload }
+    },
   },
 })
 
