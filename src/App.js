@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
 import useFetch from "Components/Hooks/useFetch";
+import Loader from "Components/Other/Loader";
 import Routes from "Routes";
 import { selectAccessToken, selectIsAuthReady, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
@@ -36,16 +36,14 @@ function App() {
 
   return (
     <div className="App">
-      {isAuthReady ?
-        <ThemeConfig>
+      <ThemeConfig>
+        {isAuthReady ?
           <BrowserRouter>
             <Routes />
           </BrowserRouter>
-        </ThemeConfig>
-        : <Box>
-          Loading...
-        </Box>
-      }
+          : <Loader />
+        }
+      </ThemeConfig>
     </div>
   );
 }

@@ -57,7 +57,7 @@ const Routes = () => {
 
 const ProtectedRoute = ({
     element: Component,
-    fallbackPath = ROUTE_REGISTER,
+    fallbackPath = ROUTE_LOGIN,
     condition = null
 }) => {
     const isAuthenticated = useSelector(selectIsAuthenticated);
