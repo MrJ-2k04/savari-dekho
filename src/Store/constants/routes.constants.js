@@ -7,11 +7,12 @@ export const ROUTE_REGISTER = "/register";
 export const ROUTE_RESET_PASSWORD = "/reset-password/:userId";
 
 export const ROUTE_WALLET = "/wallet";
-export const ROUTE_PROFILE = "/profile";
+export const ROUTE_PROFILE_DASHBOARD = "/profile";
+export const ROUTE_USER_DETAILS = "/users/:userId";
 export const ROUTE_SEARCH = "/search";
-export const ROUTE_SEARCH_QUERY = "/search/:query";
-export const ROUTE_RIDES = "/rides";
-export const ROUTE_RIDE_DETAILS = "/rides/:id";
+export const ROUTE_SEARCH_RESULT = "/search/results/:query";
+export const ROUTE_RIDE_HISTORY = "/rides";
+export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
 export const ROUTE_RIDE_PUBLISH = "/rides/publish";
 
 export const ROUTE_ABOUT_US = "/about-us";

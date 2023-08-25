@@ -4,7 +4,7 @@ import NavBar from "./NavBar";
 import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
 
 
-const Layout = ({ children }) => {
+const MinimalLayout = ({ children }) => {
 
 
   const RootStyle = styled("div")({
@@ -37,4 +37,4 @@ const Layout = ({ children }) => {
   );
 };
 
-export default Layout;
+export default MinimalLayout;

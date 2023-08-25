@@ -1,12 +1,22 @@
 
 
 
-import { HomePage, LoginPage, NotFoundPage, Wallet } from "Pages";
-import Profile from "Pages/Profile";
-import RegisterPage from "Pages/RegisterPage";
-import ResetPasswordPage from "Pages/ResetPasswordPage";
-import RidesHistory from "Pages/RidesHistory";
-import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDES, ROUTE_WALLET } from "Store/constants";
+import {
+    HomePage,
+    NotFoundPage,
+    LoginPage,
+    RegisterPage,
+    ResetPasswordPage,
+    ProfilePage,
+    WalletPage,
+    SearchPage,
+    SearchResultsPage,
+    RideDetailsPage,
+    RidesHistoryPage,
+    UserDetailsPage
+} from "Pages";
+
+import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_HISTORY, ROUTE_RIDE_DETAILS, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_WALLET, ROUTE_USER_DETAILS } from "Store/constants";
 import { selectIsAuthenticated } from "Store/selectors";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -19,6 +29,10 @@ const Routes = () => {
     return <Switch>
         {/* For Everyone */}
         <Route path={ROUTE_HOME} element={<HomePage />} />
+        <Route path={ROUTE_SEARCH} element={<SearchPage />} />
+        <Route path={ROUTE_SEARCH_RESULT} element={<SearchResultsPage />} />
+        <Route path={ROUTE_RIDE_DETAILS} element={<RideDetailsPage />} />
+        <Route path={ROUTE_USER_DETAILS} element={<UserDetailsPage />} />
 
         {/* For Not Logged In Users */}
         <Route
@@ -47,9 +61,9 @@ const Routes = () => {
         />
 
         {/* Only for Logged In Users */}
-        <Route path={ROUTE_WALLET} element={<ProtectedRoute element={Wallet} />} />
-        <Route path={ROUTE_PROFILE} element={<ProtectedRoute element={Profile} />} />
-        <Route path={ROUTE_RIDES} element={<ProtectedRoute element={RidesHistory} />} />
+        <Route path={ROUTE_WALLET} element={<ProtectedRoute element={WalletPage} />} />
+        <Route path={ROUTE_PROFILE_DASHBOARD} element={<ProtectedRoute element={ProfilePage} />} />
+        <Route path={ROUTE_RIDE_HISTORY} element={<ProtectedRoute element={RidesHistoryPage} />} />
 
         <Route path="*" element={<NotFoundPage />} />
     </Switch>

@@ -31,7 +31,7 @@ const defBookedRides = [
     },
 ]
 
-function RidesHistory() {
+function RidesHistoryPage() {
 
     const [activeTab, setActiveTab] = useState("1");
     const [publishedRides, setPublishedRides] = useState([]);
@@ -66,4 +66,4 @@ function RidesHistory() {
     );
 }
 
-export default RidesHistory;
+export default RidesHistoryPage;

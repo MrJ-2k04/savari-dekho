@@ -1,12 +1,12 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 // import Payment from "Components/Payment";
+import heroImg from "Assets/SVGs/hero.svg";
+import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
+import ConstructionSrc from "Assets/images/UnderConstruction.png";
 import UserLayout from "Layout/User";
 import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
-import heroImg from "Assets/SVGs/hero.svg";
-import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
-import { ExpandMore } from "@mui/icons-material";
-import ConstructionSrc from "Assets/images/UnderConstruction.png";
+
 
 function HomePage() {
 

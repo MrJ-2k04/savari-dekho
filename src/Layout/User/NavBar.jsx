@@ -5,12 +5,16 @@ import {
   Logout,
   PersonAdd,
   Route,
+  Search,
   TimeToLeave
 } from "@mui/icons-material";
 import {
   Divider,
+  IconButton,
   ListItemIcon,
   MenuItem,
+  Stack,
+  Switch,
   alpha,
   styled
 } from "@mui/material";
@@ -19,7 +23,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE, ROUTE_REGISTER, ROUTE_RIDES, ROUTE_RIDE_PUBLISH, ROUTE_WALLET, SITE_TITLE } from "Store/constants";
+import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_WALLET, SITE_TITLE } from "Store/constants";
 
 import { Link } from "react-router-dom";
 
@@ -40,16 +44,15 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.background.default, 0.72),
 }));
 
-
 export default function NavBar() {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { logoutUser } = useFetch();
 
   const userMenuItems = [
-    { icon: AccountCircle, label: "Profile", to: ROUTE_PROFILE },
+    { icon: AccountCircle, label: "Profile", to: ROUTE_PROFILE_DASHBOARD },
     { icon: AccountBalanceWallet, label: "Wallet", to: ROUTE_WALLET },
-    { icon: TimeToLeave, label: "Your Rides", to: ROUTE_RIDES },
+    { icon: TimeToLeave, label: "Your Rides", to: ROUTE_RIDE_HISTORY },
     { icon: Logout, label: "Logout", onClick: logoutUser },
   ]
 
@@ -60,8 +63,8 @@ export default function NavBar() {
 
   return (
     <RootStyle
-    // variant="elevation"
-    color="transparent"
+      // variant="elevation"
+      color="transparent"
     >
       <Toolbar>
         <Logo />
@@ -85,27 +88,47 @@ export default function NavBar() {
         </Box>
 
 
-        <Button
-          // className="hover-underline-animation1"
-          // onClick={toggleRole}
-          LinkComponent={Link}
-          to={ROUTE_RIDE_PUBLISH}
-          variant={"outlined"}
-          sx={{ my: 2, display: { xs: 'none', md: 'block' } }}
-        >
-          {`Publish a Ride`}
-        </Button>
 
         <Box
           display={"flex"}
           alignItems={"center"}
-          columnGap={{ xs: 0.3, sm: 1, md: 1.5 }}
+          columnGap={1}
           sx={{ ml: 3 }}
         >
+          <Stack direction={'row'} display={{ xs: 'none', md: 'block' }} spacing={2} px={1}>
+            <Button
+              // className="hover-underline-animation1"
+              // onClick={toggleRole}
+              startIcon={<Search />}
+              LinkComponent={Link}
+              to={ROUTE_SEARCH}
+              variant={"text"}
+            >
+              {`Search`}
+            </Button>
+            <Button
+              // className="hover-underline-animation1"
+              // onClick={toggleRole}
+              startIcon={<Route />}
+              LinkComponent={Link}
+              to={ROUTE_RIDE_PUBLISH}
+              variant={"text"}
+            >
+              {`Publish a Ride`}
+            </Button>
+          </Stack>
+
           <ThemeModeSwitch />
 
           <AccountMenu>
             <MHidden width="mdUp">
+              <MenuItem
+                component={Link}
+                to={ROUTE_SEARCH}
+              >
+                <ListItemIcon><Search fontSize="small" /></ListItemIcon>
+                {`Search a Ride`}
+              </MenuItem>
               <MenuItem
                 component={Link}
                 to={ROUTE_RIDE_PUBLISH}

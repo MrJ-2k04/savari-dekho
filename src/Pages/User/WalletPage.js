@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 
 
 
-function Wallet() {
+function WalletPage() {
     const themeMode = useSelector(state => state.ui.themeMode);
     const [showAddFunds, setShowAddFunds] = useState(false);
 
@@ -77,4 +77,4 @@ function Wallet() {
 }
 
 
-export default Wallet;
+export default WalletPage;

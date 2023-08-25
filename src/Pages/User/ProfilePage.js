@@ -6,7 +6,7 @@ import UserLayout from "Layout/User";
 import { useState } from "react";
 
 
-function Profile() {
+function ProfilePage() {
     const [activeTab, setActiveTab] = useState("1")
 
     const handleTabChange = (event, newValue) => {
@@ -38,4 +38,4 @@ function Profile() {
     );
 }
 
-export default Profile;
+export default ProfilePage;
