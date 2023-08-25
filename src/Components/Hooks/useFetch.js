@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_USER_ME, API_VALIDATE_OTP } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -52,6 +52,11 @@ const useFetch = () => {
     }
     throw new Error('Cannot fetch user details');
   }
+
+  const updateUserDetails = async (user) => {
+    const ack = await apiRequestWithReauth(API_USER_UPDATE, jsonToFormData(user));
+    return ack;
+  };
 
   const loginUser = async (credentials) => {
     // dispatch(authActions.setTokens({ accessToken: "abc", refreshToken: "def" }));
@@ -189,6 +194,7 @@ const useFetch = () => {
     generateOtp,
     validateOtp,
     getUserDetails,
+    updateUserDetails,
     loginUser,
     logoutUser,
     registerUser,

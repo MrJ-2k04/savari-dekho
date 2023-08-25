@@ -24,6 +24,7 @@ export const API_ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.
 export const API_REGISTER = `${API_ENDPOINT}/register`;
 export const API_LOGIN = `${API_ENDPOINT}/login`;
 export const API_USER_ME = `${API_ENDPOINT}/me`;
+export const API_USER_UPDATE = `${API_ENDPOINT}/update-user`;
 export const API_REFRESH_TOKEN = `${API_ENDPOINT}/refresh-token`;
 export const API_RESET_PASSWORD = `${API_ENDPOINT}/reset-password`;
 export const API_FORGOT_PASSWORD = `${API_ENDPOINT}/forgot-password`;

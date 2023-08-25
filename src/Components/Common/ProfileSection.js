@@ -4,9 +4,11 @@ import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import useFetch from "Components/Hooks/useFetch";
 import { CITY_OPTIONS, GENDER_OPTIONS, STATE_OPTIONS } from "Store/constants";
 import { selectUser } from "Store/selectors";
-import { formatMobileNumber, isEmptyString, parseFormData, showError, unformatMobileNumber } from "Utils";
+import { authActions } from "Store/slices";
+import { formatMobileNumber, isEmptyString, parseFormData, showError, showSuccess, unformatMobileNumber } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { useEffect, useState } from "react";
@@ -16,7 +18,7 @@ function ProfileSection() {
     const user = useSelector(selectUser);
 
     const [localUser, setLocalUser] = useState(user);
-    const [loading, setLoading] = useState(false);
+    const { loading, updateUserDetails } = useFetch();
     const dispatch = useDispatch();
 
     const handleFieldChange = field => (e, details) => {
@@ -57,22 +59,13 @@ function ProfileSection() {
             return;
         }
 
-        console.log(updatedUser);
-        // setLoading(true);
-
-        // setTimeout(() => {
-        //     setLoading(false);
-        //     showSuccess({ message: 'User updated successfully!' });
-        // }, 1000);
+        updateUserDetails(updatedUser).then((ack) => {
+            showSuccess({ message: ack.message })
+            dispatch(authActions.setUser(updatedUser));
+        }).catch(err => {
+            showError({ message: err.message });
+        });
     }
-
-    // useEffect(() => {
-    //     console.log(localUser);
-
-    //     return () => {
-
-    //     }
-    // }, [localUser])
 
 
     return (
