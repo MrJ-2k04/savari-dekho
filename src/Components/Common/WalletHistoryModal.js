@@ -1,7 +1,8 @@
-import { Close } from "@mui/icons-material";
-import { Box, Card, CardContent, CardHeader, IconButton, List, ListItem, ListItemText, Modal, Skeleton, Stack, Typography } from "@mui/material";
+import { AddCircle, Close, Refresh, RemoveCircle } from "@mui/icons-material";
+import { Box, Card, CardContent, IconButton, Modal, Stack, Tooltip, Typography } from "@mui/material";
 import useFetch from "Components/Hooks/useFetch";
-import Loader from "Components/Other/Loader";
+import { TableSkeleton } from "Components/Skeletons";
+import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
 
 function WalletHistoryModal({
@@ -9,204 +10,108 @@ function WalletHistoryModal({
     onClose,
 }) {
 
-    const [transactions, setTransactions] = useState([
-        // {
-        //     "_id": "64eb2759e50ec44c56c47210",
-        //     "amount": 100,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:37:14.009Z",
-        //     "updatedAt": "2023-08-27T10:37:14.009Z"
-        // },
-        // {
-        //     "_id": "64eb27ade668bedd31fc3f43",
-        //     "amount": 100,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:38:37.793Z"
-        // },
-        // {
-        //     "_id": "64eb27dbe668bedd31fc3f47",
-        //     "amount": 350,
-        //     "type": "debit",
-        //     "createdAt": "2023-08-27T10:39:23.796Z"
-        // },
-        // {
-        //     "_id": "64eb281c7218e7fc01323511",
-        //     "amount": 1000,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:40:28.058Z"
-        // },
-        // {
-        //     "_id": "64eb2c11c79bf36f1e3679c5",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Hello World",
-        //     "createdAt": "2023-08-27T10:57:21.722Z"
-        // },
-        // {
-        //     "_id": "64eb2c3bc79bf36f1e3679cb",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Hello World",
-        //     "createdAt": "2023-08-27T10:58:03.687Z"
-        // },
-        // {
-        //     "_id": "64eb3143c79bf36f1e3679da",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Test",
-        //     "createdAt": "2023-08-27T11:19:32.010Z"
-        // },
-        // {
-        //     "_id": "64eb315cc79bf36f1e3679df",
-        //     "amount": 1500,
-        //     "type": "credit",
-        //     "description": "Paisa hi Paisa!!!",
-        //     "createdAt": "2023-08-27T11:19:56.114Z"
-        // },
-        // {
-        //     "_id": "64eb2759e50ec44c56c47210",
-        //     "amount": 100,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:37:14.009Z",
-        //     "updatedAt": "2023-08-27T10:37:14.009Z"
-        // },
-        // {
-        //     "_id": "64eb27ade668bedd31fc3f43",
-        //     "amount": 100,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:38:37.793Z"
-        // },
-        // {
-        //     "_id": "64eb27dbe668bedd31fc3f47",
-        //     "amount": 350,
-        //     "type": "debit",
-        //     "createdAt": "2023-08-27T10:39:23.796Z"
-        // },
-        // {
-        //     "_id": "64eb281c7218e7fc01323511",
-        //     "amount": 1000,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:40:28.058Z"
-        // },
-        // {
-        //     "_id": "64eb2c11c79bf36f1e3679c5",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Hello World",
-        //     "createdAt": "2023-08-27T10:57:21.722Z"
-        // },
-        // {
-        //     "_id": "64eb2c3bc79bf36f1e3679cb",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Hello World",
-        //     "createdAt": "2023-08-27T10:58:03.687Z"
-        // },
-        // {
-        //     "_id": "64eb3143c79bf36f1e3679da",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Test",
-        //     "createdAt": "2023-08-27T11:19:32.010Z"
-        // },
-        // {
-        //     "_id": "64eb315cc79bf36f1e3679df",
-        //     "amount": 1500,
-        //     "type": "credit",
-        //     "description": "Paisa hi Paisa!!!",
-        //     "createdAt": "2023-08-27T11:19:56.114Z"
-        // },
-        // {
-        //     "_id": "64eb2759e50ec44c56c47210",
-        //     "amount": 100,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:37:14.009Z",
-        //     "updatedAt": "2023-08-27T10:37:14.009Z"
-        // },
-        // {
-        //     "_id": "64eb27ade668bedd31fc3f43",
-        //     "amount": 100,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:38:37.793Z"
-        // },
-        // {
-        //     "_id": "64eb27dbe668bedd31fc3f47",
-        //     "amount": 350,
-        //     "type": "debit",
-        //     "createdAt": "2023-08-27T10:39:23.796Z"
-        // },
-        // {
-        //     "_id": "64eb281c7218e7fc01323511",
-        //     "amount": 1000,
-        //     "type": "credit",
-        //     "createdAt": "2023-08-27T10:40:28.058Z"
-        // },
-        // {
-        //     "_id": "64eb2c11c79bf36f1e3679c5",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Hello World",
-        //     "createdAt": "2023-08-27T10:57:21.722Z"
-        // },
-        // {
-        //     "_id": "64eb2c3bc79bf36f1e3679cb",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Hello World",
-        //     "createdAt": "2023-08-27T10:58:03.687Z"
-        // },
-        // {
-        //     "_id": "64eb3143c79bf36f1e3679da",
-        //     "amount": 450,
-        //     "type": "debit",
-        //     "description": "Test",
-        //     "createdAt": "2023-08-27T11:19:32.010Z"
-        // },
-        // {
-        //     "_id": "64eb315cc79bf36f1e3679df",
-        //     "amount": 1500,
-        //     "type": "credit",
-        //     "description": "Paisa hi Paisa!!!",
-        //     "createdAt": "2023-08-27T11:19:56.114Z"
-        // }
-    ]);
+    const [transactions, setTransactions] = useState([]);
     const { loading, fetchWalletTransactions } = useFetch();
-    useEffect(() => {
-        // fetch transactions from api
+
+    const fetchRecords = () => {
         fetchWalletTransactions()
-        .then(trans=>setTransactions(trans))
-        .catch(err=>console.error(err.message))
+            .then(trans => setTransactions(trans))
+            .catch(err => console.error(err.message))
+    }
+
+    useEffect(() => {
+        fetchRecords();
     }, []);
 
+    const formatDateTime = (value) => {
+        const dateTime = new Date(value);
+        const formattedDate = dateTime.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short' });
+        const formattedTime = dateTime.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric' });
 
+        return <Stack>
+            <Typography variant="body1">{formattedDate}</Typography>
+            <Typography variant="body2" color={'InactiveCaptionText'}>{formattedTime}</Typography>
+        </Stack>;
+    }
+
+    const formatAmount = (value, tableMeta, updateValue) => {
+        const transactionType = transactions[tableMeta?.rowIndex]?.type;
+        const color = transactionType === 'credit' ? '#31b835' : 'red';
+        const Icon = transactionType === 'credit' ? AddCircle : RemoveCircle;
+        return <Stack direction={'row'} spacing={1}>
+            <Icon sx={{ color }} />
+            <Typography color={color}>{value.toLocaleString()}</Typography>
+        </Stack>
+    }
+
+    const columns = [
+        {
+            name: '_id',
+            label: 'Transaction ID',
+            options: {
+                display: 'false'
+            }
+        },
+        {
+            name: 'description',
+            label: 'Description',
+            options: {
+                customBodyRender: (value) => <Typography>{value}</Typography>
+            }
+        },
+        {
+            name: 'createdAt',
+            label: 'Date/Time',
+            options: {
+                customBodyRender: formatDateTime,
+                sortDirection: 'desc'
+            },
+        },
+        {
+            name: 'amount',
+            label: 'Amount',
+            options: { customBodyRender: formatAmount }
+        },
+    ]
 
     return (<Modal onClose={onClose} open={open}>
-        <Box display={"flex"} alignItems={"center"} height={'100%'} width={"90%"} maxWidth={'md'} m={"auto"}>
+        <Box display={"flex"} alignItems={"center"} height={'100%'} maxWidth={'md'} m={"auto"}>
             <Card sx={{ width: '100%' }} >
-                <CardHeader
+                {/* <CardHeader
                     title={'Wallet History'}
                     action={<IconButton onClick={onClose}><Close /></IconButton>}
-                />
-                <CardContent sx={{ px: 0, minHeight: "400px" }}>
-                    {loading ? <Stack px={3} spacing={1}>
-                        {Array.from({length: 6}).map(i=><Skeleton variant="text" animation='pulse' width={'100%'} height={'40px'} />)}
-                    </Stack>
+                /> */}
+                <CardContent sx={{ minHeight: "400px" }}>
+                    {loading ? <TableSkeleton rows={5} columns={4} />
                         :
-                        <Box sx={{ maxHeight: '75vh', overflow: 'auto' }} px={3}>
-                            {transactions.length > 0 ? <List>
-                                {transactions.map(item => (<ListItem>
-                                    <ListItemText>
-                                        ₹{item.amount} - {item.description} - {new Date(item.createdAt).toLocaleString()}
-                                    </ListItemText>
-                                </ListItem>))}
-                            </List>
-                                : <>
-                                    <Typography>No transactions found!</Typography>
-                                </>}
+                        <Box maxHeight='75vh' sx={{ overflowX: 'hidden' }}>
+                            <MUIDataTable
+                                title={'Wallet History'
+                                    // <Typography color={'primary'} variant="h3">{`₹${user.balance || 0}`}</Typography>
+                                }
+                                columns={columns}
+                                data={transactions}
+                                options={{
+                                    customToolbar: () => [
+                                        <Tooltip title='Refresh'><IconButton onClick={fetchRecords}><Refresh /></IconButton></Tooltip>,
+                                        <Tooltip title='Close'><IconButton onClick={onClose}><Close /></IconButton></Tooltip>
+                                    ],
+                                    rowsPerPageOptions: [5, 10, 50],
+                                    rowsPerPage: 5,
+                                    selectableRows: 'none',
+                                    elevation: 0,
+                                    responsive: 'standard',
+                                    download: false,
+                                    print: false,
+                                    textLabels: {
+                                        body: {
+                                            noMatch: 'No transactions found'
+                                        }
+                                    }
+                                }}
+                            />
                         </Box>
                     }
-
-
                 </CardContent>
             </Card>
         </Box>
