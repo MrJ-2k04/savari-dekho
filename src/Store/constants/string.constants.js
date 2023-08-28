@@ -35,43 +35,28 @@ export const THEME = {
 
 export const WALLET_FAQS = [
   {
-    question: "Q: What is the Quantum Quill?",
-    answer: "A: The Quantum Quill is a state-of-the-art, time-traveling pen designed for the adventurous writers of tomorrow. It allows you to pen stories from any era, past or future!"
+    question: "Q: What is the Carpooling Wallet?",
+    answer: "A: The Carpooling Wallet is a digital wallet service that allows you to conveniently manage payments for rides and related services within our platform."
   },
   {
-    question: "Q: How does the Quantum Quill work?",
-    answer: "A: The Quantum Quill utilizes a combination of nano-scribbler technology and quantum entanglement. Just think of the time and place you want to write about, press the nib to paper, and let your imagination flow!"
+    question: "Q: How do I add funds to my Carpooling Wallet?",
+    answer: "A: Adding funds to your Carpooling Wallet is easy. Simply go to your account settings, navigate to the 'Wallet' section, and follow the instructions to link your bank account or credit card."
   },
   {
-    question: "Q: Is the Quantum Quill safe to use?",
-    answer: "A: Absolutely! The Quantum Quill has been rigorously tested and comes with built-in safety measures to prevent any unintended paradoxes or reality disruptions. However, we recommend not using it for winning lottery numbers."
+    question: "Q: Can I use my Carpooling Wallet to pay for rides?",
+    answer: "A: Absolutely. Your Carpooling Wallet balance can be used to pay for rides you book through our platform. It's a convenient way to make seamless payments for your carpooling trips."
   },
   {
-    question: "Q: Can I write myself into the past or future with the Quantum Quill?",
-    answer: "A: While the Quantum Quill is great for fictional adventures, it cannot alter real history or transport you physically through time. Its magic is confined to the realms of fiction."
+    question: "Q: How secure is the Carpooling Wallet?",
+    answer: "A: Your security is our priority. The Carpooling Wallet employs advanced encryption and security measures to safeguard your financial information and ensure the safety of your funds."
   },
   {
-    question: "Q: Can I use the Quantum Quill as a regular pen?",
-    answer: "A: Of course! The Quantum Quill comes with a switch to toggle between time-traveling mode and regular ink mode. You can jot down your grocery list or draft your novel all in one device."
+    question: "Q: How can I withdraw funds from my Carpooling Wallet?",
+    answer: "A: If you have a balance in your Carpooling Wallet that you'd like to withdraw, you can initiate a transfer back to your linked bank account. The process is user-friendly and can be done from within the app."
   },
   {
-    question: "Q: How many words can the Quantum Quill write before it runs out of ink?",
-    answer: "A: The Quantum Quill employs quantum nano-ink technology, so you'll never run out of ink! It's a pen that writes endlessly, just like your imagination."
+    question: "Q: Can I request a refund for unused Wallet funds?",
+    answer: "A: Yes, if you decide to close your account or no longer wish to use the Wallet feature, you can request a refund for any remaining funds in your Carpooling Wallet."
   },
-  // {
-  //   question: "Q: Can the Quantum Quill be used for non-fiction writing?",
-  //   answer: "A: While the Quantum Quill is primarily designed for creative writing, it can also be used for non-fiction. Just remember to stay within the bounds of reality if you're not looking for an adventure."
-  // },
-  // {
-  //   question: "Q: What happens if I lose my Quantum Quill?",
-  //   answer: "A: Losing your Quantum Quill is not just losing a writing tool; it's losing a potential portal to countless worlds. Always keep it safe and treat it like the treasure it is!"
-  // },
-  // {
-  //   question: "Q: Can I share my Quantum Quill adventures with others?",
-  //   answer: "A: Absolutely! The Quantum Quill comes with an integrated storytelling platform where you can share your fantastical tales with a community of fellow adventurers."
-  // },
-  // {
-  //   question: "Q: Can I collaborate with other writers using the Quantum Quill?",
-  //   answer: "A: Yes, indeed! The Quantum Quill allows collaborative writing through the wonders of quantum synchronization. Team up with friends or even your future self for truly epic tales."
-  // }
+  // Add more relevant FAQs as needed
 ];

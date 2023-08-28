@@ -24,12 +24,12 @@ export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 export const API_ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ENDPOINT : `http://localhost:8080`;
 export const API_REGISTER = `${API_ENDPOINT}/register`;
 export const API_LOGIN = `${API_ENDPOINT}/login`;
-export const API_USER_ME = `${API_ENDPOINT}/me`;
-export const API_USER_UPDATE = `${API_ENDPOINT}/update-user`;
+export const API_USER_ME = `${API_ENDPOINT}/me`;  // GET
+export const API_USER_UPDATE = `${API_ENDPOINT}/user`;  // PUT
 export const API_REFRESH_TOKEN = `${API_ENDPOINT}/refresh-token`;
 export const API_RESET_PASSWORD = `${API_ENDPOINT}/reset-password`;
 export const API_FORGOT_PASSWORD = `${API_ENDPOINT}/forgot-password`;
-export const API_USERS = `${API_ENDPOINT}/users`;
+export const API_TRANSACTION = `${API_ENDPOINT}/transaction`;
 export const API_GENERATE_OTP = `${API_ENDPOINT}/generate-otp`;
 export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
 

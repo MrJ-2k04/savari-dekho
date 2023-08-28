@@ -46,7 +46,7 @@ const useFetch = () => {
   };
 
   const getUserDetails = async () => {
-    const ack = await apiRequestWithReauth(API_USER_ME)
+    const ack = await apiRequestWithReauth(API_USER_ME, null, 'GET')
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -54,7 +54,7 @@ const useFetch = () => {
   }
 
   const updateUserDetails = async (user) => {
-    const ack = await apiRequestWithReauth(API_USER_UPDATE, jsonToFormData(user));
+    const ack = await apiRequestWithReauth(API_USER_UPDATE, jsonToFormData(user), 'PUT');
     return ack;
   };
 

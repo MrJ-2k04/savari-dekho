@@ -8,7 +8,7 @@ function EditAmountModal({
     onClose,
     title = "Edit Amount",
     btnTitle = "Proceed",
-    onSubmit,
+    onSuccess,
     onCancel,
     maxLimit = Infinity,
     helperText = '',
@@ -17,9 +17,31 @@ function EditAmountModal({
 
     const [amount, setAmount] = useState(0);
 
+    const handleAddChipAmount = (chipAmount) => {
+        let newAmount = amount;
+        if (typeof amount === 'string') {
+            newAmount = parseInt(newAmount);
+        }
+        setAmount(newAmount + chipAmount);
+    }
+
+    const handleAddFundsProceed = () => {
+        // Request through Razorpay API
+
+        if (!true) {
+            onCancel();
+        }
+
+        // After Transaction is Successful
+        onSuccess(amount);
+    }
+
+    const handleAddFundsCancel = () => {
+        onCancel();
+    }
+
     return (
-        <Modal open={open} onClose={onClose}>
-            
+        open && <Modal open={open} onClose={onClose}>
             <Box display={"flex"} alignItems={"center"} height={"100%"} maxHeight={"100vh"} width={"90%"} maxWidth={'460px'} mx={"auto"}>
                 <Card sx={{ width: '100%' }}>
                     <CardHeader
@@ -31,7 +53,7 @@ function EditAmountModal({
                             <Box>
                                 <TextField
                                     value={amount}
-                                    onChange={e=>setAmount(parseInt(e.target.value))}
+                                    onChange={e => setAmount(parseInt(e.target.value) || 0)}
                                     inputProps={{
                                         min: 0,
                                         max: maxLimit,
@@ -53,15 +75,15 @@ function EditAmountModal({
                                         variant="filled"
                                         key={amt}
                                         label={`+₹${amt}`}
-                                        onClick={e => { }}
+                                        onClick={() => handleAddChipAmount(amt)}
                                     />
                                 ))}
                             </Box>
                         </Stack>
                     </CardContent>
                     <CardActions sx={{ p: 2 }}>
-                        <Button sx={{ ml: "auto" }} onClick={onSubmit} variant="contained">{btnTitle}</Button>
-                        <Button sx={{ ml: "auto" }} onClick={onCancel} variant="contained">Cancel</Button>
+                        <Button sx={{ ml: "auto" }} onClick={handleAddFundsCancel} variant="outlined">Cancel</Button>
+                        <Button sx={{ ml: "auto" }} onClick={handleAddFundsProceed} variant="contained">{btnTitle}</Button>
                     </CardActions>
                 </Card>
             </Box>

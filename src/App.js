@@ -1,3 +1,4 @@
+import { CssBaseline } from "@mui/material";
 import useFetch from "Components/Hooks/useFetch";
 import Loader from "Components/Other/Loader";
 import Routes from "Routes";

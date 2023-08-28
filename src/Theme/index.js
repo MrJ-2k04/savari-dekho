@@ -13,6 +13,8 @@ import { shadows, shadowsDark, customShadows, customShadowsDark } from "./shadow
 import mixins from "./mixins";
 import { THEME } from "Store/constants";
 import { useSelector } from "react-redux";
+import { selectThemeMode } from "Store/selectors";
+import GlobalStyles from "./globalStyles";
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +23,7 @@ ThemeConfig.propTypes = {
 };
 
 export default function ThemeConfig({ children }) {
-  const mode = useSelector((state) => state.ui.themeMode);
+  const mode = useSelector(selectThemeMode);
 
   const themeOptions = useMemo(
     () => ({
@@ -42,6 +44,7 @@ export default function ThemeConfig({ children }) {
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <GlobalStyles />
         {children}
       </ThemeProvider>
     </StyledEngineProvider>

@@ -1,5 +1,5 @@
 import { TabContext, TabPanel } from "@mui/lab";
-import { Box, Container, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Container, Tab, Tabs } from "@mui/material";
 import RideCard from "Components/Common/RideCard";
 import UserLayout from "Layout/User";
 import { useState } from "react";
@@ -52,7 +52,7 @@ function RidesHistoryPage() {
                     </Box>
                     <Box>
                         <TabPanel value={"1"}>
-                            {bookedRides.map((ride,index)=>(
+                            {bookedRides.map((ride, index) => (
                                 <RideCard ride={ride} key={index} />
                             ))}
                         </TabPanel>
