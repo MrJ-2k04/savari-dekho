@@ -96,18 +96,18 @@ function WalletPage() {
                 </Grid>
             </Container>
 
-            <WalletHistoryModal
+            {showHisory && <WalletHistoryModal
                 open={showHisory}
                 onClose={handleHideHistory}
-            />
+            />}
 
-            <EditAmountModal
+            {showAddFunds && <EditAmountModal
                 onClose={handleAddFundsClose}
                 onSuccess={handleAddFundsSuccess}
                 onCancel={handleAddFundsFailure}
                 open={showAddFunds}
                 title="Add Funds"
-            />
+            />}
         </UserLayout>
     );
 }

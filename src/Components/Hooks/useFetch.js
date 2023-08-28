@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -118,6 +118,14 @@ const useFetch = () => {
     }
   }
 
+  const fetchWalletTransactions = async () => {
+    const ack = await apiRequestWithReauth(API_TRANSACTION, null, 'GET');
+    if(ack.type==='success'){
+      return ack.payload;
+    }
+    throw new Error(ack.message||"Cannot fetch transactions");
+  }
+
   const apiRequestWithReauth = async (url, data = null, method = 'POST') => {
     setLoading(true);
     return new Promise(async (resolve, reject) => {
@@ -200,6 +208,7 @@ const useFetch = () => {
     registerUser,
     forgotPassword,
     resetPassword,
+    fetchWalletTransactions,
   };
 };
 

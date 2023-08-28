@@ -2,7 +2,6 @@ import UserFooter from "./Footer";
 import { Grid, styled } from "@mui/material";
 import NavBar from "./NavBar";
 import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
-import { motion } from "framer-motion"
 import Animate from "Components/Other/Animate";
 
 
