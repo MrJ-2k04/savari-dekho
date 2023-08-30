@@ -1,7 +1,7 @@
 import { Container } from "@mui/material";
 import Layout from "Layout/User";
 
-function RideDetailsPage({ }) {
+function RideDetailsPage() {
 
     return (<Layout>
         <Container>

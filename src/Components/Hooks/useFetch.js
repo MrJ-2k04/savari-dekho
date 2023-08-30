@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -120,10 +120,37 @@ const useFetch = () => {
 
   const fetchWalletTransactions = async () => {
     const ack = await apiRequestWithReauth(API_TRANSACTION, null, 'GET');
-    if(ack.type==='success'){
+    if (ack.type === 'success') {
       return ack.payload;
     }
-    throw new Error(ack.message||"Cannot fetch transactions");
+    throw new Error(ack.message || "Cannot fetch transactions");
+  }
+
+  const requestPayment = async (amount, description = "Unknown") => {
+    const ack = await apiRequestWithReauth(API_PAYMENT_CREATE, jsonToFormData({ amount, description }));
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message);
+  };
+
+  const validatePayment = async (credentials) => {
+    const ack = await apiRequestWithReauth(API_PAYMENT_VALIDATE, jsonToFormData(credentials));
+    try {
+      const userDetails = await getUserDetails(accessToken);
+      dispatch(authActions.setUser(userDetails));
+    } catch (error) {
+      dispatch(authActions.logout());
+    }
+    if (ack.type === 'success') {
+      return ack.message;
+    }
+    throw new Error(ack.message);
+  };
+
+  const cancelPayment = async (orderId) => {
+    const ack = await apiRequestWithReauth(API_PAYMENT_CANCEL, jsonToFormData({ orderId }), 'PUT');
+    return ack.message;
   }
 
   const apiRequestWithReauth = async (url, data = null, method = 'POST') => {
@@ -195,7 +222,7 @@ const useFetch = () => {
         }
       });
     });
-  }
+  };
 
   return {
     loading,
@@ -209,6 +236,9 @@ const useFetch = () => {
     forgotPassword,
     resetPassword,
     fetchWalletTransactions,
+    requestPayment,
+    validatePayment,
+    cancelPayment,
   };
 };
 

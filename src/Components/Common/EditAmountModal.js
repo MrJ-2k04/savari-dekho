@@ -1,7 +1,11 @@
+import { useTheme } from "@emotion/react";
 import { Close, CurrencyRupee } from "@mui/icons-material";
 import { Box, Button, CardActions, CardContent, CardHeader, Chip, IconButton, InputAdornment, Modal, Stack, TextField, Typography, Card } from "@mui/material";
+import useFetch from "Components/Hooks/useFetch";
 import { ADD_FUND_AMOUNTS } from "Store/constants";
+import { selectUser } from "Store/selectors";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 function EditAmountModal({
     open = false,
@@ -16,6 +20,8 @@ function EditAmountModal({
 }) {
 
     const [amount, setAmount] = useState(0);
+    const { loading, requestPayment, validatePayment, cancelPayment } = useFetch();
+    const user = useSelector(selectUser);
 
     const handleAddChipAmount = (chipAmount) => {
         let newAmount = amount;
@@ -25,15 +31,59 @@ function EditAmountModal({
         setAmount(newAmount + chipAmount);
     }
 
+    const handleAddFundsSuccess = (resp) => {
+        // Send this response to the backend for verification
+        const credentials = {
+            razorpayPaymentId: resp.razorpay_payment_id,
+            razorpayOrderId: resp.razorpay_order_id,
+            razorpaySignature: resp.razorpay_signature,
+        }
+        console.log("Payment success", resp);
+        validatePayment(credentials).then(msg => {
+            onSuccess(msg);
+        }).catch(err => {
+            console.error(err.message);
+            onCancel(err.message);
+        });
+    }
+
     const handleAddFundsProceed = () => {
         // Request through Razorpay API
+        const description = "Add Funds to Wallet";
+        requestPayment(amount, description).then(data => {
+            const { order, key } = data;
+            const options = {
+                key,
+                amount: order.amount,
+                order_id: order.id,
+                name: "Savari Dekho Ltd.",
+                description,
+                image: 'https://savari-dekho.pages.dev/static/media/logo.6e86b5270fbf4e6d5ed6f431ace6eb54.svg',
+                prefill: {
+                    name: `${user.firstName} ${user.lastName}`,
+                    email: user.email,
+                    contact: user.mobileNumber.split("-")[1],
+                },
+                notes: {
+                    userId: user._id
+                },
+                handler: handleAddFundsSuccess,
+                "modal": {
+                    "ondismiss": () => {
+                        cancelPayment(order.id).then(msg => onCancel(msg)).catch(err => onCancel());
+                    },
+                },
+                theme: {
+                    color: '#27374D',
+                }
+            };
+            const razorpay = new window.Razorpay(options);
 
-        if (!true) {
-            onCancel();
-        }
-
-        // After Transaction is Successful
-        onSuccess(amount);
+            razorpay.open();
+        }).catch(err => {
+            console.error(err.message);
+            onCancel(err.message);
+        });
     }
 
     const handleAddFundsCancel = () => {

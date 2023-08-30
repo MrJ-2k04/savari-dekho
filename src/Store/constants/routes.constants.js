@@ -1,23 +1,65 @@
 
-// ############################################################## INTERNAL ROUTES ##############################################################
+// ############################################################## APP ROUTES ##############################################################
 
+// For Everyone
 export const ROUTE_HOME = "/";
-export const ROUTE_LOGIN = "/login";
-export const ROUTE_REGISTER = "/register";
 export const ROUTE_RESET_PASSWORD = "/reset-password/:userId";
-
-export const ROUTE_WALLET = "/wallet";
-export const ROUTE_PROFILE_DASHBOARD = "/profile";
-export const ROUTE_USER_DETAILS = "/users/:userId";
-export const ROUTE_SEARCH = "/search";
-export const ROUTE_SEARCH_RESULT = "/search/results/:query";
-export const ROUTE_RIDE_HISTORY = "/rides";
-export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
-export const ROUTE_RIDE_PUBLISH = "/rides/publish";
-
 export const ROUTE_ABOUT_US = "/about-us";
 export const ROUTE_PRIVACY_POLICY = "/privacy-policy";
 export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
+export const ROUTE_USER_DETAILS = "/users/:userId";
+export const ROUTE_SEARCH = "/search";
+export const ROUTE_SEARCH_RESULT = "/search/results/:query";
+export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
+
+// For Registered Users
+export const ROUTE_WALLET = "/wallet";
+export const ROUTE_PROFILE_DASHBOARD = "/profile";
+export const ROUTE_RIDE_HISTORY = "/rides";
+export const ROUTE_RIDE_PUBLISH = "/rides/publish";
+
+// For Guests only
+export const ROUTE_LOGIN = "/login";
+export const ROUTE_REGISTER = "/register";
+
+// ############################################################## ADMIN ROUTES ##############################################################
+
+export const ROUTE_ADMIN = '/admin'
+export const ROUTE_ADMIN_DASHBOARD = `${ROUTE_ADMIN}/dashboard`
+export const ROUTE_ADMIN_USERS = `${ROUTE_ADMIN}/users`
+export const ROUTE_ADMIN_TRANSACTIONS = `${ROUTE_ADMIN}/transactions`
+export const ROUTE_ADMIN_REPORTS = `${ROUTE_ADMIN}/reports`
+export const ROUTE_ADMIN_VERIFICATION_REQS = `${ROUTE_ADMIN}/verification-requests`
+
+// ############################################################## ROUTES CATEGORY ##############################################################
+
+export const PUBLIC_ROUTES = [
+    ROUTE_HOME,
+    ROUTE_RESET_PASSWORD,
+    ROUTE_ABOUT_US,
+    ROUTE_PRIVACY_POLICY,
+    ROUTE_TERMS_AND_CODITIONS,
+    ROUTE_USER_DETAILS,
+    ROUTE_SEARCH,
+    ROUTE_SEARCH_RESULT,
+    ROUTE_RIDE_DETAILS,
+];
+export const GUEST_ONLY_ROUTES = [ROUTE_LOGIN, ROUTE_REGISTER];
+export const USER_ROUTES = [
+    ROUTE_WALLET,
+    ROUTE_PROFILE_DASHBOARD,
+    ROUTE_RIDE_HISTORY,
+    ROUTE_RIDE_PUBLISH,
+];
+
+export const ADMIN_ROUTES = [
+    ROUTE_ADMIN,
+    ROUTE_ADMIN_DASHBOARD,
+    ROUTE_ADMIN_USERS,
+    ROUTE_ADMIN_TRANSACTIONS,
+    ROUTE_ADMIN_REPORTS,
+    ROUTE_ADMIN_VERIFICATION_REQS,
+]
 
 /* ############################################################## API ENDPOINT ROUTES ############################################################## */
 
@@ -34,6 +76,6 @@ export const API_GENERATE_OTP = `${API_ENDPOINT}/generate-otp`;
 export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
 
 // Payment Stuff
-export const API_PAYMENT_CREATE = `${API_ENDPOINT}/payment/create`;
-export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/payment/validate`;
-export const API_CHECKOUT_SCRIPT = `https://checkout.razorpay.com/v1/checkout.js`;
+export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;
+export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
+export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;

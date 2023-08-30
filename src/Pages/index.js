@@ -1,3 +1,3 @@
 export * from "./Guest";
 export * from "./User";
-// export * from "./Admin";
+export * from "./Admin";
