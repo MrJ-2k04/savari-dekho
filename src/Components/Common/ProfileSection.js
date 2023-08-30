@@ -1,24 +1,24 @@
 
 import { AddCircle, Edit, PendingActions, Save, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import useFetch from "Components/Hooks/useFetch";
+import useApi from "Components/Hooks/useApi";
 import { CITY_OPTIONS, GENDER_OPTIONS, STATE_OPTIONS } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
-import { formatMobileNumber, isEmptyString, parseFormData, showError, showSuccess, unformatMobileNumber } from "Utils";
+import { formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 function ProfileSection() {
     const user = useSelector(selectUser);
 
     const [localUser, setLocalUser] = useState(user);
-    const { loading, updateUserDetails } = useFetch();
+    const { loading, updateUserDetails } = useApi();
     const dispatch = useDispatch();
 
     const handleFieldChange = field => (e, details) => {

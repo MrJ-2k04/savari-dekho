@@ -1,20 +1,11 @@
 import {
-  AccountBalanceWallet,
-  AccountCircle,
-  Login,
-  Logout,
-  PersonAdd,
   Route,
-  Search,
-  TimeToLeave
+  Search
 } from "@mui/icons-material";
 import {
-  Divider,
-  IconButton,
   ListItemIcon,
   MenuItem,
   Stack,
-  Switch,
   alpha,
   styled
 } from "@mui/material";
@@ -23,17 +14,14 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_WALLET, SITE_TITLE } from "Store/constants";
+import { ROUTE_HOME, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, SITE_TITLE } from "Store/constants";
 
 import { Link } from "react-router-dom";
 
 import { MHidden } from "Components/@Material-Extend";
 import Logo from "Components/Common/Logo";
 import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
-import useFetch from "Components/Hooks/useFetch";
 import AccountMenu from "Components/Other/AccountMenu";
-import { selectIsAuthenticated } from "Store/selectors";
-import { useSelector } from "react-redux";
 
 
 const RootStyle = styled(AppBar)(({ theme }) => ({
@@ -45,22 +33,6 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 }));
 
 export default function NavBar() {
-
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const { logoutUser } = useFetch();
-
-  const userMenuItems = [
-    { icon: AccountCircle, label: "Profile", to: ROUTE_PROFILE_DASHBOARD },
-    { icon: AccountBalanceWallet, label: "Wallet", to: ROUTE_WALLET },
-    { icon: TimeToLeave, label: "Your Rides", to: ROUTE_RIDE_HISTORY },
-    { icon: Logout, label: "Logout", onClick: logoutUser },
-  ]
-
-  const guestMenuItems = [
-    { icon: Login, label: "Login", to: ROUTE_LOGIN },
-    { icon: PersonAdd, label: "Sign up", to: ROUTE_REGISTER },
-  ]
-
   return (
     <RootStyle
       // variant="elevation"
@@ -68,6 +40,8 @@ export default function NavBar() {
     >
       <Toolbar>
         <Logo />
+
+
         <Box flexGrow={1}>
           <Typography
             variant="h3"
@@ -86,7 +60,6 @@ export default function NavBar() {
             {SITE_TITLE}
           </Typography>
         </Box>
-
 
 
         <Box
@@ -136,21 +109,7 @@ export default function NavBar() {
                 <ListItemIcon><Route fontSize="small" /></ListItemIcon>
                 {`Publish a Ride`}
               </MenuItem>
-              <Divider />
             </MHidden>
-            {(isAuthenticated ? userMenuItems : guestMenuItems).map(item => (
-              <MenuItem
-                key={item.label}
-                component={Boolean(item.to) ? Link : undefined}
-                to={item.to}
-                onClick={item.onClick}
-              >
-                <ListItemIcon>
-                  <item.icon fontSize="small" />
-                </ListItemIcon>
-                {item.label}
-              </MenuItem>
-            ))}
           </AccountMenu>
         </Box>
       </Toolbar>

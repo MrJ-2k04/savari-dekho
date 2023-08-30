@@ -1,14 +1,19 @@
-import { AccountCircle, DashboardOutlined, Paid, PieChart, VerifiedUser } from "@mui/icons-material";
+import { AccountCircle, DashboardOutlined, Logout, Paid, PieChart, VerifiedUser } from "@mui/icons-material";
 import { ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS } from "Store/constants";
 
 
+const dashboardLink = {
+    title: "Dashboard",
+    path: ROUTE_ADMIN_DASHBOARD,
+    icon: <DashboardOutlined />,
+};
 
-const dashboardLinks = [
-    {
-        title: "Dashboard",
-        path: ROUTE_ADMIN_DASHBOARD,
-        icon: <DashboardOutlined />,
-    },
+const logoutLink = {
+    title: 'Logout',
+    icon: <Logout />,
+}
+
+const toolLinks = [
     {
         title: "Users",
         path: ROUTE_ADMIN_USERS,
@@ -32,5 +37,7 @@ const dashboardLinks = [
 ];
 
 export {
-    dashboardLinks
+    dashboardLink,
+    toolLinks,
+    logoutLink,
 }

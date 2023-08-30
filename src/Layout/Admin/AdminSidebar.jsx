@@ -1,13 +1,14 @@
-import { Avatar, Box, Drawer, IconButton, Link, Typography, alpha, styled } from "@mui/material";
-import { Link as RouterLink, matchPath, useLocation } from "react-router-dom";
+import { useTheme } from "@emotion/react";
+import { AccountCircle } from "@mui/icons-material";
+import { Avatar, Box, Drawer, Link, List, Typography, alpha, styled } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import LogoWithText from "Components/Common/LogoWithText";
-import NavSection from "Components/Common/NavSection";
-import { DRAWER_WIDTH, ROUTE_ADMIN, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE } from "Store/constants";
-import { dashboardLinks } from "./AdminSidebarConfig";
-import { AccountCircle, Logout } from "@mui/icons-material";
-import { useTheme } from "@emotion/react";
+import NavSection, { NavItem } from "Components/Common/NavSection";
+import useApi from "Components/Hooks/useApi";
+import { DRAWER_WIDTH, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE } from "Store/constants";
 import { useEffect } from "react";
+import { Link as RouterLink, matchPath, useLocation } from "react-router-dom";
+import { dashboardLink, logoutLink, toolLinks } from "./AdminSidebarConfig";
 
 
 const RootStyle = styled("div")(({ theme }) => ({
@@ -30,7 +31,17 @@ const AccountStyle = styled("div")(({ theme }) => ({
 
 function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
 
-    const { pathname } = useLocation();
+    // ######################################################### STATES #########################################################
+
+    const { pathname, state } = useLocation();
+    const { logoutUser } = useApi();
+    const match = (path) => path ? !!(
+        matchPath({ path, end: false }, pathname) &&
+        (path.state || state ? path.state === state : true)
+    ) : false;
+
+    // ######################################################### USE EFFECTS #########################################################
+
     useEffect(() => {
         if (isOpenSidebar) {
             onCloseSidebar();
@@ -38,6 +49,8 @@ function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname]);
     const isProfilePage = matchPath({ path: ROUTE_ADMIN_PROFILE, end: true }, pathname);
+
+    // ######################################################### STYLES #########################################################
 
     const theme = useTheme();
     const activeRootStyle = {
@@ -49,16 +62,15 @@ function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
         "&:before": { display: "block" },
     };
 
+    // ######################################################### CONTENT #########################################################
+
     const renderContent = (
         <Box sx={{ overflow: "auto", height: "100%", paddingRight: "12px" }} display={'flex'} flexDirection={'column'}>
-            <Box sx={{ py: 6 }}>
-                <LogoWithText
-                    to={ROUTE_ADMIN_DASHBOARD}
-                // sx={{ flexWrap: 'wrap' }}
-                />
+            <Box pt={2} pb={6} pl={1}>
+                <LogoWithText textVariant="h4" sx={{ width: { xs: '72px', md: '56px' } }} to={ROUTE_ADMIN_DASHBOARD} />
             </Box>
 
-            <Box sx={{ mb: 5 }}>
+            <Box mb={5}>
                 <Link underline="none" component={RouterLink} to={ROUTE_ADMIN_PROFILE}>
                     <AccountStyle
                         sx={{
@@ -78,22 +90,21 @@ function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
                 </Link>
             </Box>
 
-            <NavSection navConfig={dashboardLinks} />
-            {/* <Typography variant="subtitle1" p={2}>
+            <List disablePadding>
+                <NavItem item={dashboardLink} active={match} />
+            </List>
+            <Typography variant="subtitle1" p={2}>
                 Tools
-            </Typography> */}
+            </Typography>
+            <NavSection navConfig={toolLinks} />
 
-            <Box mt={'auto'}>
-                <NavSection navConfig={[{
-                    title: 'Logout',
-                    icon: <Logout />,
-                }]}
-                    onClick={() => console.log('logout')}
-                />
-            </Box>
-
+            <List disablePadding sx={{ mt: 'auto' }} onClick={logoutUser} >
+                <NavItem item={logoutLink} active={() => false} />
+            </List>
         </Box>
     );
+
+    // ######################################################### BOILERPLATE #########################################################
 
     return (
         <RootStyle>

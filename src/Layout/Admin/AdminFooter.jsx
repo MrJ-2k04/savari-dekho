@@ -1,23 +1,19 @@
 import {
   Box,
-  Grid,
-  IconButton,
   Stack,
   Typography
 } from "@mui/material";
 // import { ReactComponent as Logo } from "Assets/brand/logo.svg";
 import { useTheme } from "@emotion/react";
-import { Email, Facebook, Instagram, YouTube } from "@mui/icons-material";
-import Logo from "Components/Common/Logo";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 
-const iconItems = [
-  { icon: Instagram, path: "" },
-  { icon: YouTube, path: "" },
-  { icon: Facebook, path: "" },
-  { icon: Email, path: "" },
-];
+// const iconItems = [
+//   { icon: Instagram, path: "" },
+//   { icon: YouTube, path: "" },
+//   { icon: Facebook, path: "" },
+//   { icon: Email, path: "" },
+// ];
 
 const AdminFooter = () => {
   const theme = useTheme();

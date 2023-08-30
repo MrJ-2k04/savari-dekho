@@ -1,6 +1,6 @@
 import { AddCircle, Close, Refresh, RemoveCircle } from "@mui/icons-material";
 import { Box, Card, CardContent, IconButton, Modal, Stack, Tooltip, Typography } from "@mui/material";
-import useFetch from "Components/Hooks/useFetch";
+import useApi from "Components/Hooks/useApi";
 import { TableSkeleton } from "Components/Skeletons";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ function WalletHistoryModal({
 }) {
 
     const [transactions, setTransactions] = useState([]);
-    const { loading, fetchWalletTransactions } = useFetch();
+    const { loading, fetchWalletTransactions } = useApi();
 
     const fetchRecords = () => {
         fetchWalletTransactions()
@@ -21,6 +21,7 @@ function WalletHistoryModal({
 
     useEffect(() => {
         fetchRecords();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const formatDateTime = (value) => {

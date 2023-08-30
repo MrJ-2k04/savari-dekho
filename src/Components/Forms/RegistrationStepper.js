@@ -1,31 +1,31 @@
 
+import { useTheme } from '@emotion/react';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+import { CardContent, Divider, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
+import Button from '@mui/material/Button';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
+import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import MobileNumberOTP from './MobileNumberOTP';
-import { useState } from 'react';
-import { CardContent, CardHeader, Card, TextField, Stack, FormControl, InputLabel, Select, MenuItem, FormHelperText, Grid, Divider, InputAdornment, IconButton } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import inLocale from "date-fns/locale/en-IN"
-import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_LOGIN, STATE_OPTIONS } from 'Store/constants';
-import { isEmptyString, isValidDateObject, is18Plus, jsonToFormData, parseFormData, isValidEmail } from 'Utils';
-import AvatarSection from './AvatarSection';
-import { LoadingButton } from '@mui/lab';
-import { Close, Done, Visibility, VisibilityOff } from '@mui/icons-material';
-import useFetch from 'Components/Hooks/useFetch';
 import ValidationText from 'Components/Common/ValidationText';
+import useApi from 'Components/Hooks/useApi';
+import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_LOGIN, STATE_OPTIONS } from 'Store/constants';
+import { is18Plus, isEmptyString, isValidDateObject, isValidEmail } from 'Utils';
+import inLocale from "date-fns/locale/en-IN";
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTheme } from '@emotion/react';
+import AvatarSection from './AvatarSection';
+import MobileNumberOTP from './MobileNumberOTP';
 
 const steps = ['Mobile Verfication', 'Basic Details', 'Location Details', 'Create Password'];
 
 export default function RegistrationStepper() {
     const theme = useTheme();
-    const { registerUser, loading: submitting } = useFetch();
+    const { registerUser, loading: submitting } = useApi();
 
     // --------------------------- Form Fields ---------------------------
 
@@ -192,7 +192,7 @@ export default function RegistrationStepper() {
             isMinLength: newPassword.length >= 8,
             hasNumber: /\d/.test(newPassword),
             hasUppercase: /[A-Z]/.test(newPassword),
-            hasSpecialChar: /[!@#$%^&*_\-]/.test(newPassword),
+            hasSpecialChar: /[!@#$%^&*_-]/.test(newPassword),
             isSame: !isEmptyString(newPassword) && newPassword === confirmPassword,
         });
     };

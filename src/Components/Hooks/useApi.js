@@ -6,7 +6,7 @@ import { jsonToFormData, showError, showSuccess } from "Utils";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const useFetch = () => {
+const useApi = () => {
   const [loading, setLoading] = useState(false);
 
   const accessToken = useSelector(selectAccessToken);
@@ -242,4 +242,4 @@ const useFetch = () => {
   };
 };
 
-export default useFetch;
+export default useApi;

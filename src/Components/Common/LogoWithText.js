@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
-export default function LogoWithText({ sx, onClick, to = ROUTE_HOME }) {
+export default function LogoWithText({ sx, onClick, to = ROUTE_HOME, textVariant='h3' }) {
     const themeMode = useSelector((state) => state.ui.themeMode);
     // const Logo = themeMode === THEME.LIGHT ? logo : logoDark;
     const src = themeMode === THEME.LIGHT ? logoSrc : logoDarkSrc;
@@ -22,7 +22,6 @@ export default function LogoWithText({ sx, onClick, to = ROUTE_HOME }) {
         sx={{
             textDecoration: "none",
             color: "inherit",
-            ...sx,
         }}>
         <Box
             onClick={onClick}
@@ -35,11 +34,12 @@ export default function LogoWithText({ sx, onClick, to = ROUTE_HOME }) {
                 position: "relative",
                 maxWidth: { xs: 140, sm: 160, md: 180, lg: 221 },
                 maxHeight: { xs: 40, md: 60 },
+                ...sx,
             }}>
         </Box>
         <Box flexGrow={1}>
             <Typography
-                variant="h3"
+                variant={textVariant}
                 noWrap
                 // component={Link}
                 // to={ROUTE_HOME}

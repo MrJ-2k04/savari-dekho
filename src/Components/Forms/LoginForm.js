@@ -1,17 +1,16 @@
 import { useTheme } from "@emotion/react";
 import { Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
-import Logo from "Components/Common/Logo";
-import useFetch from "Components/Hooks/useFetch";
-import { ROUTE_HOME, ROUTE_REGISTER } from "Store/constants";
-import { formatMobileNumber, isEmptyString } from "Utils";
+import { Box, Button, CardActions, CardContent, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import useApi from "Components/Hooks/useApi";
+import { ROUTE_REGISTER } from "Store/constants";
+import { isEmptyString } from "Utils";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
 function LoginForm() {
     const theme = useTheme();
-    const { loginUser, forgotPassword,loading } = useFetch();
+    const { loginUser, forgotPassword,loading } = useApi();
 
     const [credential, setCredential] = useState('');
     const [password, setPassword] = useState('');

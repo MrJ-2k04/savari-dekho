@@ -1,7 +1,6 @@
-import { useTheme } from "@emotion/react";
 import { Close, CurrencyRupee } from "@mui/icons-material";
-import { Box, Button, CardActions, CardContent, CardHeader, Chip, IconButton, InputAdornment, Modal, Stack, TextField, Typography, Card } from "@mui/material";
-import useFetch from "Components/Hooks/useFetch";
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Chip, IconButton, InputAdornment, Modal, Stack, TextField } from "@mui/material";
+import useApi from "Components/Hooks/useApi";
 import { ADD_FUND_AMOUNTS } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { useState } from "react";
@@ -20,7 +19,7 @@ function EditAmountModal({
 }) {
 
     const [amount, setAmount] = useState(0);
-    const { loading, requestPayment, validatePayment, cancelPayment } = useFetch();
+    const { requestPayment, validatePayment, cancelPayment } = useApi();
     const user = useSelector(selectUser);
 
     const handleAddChipAmount = (chipAmount) => {
