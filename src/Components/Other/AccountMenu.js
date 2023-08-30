@@ -68,6 +68,11 @@ export default function AccountMenu({ children }) {
                             transform: 'translateY(-50%) rotate(45deg)',
                             zIndex: 0,
                         },
+                        '& .MuiPaper-root': {
+                            borderRadius: 6,
+                            // marginTop: theme.spacing(1),
+                            minWidth: 180,
+                        }
                     },
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}

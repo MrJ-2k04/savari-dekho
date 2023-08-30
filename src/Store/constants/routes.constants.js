@@ -24,8 +24,9 @@ export const ROUTE_REGISTER = "/register";
 
 // ############################################################## ADMIN ROUTES ##############################################################
 
-export const ROUTE_ADMIN = '/admin'
+const ROUTE_ADMIN = '/admin'
 export const ROUTE_ADMIN_DASHBOARD = `${ROUTE_ADMIN}/dashboard`
+export const ROUTE_ADMIN_PROFILE = `${ROUTE_ADMIN}/profile`
 export const ROUTE_ADMIN_USERS = `${ROUTE_ADMIN}/users`
 export const ROUTE_ADMIN_TRANSACTIONS = `${ROUTE_ADMIN}/transactions`
 export const ROUTE_ADMIN_REPORTS = `${ROUTE_ADMIN}/reports`
@@ -55,6 +56,7 @@ export const USER_ROUTES = [
 export const ADMIN_ROUTES = [
     ROUTE_ADMIN,
     ROUTE_ADMIN_DASHBOARD,
+    ROUTE_ADMIN_PROFILE,
     ROUTE_ADMIN_USERS,
     ROUTE_ADMIN_TRANSACTIONS,
     ROUTE_ADMIN_REPORTS,

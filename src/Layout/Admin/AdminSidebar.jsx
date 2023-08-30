@@ -1,6 +1,13 @@
-import { Drawer } from "@mui/material";
+import { Avatar, Box, Drawer, IconButton, Link, Typography, alpha, styled } from "@mui/material";
+import { Link as RouterLink, matchPath, useLocation } from "react-router-dom";
 import { MHidden } from "Components/@Material-Extend";
-import { DRAWER_WIDTH } from "Store/constants";
+import LogoWithText from "Components/Common/LogoWithText";
+import NavSection from "Components/Common/NavSection";
+import { DRAWER_WIDTH, ROUTE_ADMIN, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE } from "Store/constants";
+import { dashboardLinks } from "./AdminSidebarConfig";
+import { AccountCircle, Logout } from "@mui/icons-material";
+import { useTheme } from "@emotion/react";
+import { useEffect } from "react";
 
 
 const RootStyle = styled("div")(({ theme }) => ({
@@ -21,83 +28,72 @@ const AccountStyle = styled("div")(({ theme }) => ({
     },
 }));
 
-function AdminSidebar({ isOpenSidebar, onCloseSidebar }) {
+function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
 
-
+    const { pathname } = useLocation();
     useEffect(() => {
         if (isOpenSidebar) {
             onCloseSidebar();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname]);
+    const isProfilePage = matchPath({ path: ROUTE_ADMIN_PROFILE, end: true }, pathname);
 
-    // const renderContent = (
-    //     <Box sx={{ overflow: "auto", height: "100%", paddingRight: "12px" }}>
-    //         <Box sx={{ py: 6 }}>
-    //             <Logo sx={{ width: "100%" }} />
-    //         </Box>
+    const theme = useTheme();
+    const activeRootStyle = {
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderColor: theme.palette.secondary.main,
+        fontWeight: "fontWeightMedium",
+        bgcolor: alpha(theme.palette.secondary.main, theme.palette.action.selectedOpacity),
+        "&:before": { display: "block" },
+    };
 
-    //         <Box sx={{ mb: 5 }}>
-    //             <Link underline="none" component={RouterLink} to={ROUTE_ADVISOR_PROFILE}>
-    //                 <AccountStyle
-    //                     sx={{
-    //                         ...(isProfilePage && activeRootStyle),
-    //                     }}
-    //                 >
-    //                     <Avatar src={account.photoURL} sx={{ width: 40, height: 40 }}>
-    //                         <AccountCircle />
-    //                     </Avatar>
-    //                     <Box sx={{ ml: 2 }}>
-    //                         <Typography variant="subtitle2">{account.displayName}</Typography>
-    //                         <Typography variant="subtitle2" sx={{ color: "text.disabled" }}>
-    //                             {account.role}
-    //                         </Typography>
-    //                     </Box>
-    //                 </AccountStyle>
-    //             </Link>
-    //         </Box>
+    const renderContent = (
+        <Box sx={{ overflow: "auto", height: "100%", paddingRight: "12px" }} display={'flex'} flexDirection={'column'}>
+            <Box sx={{ py: 6 }}>
+                <LogoWithText
+                    to={ROUTE_ADMIN_DASHBOARD}
+                // sx={{ flexWrap: 'wrap' }}
+                />
+            </Box>
 
-    //         {app === APPS.RETIREMENT_CALC ? (
-    //             <>
-    //                 <Typography variant="subtitle1" p={2}>
-    //                     Retirement Calculator
-    //                 </Typography>
-    //                 <NavSection navConfig={retirementCalcPageLinks} />
+            <Box sx={{ mb: 5 }}>
+                <Link underline="none" component={RouterLink} to={ROUTE_ADMIN_PROFILE}>
+                    <AccountStyle
+                        sx={{
+                            ...(isProfilePage && activeRootStyle),
+                        }}
+                    >
+                        <Avatar src={user.profilePicture} sx={{ width: 40, height: 40 }}>
+                            <AccountCircle />
+                        </Avatar>
+                        <Box sx={{ ml: 2 }}>
+                            <Typography variant="subtitle2">{user.firstName}</Typography>
+                            <Typography variant="subtitle2" sx={{ color: "text.disabled" }}>
+                                {`Admin`}
+                            </Typography>
+                        </Box>
+                    </AccountStyle>
+                </Link>
+            </Box>
 
-    //                 <Typography variant="subtitle1" p={2}>
-    //                     Page Links
-    //                 </Typography>
-    //                 <NavSection navConfig={otherLinks} />
-    //             </>
-    //         ) : app === APPS.INSURANCE_CALC ? (
-    //             <>
-    //                 <Typography variant="subtitle1" p={2}>
-    //                     Insurance Calculator
-    //                 </Typography>
-    //                 <NavSection navConfig={insuranceCalcPageLinks} />
+            <NavSection navConfig={dashboardLinks} />
+            {/* <Typography variant="subtitle1" p={2}>
+                Tools
+            </Typography> */}
 
-    //                 <Typography variant="subtitle1" p={2}>
-    //                     Page Links
-    //                 </Typography>
-    //                 <NavSection navConfig={otherLinks} />
-    //             </>
-    //         ) : app === APPS.TOOLS ? (
-    //             <>
-    //                 <Typography variant="subtitle1" p={2}>
-    //                     Engagement Tools
-    //                 </Typography>
-    //                 <NavSection navConfig={formPageLinks} />
+            <Box mt={'auto'}>
+                <NavSection navConfig={[{
+                    title: 'Logout',
+                    icon: <Logout />,
+                }]}
+                    onClick={() => console.log('logout')}
+                />
+            </Box>
 
-    //                 <Typography variant="subtitle1" p={2}>
-    //                     Page Links
-    //                 </Typography>
-    //                 <NavSection navConfig={otherLinks} />
-    //             </>
-    //         ) : (
-    //             <NavSection navConfig={dashboardLinks} />
-    //         )}
-    //     </Box>
-    // );
+        </Box>
+    );
 
     return (
         <RootStyle>

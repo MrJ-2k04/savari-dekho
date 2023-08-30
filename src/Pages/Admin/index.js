@@ -1,2 +1,3 @@
-export {default as Dashboard} from "./Dashboard";
-export {default as UsersList} from "./UsersList";
+export {default as AdminDashboard} from "./AdminDashboard";
+export {default as AdminUsersList} from "./AdminUsersList";
+export {default as AdminProfile} from "./AdminProfile";

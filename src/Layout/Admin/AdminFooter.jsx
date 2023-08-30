@@ -19,7 +19,7 @@ const iconItems = [
   { icon: Email, path: "" },
 ];
 
-const UserFooter = () => {
+const AdminFooter = () => {
   const theme = useTheme();
   const isDark = useSelector(selectIsDarkMode);
 
@@ -30,7 +30,7 @@ const UserFooter = () => {
       // bgcolor={theme.palette.background.paper}
       color={theme.palette.text.primary}
     >
-      <Grid container spacing={2} p={{ md: "106px 20px 20px", xs: "48px 16px 16px" }}>
+      {/* <Grid container spacing={2} p={{ md: "106px 20px 20px", xs: "48px 16px 16px" }}>
         <Grid item xs={12} sm={6} md={3}>
           <Logo />
           <p>This is the first item in the grid.</p>
@@ -69,7 +69,7 @@ const UserFooter = () => {
           <h2>Item 4</h2>
           <p>This is the fourth item in the grid.</p>
         </Grid>
-      </Grid>
+      </Grid> */}
 
       <Stack
         direction={"row"}
@@ -108,4 +108,4 @@ const UserFooter = () => {
   );
 };
 
-export default UserFooter;
+export default AdminFooter;
