@@ -1,4 +1,4 @@
-import { AddCircle, Close, Refresh, RemoveCircle } from "@mui/icons-material";
+import { Close, Error, HelpOutline, HourglassTop, Refresh } from "@mui/icons-material";
 import { Box, Card, CardContent, IconButton, Modal, Stack, Tooltip, Typography } from "@mui/material";
 import useApi from "Components/Hooks/useApi";
 import { TableSkeleton } from "Components/Skeletons";
@@ -15,7 +15,20 @@ function WalletHistoryModal({
 
     const fetchRecords = () => {
         fetchWalletTransactions()
-            .then(trans => setTransactions(trans))
+            .then(trans => {
+                const finalTransactions = trans
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .map(tran => {
+                        const dateTime = new Date(tran.createdAt)
+                        const temp = {
+                            date: dateTime.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short' }),
+                            time: dateTime.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric' })
+                        }
+                        tran.createdAt = `${temp.date} - ${temp.time}`;
+                        return tran;
+                    })
+                setTransactions(finalTransactions)
+            })
             .catch(err => console.error(err.message))
     }
 
@@ -25,23 +38,38 @@ function WalletHistoryModal({
     }, []);
 
     const formatDateTime = (value) => {
-        const dateTime = new Date(value);
-        const formattedDate = dateTime.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short' });
-        const formattedTime = dateTime.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric' });
-
+        const newVal = value.split('-')?.map(v => v.trim())
         return <Stack>
-            <Typography variant="body1">{formattedDate}</Typography>
-            <Typography variant="body2" color={'InactiveCaptionText'}>{formattedTime}</Typography>
+            <Typography variant="body1">{newVal[0]}</Typography>
+            <Typography variant="body2" color={'InactiveCaptionText'}>{newVal[1]}</Typography>
         </Stack>;
     }
 
     const formatAmount = (value, tableMeta, updateValue) => {
         const transactionType = transactions[tableMeta?.rowIndex]?.type;
+        const status = transactions[tableMeta?.rowIndex].status;
+        var Icon;
+        switch (status) {
+            case 'completed':
+                Icon = <></>//<CheckCircle color="success" />;
+                break;
+
+            case 'failed':
+                Icon = <Error color="error" />;
+                break;
+
+            case 'pending':
+                Icon = <HourglassTop color="warning" />;
+                break;
+
+            default:
+                Icon = <HelpOutline color="primary" />;
+                break;
+        }
         const color = transactionType === 'credit' ? '#31b835' : 'red';
-        const Icon = transactionType === 'credit' ? AddCircle : RemoveCircle;
         return <Stack direction={'row'} spacing={1}>
-            <Icon sx={{ color }} />
-            <Typography color={color}>{value.toLocaleString()}</Typography>
+            {Icon}
+            <Typography color={color}>{transactionType === 'credit' ? "+" : "-"}{value.toLocaleString()}</Typography>
         </Stack>
     }
 
@@ -65,7 +93,7 @@ function WalletHistoryModal({
             label: 'Date/Time',
             options: {
                 customBodyRender: formatDateTime,
-                sortDirection: 'desc'
+                sort: true,
             },
         },
         {
@@ -82,10 +110,10 @@ function WalletHistoryModal({
                     title={'Wallet History'}
                     action={<IconButton onClick={onClose}><Close /></IconButton>}
                 /> */}
-                <CardContent sx={{ minHeight: "400px" }}>
-                    {loading ? <TableSkeleton rows={5} columns={4} />
+                <CardContent>
+                    {loading ? <TableSkeleton rows={6} columns={4} />
                         :
-                        <Box maxHeight='75vh' sx={{ overflowX: 'hidden' }}>
+                        <Box minHeight={'500px'} maxHeight='80vh' sx={{ overflowX: 'hidden' }}>
                             <MUIDataTable
                                 title={'Wallet History'
                                     // <Typography color={'primary'} variant="h3">{`₹${user.balance || 0}`}</Typography>
@@ -93,6 +121,7 @@ function WalletHistoryModal({
                                 columns={columns}
                                 data={transactions}
                                 options={{
+                                    sort: false,
                                     customToolbar: () => [
                                         <Tooltip title='Refresh'><IconButton onClick={fetchRecords}><Refresh /></IconButton></Tooltip>,
                                         <Tooltip title='Close'><IconButton onClick={onClose}><Close /></IconButton></Tooltip>
