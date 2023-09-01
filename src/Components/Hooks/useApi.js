@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -14,7 +14,7 @@ const useApi = () => {
   const dispatch = useDispatch();
 
 
-
+  // ######################################################### FOR USERS #########################################################
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
@@ -224,6 +224,18 @@ const useApi = () => {
     });
   };
 
+  // ######################################################### FOR ADMINS #########################################################
+  const getUsersList = async () => {
+    const ack = await apiRequestWithReauth(API_GET_USERS, null, 'GET')
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Cannot fetch users list');
+  }
+
+
+
+
   return {
     loading,
     generateOtp,
@@ -239,6 +251,8 @@ const useApi = () => {
     requestPayment,
     validatePayment,
     cancelPayment,
+    // Admin
+    getUsersList
   };
 };
 

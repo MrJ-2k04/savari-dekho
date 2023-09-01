@@ -1,11 +1,13 @@
-import { Typography } from "@mui/material";
+import { Container } from "@mui/material";
+import UsersTable from "Components/Admin/UsersTable";
 import AdminLayout from "Layout/Admin";
 
-
-function UsersList() {
+function AdminUsersList() {
     return (<AdminLayout>
-        <Typography>Users List</Typography>
+        <Container>
+            <UsersTable />
+        </Container>
     </AdminLayout>);
 }
 
-export default UsersList;
+export default AdminUsersList;

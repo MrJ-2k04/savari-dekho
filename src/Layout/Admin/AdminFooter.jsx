@@ -25,6 +25,7 @@ const AdminFooter = () => {
       bgcolor={isDark ? theme.palette.background.paper : theme.palette.background.disabled}
       // bgcolor={theme.palette.background.paper}
       color={theme.palette.text.primary}
+      mt={3}
     >
       {/* <Grid container spacing={2} p={{ md: "106px 20px 20px", xs: "48px 16px 16px" }}>
         <Grid item xs={12} sm={6} md={3}>

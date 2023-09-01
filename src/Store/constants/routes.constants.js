@@ -81,3 +81,6 @@ export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
 export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;
 export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
 export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
+
+// Admin
+export const API_GET_USERS = `${API_ENDPOINT}/users`;
