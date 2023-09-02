@@ -17,10 +17,10 @@ import {
     SearchResultsPage,
     UserDetailsPage,
     WalletPage,
+    AdminReports,
+    AdminTransactions,
+    AdminVerifyRequests,
 } from "Pages";
-import AdminReports from "Pages/Admin/AdminReports";
-import AdminTransactions from "Pages/Admin/AdminTransactions";
-import AdminVerifyRequests from "Pages/Admin/AdminVerifyRequests";
 
 import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_USER_DETAILS, ROUTE_WALLET, USER_ROUTES } from "Store/constants";
 import { selectIsAuthenticated, selectUser } from "Store/selectors";
@@ -30,26 +30,34 @@ import { Navigate, Route, Routes as Switch, useLocation } from "react-router-dom
 
 
 
-const getTargetRoute = (isAuthenticated, user, route) => {
+const getTargetRoute = (isAuthenticated, user, route, state) => {
+    const targetRoute = { path: null, state: null };
     if (!isAuthenticated) {
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {
             if (!USER_ROUTES.includes(route) && !ADMIN_ROUTES.includes(route)) {
-                return null;
+                // No Navigation Needed
+            } else {
+                targetRoute.path = ROUTE_LOGIN;
+                targetRoute.state = state;
             }
-            return ROUTE_LOGIN;
         }
     } else {
         if (GUEST_ONLY_ROUTES.includes(route)) {
-            return ROUTE_HOME;
+            if (state && state.redirectUrl) {
+                targetRoute.path = state.redirectUrl;
+            } else {
+                targetRoute.path = ROUTE_HOME;
+                targetRoute.state = state;
+            }
         } else if (user.isAdmin) {
             if (!ADMIN_ROUTES.includes(route)) {
-                return ROUTE_ADMIN_DASHBOARD;
+                targetRoute.path = ROUTE_ADMIN_DASHBOARD;
             }
         } else if (ADMIN_ROUTES.includes(route)) {
-            return ROUTE_HOME;
+            targetRoute.path = ROUTE_HOME;
         }
     }
-    return null; // No navigation needed
+    return targetRoute;
 };
 
 
@@ -59,9 +67,10 @@ const Routes = () => {
     const location = useLocation();
     const user = useSelector(selectUser);
 
-    const targetRoute = getTargetRoute(isAuthenticated, user, location.pathname);
-    if (targetRoute) {
-        return <Navigate to={targetRoute} />
+    const { path, state } = getTargetRoute(isAuthenticated, user, location.pathname, location.state);
+
+    if (path) {
+        return <Navigate to={path} state={state} />
     }
 
     return <Switch location={location} key={location.key}>

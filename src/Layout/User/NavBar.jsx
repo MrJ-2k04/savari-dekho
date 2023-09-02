@@ -85,6 +85,7 @@ export default function NavBar() {
               startIcon={<Route />}
               LinkComponent={Link}
               to={ROUTE_RIDE_PUBLISH}
+              state={{ redirectUrl: ROUTE_RIDE_PUBLISH }}
               variant={"text"}
             >
               {`Publish a Ride`}
