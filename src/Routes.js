@@ -21,8 +21,11 @@ import {
     AdminTransactions,
     AdminVerifyRequests,
 } from "Pages";
+import AboutUsPage from "Pages/Guest/AboutUsPage";
+import PrivacyPolicyPage from "Pages/Guest/PrivacyPolicyPage";
+import TermsAndCondititionsPage from "Pages/Guest/TermsAndConditionsPage";
 
-import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_USER_DETAILS, ROUTE_WALLET, USER_ROUTES } from "Store/constants";
+import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_WALLET, USER_ROUTES } from "Store/constants";
 import { selectIsAuthenticated, selectUser } from "Store/selectors";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes as Switch, useLocation } from "react-router-dom";
@@ -74,7 +77,11 @@ const Routes = () => {
     }
 
     return <Switch location={location} key={location.key}>
+        <Route path={ROUTE_ABOUT_US} element={<AboutUsPage />} />
+        <Route path={ROUTE_PRIVACY_POLICY} element={<PrivacyPolicyPage />} />
+        <Route path={ROUTE_TERMS_AND_CODITIONS} element={<TermsAndCondititionsPage />} />
         {/* For Everyone */}
+
         <Route path={ROUTE_HOME} element={<HomePage />} />
         <Route path={ROUTE_SEARCH} element={<SearchPage />} />
         <Route path={ROUTE_SEARCH_RESULT} element={<SearchResultsPage />} />

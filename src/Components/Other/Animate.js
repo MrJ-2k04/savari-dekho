@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 function Animate({ children }) {
 
     // const controls = useAnimation();
-    // const location = useLocation();
+    const location = useLocation();
     // const [prevLocation, setPrevLocation] = useState(location);
 
     // useEffect(() => {
@@ -16,6 +18,11 @@ function Animate({ children }) {
     //     //     controls.start({ opacity: 1, x: 0 });
     //     // }
     // }, [location, prevLocation, controls]);
+
+    useEffect(() => {
+        window.scrollTo({ behavior: 'smooth', top: true });
+    }, [location.pathname])
+
 
     return (
         <motion.div

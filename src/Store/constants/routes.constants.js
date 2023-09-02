@@ -4,13 +4,14 @@
 // For Everyone
 export const ROUTE_HOME = "/";
 export const ROUTE_RESET_PASSWORD = "/reset-password/:userId";
-export const ROUTE_ABOUT_US = "/about-us";
-export const ROUTE_PRIVACY_POLICY = "/privacy-policy";
-export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 export const ROUTE_USER_DETAILS = "/users/:userId";
 export const ROUTE_SEARCH = "/search";
 export const ROUTE_SEARCH_RESULT = "/search/results/:query";
 export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
+
+export const ROUTE_ABOUT_US = "/about-us";
+export const ROUTE_PRIVACY_POLICY = "/privacy-policy";
+export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 
 // For Registered Users
 export const ROUTE_WALLET = "/wallet";

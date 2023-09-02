@@ -5,6 +5,7 @@
 // ############################################## SITE SETTINGS ##############################################
 
 export const SITE_TITLE = "Savari Dekho";
+export const SITE_CAPTION = "Unlock Affordable Adventures Across Cities and States";
 
 export const USER = "User";
 export const RIDER = "Rider";
@@ -12,6 +13,10 @@ export const ROLES = {
   USER,
   RIDER
 };
+
+export const CONTACT_NUMBER = '+91 79906 74110';
+export const CONTACT_EMAIL_PRIMARY = 'info@webwizards.in';
+export const CONTACT_EMAIL_SECONDARY = 'wizardsweb142@gmail.com';
 
 // ############################################## RESPONSE TYPES ##############################################
 
