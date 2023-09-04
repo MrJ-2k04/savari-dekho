@@ -24,8 +24,11 @@ import {
 import AboutUsPage from "Pages/Guest/AboutUsPage";
 import PrivacyPolicyPage from "Pages/Guest/PrivacyPolicyPage";
 import TermsAndCondititionsPage from "Pages/Guest/TermsAndConditionsPage";
+import PublishRidePage from "Pages/Rider/PublishRidePage";
+import VerifyRiderPage from "Pages/Rider/VerifyRiderPage";
+import VerifyVehiclePage from "Pages/Rider/VerifyVehiclePage";
 
-import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_VERIFY_VEHICLE, ROUTE_WALLET, USER_ROUTES } from "Store/constants";
+import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_VERIFY_VEHICLE, ROUTE_WALLET, USER_ROUTES } from "Store/constants";
 import { selectIsAuthenticated, selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { showError } from "Utils";
@@ -39,6 +42,7 @@ import { Navigate, Route, Routes as Switch, useLocation } from "react-router-dom
 
 const getTargetRoute = (isAuthenticated, user, route, state) => {
     const targetRoute = { path: null, state: null };
+    console.log(route, state);
     if (!isAuthenticated) {
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {
             if (!USER_ROUTES.includes(route) && !ADMIN_ROUTES.includes(route)) {
@@ -64,17 +68,30 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
             }
         } else if (ADMIN_ROUTES.includes(route)) {
             targetRoute.path = ROUTE_HOME;
-        } else if (RIDER_ROUTES.includes(route)) {
-            if (!user.isRider) {
-                targetRoute.path = ROUTE_VERIFY_RIDER;
-                targetRoute.state = state || { redirectUrl: route };
-            } else if (user.vehicles && user.vehicles.length === 0) {
+        } else if (RIDER_ROUTES.includes(route) || (state && RIDER_ROUTES.includes(state.redirectUrl))) {
+            if (RIDER_ROUTES.includes(route)) {
+                if (!user.isRider) {
+                    targetRoute.path = ROUTE_VERIFY_RIDER;
+                    targetRoute.state = state || { redirectUrl: route };
+                } else if (!user.vehicles || user.vehicles.length === 0) {
+                    targetRoute.path = ROUTE_VERIFY_VEHICLE;
+                    targetRoute.state = state || { redirectUrl: route };
+                }
+            } else if (route === ROUTE_VERIFY_VEHICLE) {
+                if (!user.isRider) {
+                    targetRoute.path = ROUTE_VERIFY_RIDER;
+                    targetRoute.state = state || { redirectUrl: route };
+                } else if (user.vehicles && user.vehicles.length > 0) {
+                    targetRoute.path = state.redirectUrl;
+                }
+            } else if (route === ROUTE_VERIFY_RIDER && user.isRider) {
                 targetRoute.path = ROUTE_VERIFY_VEHICLE;
                 targetRoute.state = state || { redirectUrl: route };
             }
-        } else if (state && state.redirectUrl) {
-            targetRoute.path = state.redirectUrl;
         }
+        // else if (state && state.redirectUrl) {
+        //     targetRoute.path = state.redirectUrl;
+        // }
     }
     return targetRoute;
 };
@@ -121,6 +138,12 @@ const Routes = () => {
         <Route path={ROUTE_WALLET} element={<WalletPage />} />
         <Route path={ROUTE_PROFILE_DASHBOARD} element={<ProfilePage />} />
         <Route path={ROUTE_RIDE_HISTORY} element={<RidesHistoryPage />} />
+
+        {/* For Ride Publishers */}
+        <Route path={ROUTE_VERIFY_RIDER} element={<VerifyRiderPage />} />
+        <Route path={ROUTE_VERIFY_VEHICLE} element={<VerifyVehiclePage />} />
+        <Route path={ROUTE_RIDE_PUBLISH} element={<PublishRidePage />} />
+
 
         {/* For Admin */}
         <Route path={ROUTE_ADMIN_DASHBOARD} element={<AdminDashboard />} />

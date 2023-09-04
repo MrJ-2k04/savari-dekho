@@ -58,7 +58,7 @@ export const USER_ROUTES = [
     ROUTE_RIDE_PUBLISH,
 ];
 export const RIDER_ROUTES = [
-    ROUTE_RIDE_PUBLISH
+    ROUTE_RIDE_PUBLISH,
 ]
 export const ADMIN_ROUTES = [
     ROUTE_ADMIN,
