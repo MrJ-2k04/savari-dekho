@@ -1,13 +1,13 @@
 import { Container } from "@mui/material";
-import Layout from "Layout/User";
+import UserLayout from "Layout/User";
 
 function RideDetailsPage() {
 
-    return (<Layout>
+    return (<UserLayout>
         <Container>
             Ride Details Page
         </Container>
-    </Layout>);
+    </UserLayout>);
 }
 
 export default RideDetailsPage;

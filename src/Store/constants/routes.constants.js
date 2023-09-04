@@ -17,6 +17,10 @@ export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 export const ROUTE_WALLET = "/wallet";
 export const ROUTE_PROFILE_DASHBOARD = "/profile";
 export const ROUTE_RIDE_HISTORY = "/rides";
+
+// For Riders
+export const ROUTE_VERIFY_RIDER = "/verify/rider";
+export const ROUTE_VERIFY_VEHICLE = "/verify/vehicle";
 export const ROUTE_RIDE_PUBLISH = "/rides/publish";
 
 // For Guests only
@@ -53,7 +57,9 @@ export const USER_ROUTES = [
     ROUTE_RIDE_HISTORY,
     ROUTE_RIDE_PUBLISH,
 ];
-
+export const RIDER_ROUTES = [
+    ROUTE_RIDE_PUBLISH
+]
 export const ADMIN_ROUTES = [
     ROUTE_ADMIN,
     ROUTE_ADMIN_DASHBOARD,

@@ -1,12 +1,12 @@
 import { Container } from "@mui/material";
-import Layout from "Layout/User";
+import UserLayout from "Layout/User";
 
 function UserDetailsPage() {
-    return (<Layout>
+    return (<UserLayout>
         <Container>
             User Details Page
         </Container>
-    </Layout>);
+    </UserLayout>);
 }
 
 export default UserDetailsPage;

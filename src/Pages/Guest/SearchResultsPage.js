@@ -1,12 +1,12 @@
 import { Container } from "@mui/material";
-import Layout from "Layout/User";
+import UserLayout from "Layout/User";
 
 function SearchResultsPage() {
-    return (<Layout>
+    return (<UserLayout>
         <Container>
             Search Results Page
         </Container>
-    </Layout>);
+    </UserLayout>);
 }
 
 export default SearchResultsPage;

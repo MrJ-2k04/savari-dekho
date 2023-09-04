@@ -25,7 +25,7 @@ const MainStyle = styled("div")(({ theme }) => ({
   },
 }));
 
-const Layout = ({ children }) => {
+const UserLayout = ({ children }) => {
   return (
     <RootStyle>
       <NavBar />
@@ -42,4 +42,4 @@ const Layout = ({ children }) => {
 };
 
 
-export default Layout;
+export default UserLayout;
