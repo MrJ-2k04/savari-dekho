@@ -1,11 +1,9 @@
-
-
 body {
   margin: 0 !important;
   font-family: 'GT Eesti Pro Display', Arial, sans-serif !important;
 }
 
-input[autocomplete="one-time-code"]{
+input[autocomplete="one-time-code"] {
   padding-left: 1px;
   padding-right: 1px;
 }

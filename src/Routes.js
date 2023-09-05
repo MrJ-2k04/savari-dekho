@@ -1,10 +1,14 @@
 
 
 
+import useApi from "Components/Hooks/useApi";
 import {
     AdminDashboard,
     AdminProfile,
+    AdminReports,
+    AdminTransactions,
     AdminUsersList,
+    AdminVerifyRequests,
     HomePage,
     LoginPage,
     NotFoundPage,
@@ -17,9 +21,6 @@ import {
     SearchResultsPage,
     UserDetailsPage,
     WalletPage,
-    AdminReports,
-    AdminTransactions,
-    AdminVerifyRequests,
 } from "Pages";
 import AboutUsPage from "Pages/Guest/AboutUsPage";
 import PrivacyPolicyPage from "Pages/Guest/PrivacyPolicyPage";
@@ -28,10 +29,9 @@ import PublishRidePage from "Pages/Rider/PublishRidePage";
 import VerifyRiderPage from "Pages/Rider/VerifyRiderPage";
 import VerifyVehiclePage from "Pages/Rider/VerifyVehiclePage";
 
-import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_VERIFY_VEHICLE, ROUTE_WALLET, USER_ROUTES } from "Store/constants";
-import { selectIsAuthenticated, selectUser } from "Store/selectors";
+import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_VERIFY_VEHICLE, ROUTE_WALLET } from "Store/constants";
+import { selectAccessToken, selectIsAuthenticated, selectRefreshToken, selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
-import { showError } from "Utils";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,17 +42,11 @@ import { Navigate, Route, Routes as Switch, useLocation } from "react-router-dom
 
 const getTargetRoute = (isAuthenticated, user, route, state) => {
     const targetRoute = { path: null, state: null };
-    console.log(route, state);
+
     if (!isAuthenticated) {
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {
-            if (!USER_ROUTES.includes(route) && !ADMIN_ROUTES.includes(route)) {
-                // No Navigation Needed
-            } else {
-                targetRoute.path = ROUTE_LOGIN;
-                if (!GUEST_ONLY_ROUTES.includes(route)) {
-                    targetRoute.state = state || { redirectUrl: route };
-                }
-            }
+            targetRoute.path = ROUTE_LOGIN;
+            targetRoute.state = state || { redirectUrl: route };
         }
     } else {
         if (GUEST_ONLY_ROUTES.includes(route)) {
@@ -68,30 +62,39 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
             }
         } else if (ADMIN_ROUTES.includes(route)) {
             targetRoute.path = ROUTE_HOME;
-        } else if (RIDER_ROUTES.includes(route) || (state && RIDER_ROUTES.includes(state.redirectUrl))) {
-            if (RIDER_ROUTES.includes(route)) {
-                if (!user.isRider) {
-                    targetRoute.path = ROUTE_VERIFY_RIDER;
-                    targetRoute.state = state || { redirectUrl: route };
-                } else if (!user.vehicles || user.vehicles.length === 0) {
-                    targetRoute.path = ROUTE_VERIFY_VEHICLE;
-                    targetRoute.state = state || { redirectUrl: route };
-                }
-            } else if (route === ROUTE_VERIFY_VEHICLE) {
-                if (!user.isRider) {
-                    targetRoute.path = ROUTE_VERIFY_RIDER;
-                    targetRoute.state = state || { redirectUrl: route };
-                } else if (user.vehicles && user.vehicles.length > 0) {
-                    targetRoute.path = state.redirectUrl;
-                }
-            } else if (route === ROUTE_VERIFY_RIDER && user.isRider) {
-                targetRoute.path = ROUTE_VERIFY_VEHICLE;
-                targetRoute.state = state || { redirectUrl: route };
+        } else if (RIDER_ROUTES.includes(route)) {
+            switch (route) {
+                case ROUTE_VERIFY_RIDER:
+                    if (user.isRider) {
+                        targetRoute.path = ROUTE_VERIFY_VEHICLE;
+                        targetRoute.state = state;
+                    }
+                    break;
+
+                case ROUTE_VERIFY_VEHICLE:
+                    if (!user.isRider) {
+                        targetRoute.path = ROUTE_VERIFY_RIDER;
+                        targetRoute.state = state;
+                    }
+                    else if (user.vehicles && user.vehicles.length > 0 && state && state.redirectUrl) {
+                        targetRoute.path = state.redirectUrl;
+                    }
+                    break;
+
+                case ROUTE_RIDE_PUBLISH:
+                    if (!user.isRider) {
+                        targetRoute.path = ROUTE_VERIFY_RIDER;
+                        targetRoute.state = state || { redirectUrl: route };
+                    } else if (!user.vehicles || user.vehicles.length === 0) {
+                        targetRoute.path = ROUTE_VERIFY_VEHICLE;
+                        targetRoute.state = state || { redirectUrl: route };
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
-        // else if (state && state.redirectUrl) {
-        //     targetRoute.path = state.redirectUrl;
-        // }
     }
     return targetRoute;
 };
@@ -103,14 +106,22 @@ const Routes = () => {
     const location = useLocation();
     const user = useSelector(selectUser);
     const dispatch = useDispatch();
+    const { syncUser } = useApi();
+    const accessToken = useSelector(selectAccessToken);
+    const refreshToken = useSelector(selectRefreshToken);
 
     const { path, state } = getTargetRoute(isAuthenticated, user, location.pathname, location.state);
 
     useEffect(() => {
-        if (isAuthenticated && !Cookies.get('accessToken') && !Cookies.get('refreshToken')) {
-            showError({ title: 'Logged Out', message: 'Your session has been expired!' });
-            dispatch(authActions.logout());
+        if (isAuthenticated) {
+            if (Cookies.get('accessToken') !== accessToken || Cookies.get('refreshToken') !== refreshToken) {
+                dispatch(authActions.setTokens({ accessToken: Cookies.get('accessToken'), refreshToken: Cookies.get('refreshToken') }))
+            }
+            if (!path) {
+                syncUser();
+            }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname])
 
     if (path) {

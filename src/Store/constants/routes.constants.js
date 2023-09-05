@@ -59,6 +59,8 @@ export const USER_ROUTES = [
 ];
 export const RIDER_ROUTES = [
     ROUTE_RIDE_PUBLISH,
+    ROUTE_VERIFY_RIDER,
+    ROUTE_VERIFY_VEHICLE
 ]
 export const ADMIN_ROUTES = [
     ROUTE_ADMIN,
@@ -88,6 +90,9 @@ export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
 export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;
 export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
 export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
+
+// Rider Stuff
+export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
 
 // Admin
 export const API_GET_USERS = `${API_ENDPOINT}/users`;

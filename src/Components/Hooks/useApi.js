@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -51,6 +51,15 @@ const useApi = () => {
       return ack.payload;
     }
     throw new Error('Cannot fetch user details');
+  }
+
+  const syncUser = () => {
+    getUserDetails().then(userDetails => {
+      dispatch(authActions.setUser(userDetails));
+    }).catch(err => {
+      console.error(err.message);
+      dispatch(authActions.logout());
+    });
   }
 
   const updateUserDetails = async (user) => {
@@ -153,6 +162,29 @@ const useApi = () => {
     return ack.message;
   }
 
+  // ######################################################### FOR RIDERS #########################################################
+
+  const uploadRiderDocs = async (docsJson) => {
+    const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(docsJson));
+    if (ack.type === 'success') {
+      syncUser();
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't upload the documents");
+  }
+
+  // ######################################################### FOR ADMINS #########################################################
+
+  const getUsersList = async () => {
+    const ack = await apiRequestWithReauth(API_GET_USERS, null, 'GET')
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Cannot fetch users list');
+  }
+
+  // ######################################################### ACTUAL API CALLS #########################################################
+
   const apiRequestWithReauth = async (url, data = null, method = 'POST') => {
     setLoading(true);
     return new Promise(async (resolve, reject) => {
@@ -160,7 +192,7 @@ const useApi = () => {
         const res = await apiRequest(url, data, method);
         resolve(res);
       } catch (error) {
-        if (error.code === 'AUTH_EXPIRED') {
+        if (error.code === 'AUTH_EXPIRED' || error.code === 'AUTH_INVALID') {
           try {
             // Generate new Access Token using Refresh Token
             const ack = await apiRequest(API_REFRESH_TOKEN, jsonToFormData({ refreshToken }))
@@ -224,23 +256,12 @@ const useApi = () => {
     });
   };
 
-  // ######################################################### FOR ADMINS #########################################################
-  const getUsersList = async () => {
-    const ack = await apiRequestWithReauth(API_GET_USERS, null, 'GET')
-    if (ack.type === 'success') {
-      return ack.payload;
-    }
-    throw new Error(ack.message || 'Cannot fetch users list');
-  }
-
-
-
-
   return {
     loading,
     generateOtp,
     validateOtp,
     getUserDetails,
+    syncUser,
     updateUserDetails,
     loginUser,
     logoutUser,
@@ -251,6 +272,9 @@ const useApi = () => {
     requestPayment,
     validatePayment,
     cancelPayment,
+    // Rider
+    uploadRiderDocs,
+
     // Admin
     getUsersList
   };

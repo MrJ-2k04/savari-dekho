@@ -15,7 +15,7 @@ function App() {
   const accessToken = useSelector(selectAccessToken);
   const refreshToken = useSelector(selectRefreshToken);
   const isAuthReady = useSelector(selectIsAuthReady);
-  const { getUserDetails } = useApi();
+  const { syncUser } = useApi();
   const dispatch = useDispatch();
 
 
@@ -23,13 +23,14 @@ function App() {
   useEffect(() => {
     dispatch(authActions.setAuthReadyStatus(false));
     if (accessToken && refreshToken) {
-      getUserDetails(accessToken).then((userDetails) => {
-        dispatch(authActions.setUser(userDetails));
-      }).catch(err => {
-        console.log(err.message);
-        // showError({ message: err.message })
-        dispatch(authActions.logout());
-      });
+      syncUser();
+      // getUserDetails(accessToken).then((userDetails) => {
+      //   dispatch(authActions.setUser(userDetails));
+      // }).catch(err => {
+      //   console.log(err.message);
+      //   // showError({ message: err.message })
+      //   dispatch(authActions.logout());
+      // });
     } else {
       dispatch(authActions.setAuthReadyStatus(true));
     }

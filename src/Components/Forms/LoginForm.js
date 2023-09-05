@@ -34,7 +34,9 @@ function LoginForm() {
         return "";
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
         var isValid = true;
         const inputType = getInputType(credential);
 
@@ -82,7 +84,7 @@ function LoginForm() {
     }
 
     return (
-        <>
+        <form onSubmit={handleSubmit}>
             <Box height={'100%'} display={'flex'} flexDirection={'column'} justifyContent={'center'} maxWidth={'500px'} mx={'auto'}>
                 {/* <CardHeader
                     // title={<Typography variant="h3" textAlign={'center'}>Login</Typography>}
@@ -136,6 +138,7 @@ function LoginForm() {
                             </Stack>
                             <LoadingButton
                                 onClick={handleSubmit}
+                                type="submit"
                                 loading={loading}
                                 startIcon={<Login />}
                                 // sx={{ maxWidth: '16rem', mx: 'auto' }}
@@ -153,7 +156,7 @@ function LoginForm() {
                     </Stack>
                 </CardActions>
             </Box>
-        </>
+        </form>
     );
 }
 
