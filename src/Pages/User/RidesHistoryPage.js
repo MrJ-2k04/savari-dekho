@@ -44,7 +44,7 @@ function RidesHistoryPage() {
         <UserLayout>
             <Container maxWidth={'md'}>
                 <TabContext value={activeTab}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', boxShadow: '0px 9px 6px -4px rgba(0,0,0,0.05)' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} centered variant="fullWidth">
                             <Tab label="Your Booked Rides" value={"1"} />
                             <Tab label="Your Published Rides" value={"2"} />

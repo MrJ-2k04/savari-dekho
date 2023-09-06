@@ -191,3 +191,45 @@ export const CITY_OPTIONS = {
         "Purulia", "South 24 Parganas", "Uttar Dinajpur"
     ],
 };
+
+
+export const VEHICLE_TYPE_OPTIONS = [
+    "Sedan",
+    "SUV",
+    "Compact",
+    'Hatchback',
+    "Van",
+    "Crossover",
+    "Convertible",
+    "Sports Car",
+    "Other"
+]
+
+export const VEHICLE_FUEL_TYPES = [
+    "Gasoline/Petrol",
+    "Diesel",
+    "Electric",
+    "Hybrid",
+    "Natural Gas",
+    "Propane",
+    "Other"
+]
+
+export const VEHICLE_COLOR_OPTIONS = [
+    { name: "Black", value: "#000000" },
+    { name: "White", value: "#FFFFFF" },
+    { name: "Dark gray", value: "#555555" },
+    { name: "Gray", value: "#AAAAAA" },
+    { name: "Burgundy", value: "#9b0004" },
+    { name: "Red", value: "#FF0000" },
+    { name: "Dark blue", value: "#0b2742" },
+    { name: "Blue", value: "#1a7cbd" },
+    { name: "Dark green", value: "#008000" },
+    { name: "Green", value: "#00FF00" },
+    { name: "Brown", value: "#4e301c" },
+    { name: "Beige", value: "#F5F5DC" },
+    { name: "Orange", value: "#FFA500" },
+    { name: "Yellow", value: "#FFFF00" },
+    { name: "Purple", value: "#800080" },
+    { name: "Pink", value: "#FFC0CB" }
+];

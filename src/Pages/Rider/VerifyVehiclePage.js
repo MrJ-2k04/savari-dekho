@@ -1,9 +1,10 @@
 
 import UserLayout from "Layout/User";
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { useDispatch, useSelector } from "react-redux";
+import AddVehicleForm from "Components/Forms/AddVehicleForm";
 
 function VerifyVehiclePage() {
 
@@ -14,8 +15,10 @@ function VerifyVehiclePage() {
     }
 
     return (<UserLayout>
-        Verify Vehicle Page
-        <Button variant="contained" onClick={handleVerify}>Verify Rider's Vehicle</Button>
+        <Container sx={{ my: 3 }}>
+            <AddVehicleForm />
+            <Button variant="contained" onClick={handleVerify}>Verify Rider's Vehicle</Button>
+        </Container>
     </UserLayout>);
 }
 
