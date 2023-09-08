@@ -1,12 +1,12 @@
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import UsersTable from "Components/Admin/UsersTable";
 import AdminLayout from "Layout/Admin";
 
 function AdminUsersList() {
     return (<AdminLayout>
-        <Container>
+        <Box p={3}>
             <UsersTable />
-        </Container>
+        </Box>
     </AdminLayout>);
 }
 

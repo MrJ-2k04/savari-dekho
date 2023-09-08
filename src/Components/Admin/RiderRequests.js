@@ -1,26 +1,24 @@
 import { Refresh } from "@mui/icons-material";
-import { Avatar, Box, IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import useApi from "Components/Hooks/useApi";
 import { TableSkeleton } from "Components/Skeletons";
 import { renderDate, renderImage, showError } from "Utils";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
 
+function RiderRequests() {
 
+    const { loading, getRiderRequests } = useApi();
+    const [riderRequests, setRiderRequests] = useState([]);
 
-function UsersTable() {
-
-    const { loading, getUsersList } = useApi();
-    const [users, setUsers] = useState([]);
-
-    const fetchUsers = () => {
-        getUsersList()
-            .then(usersList => setUsers(usersList))
+    const fetchRiderRequests = () => {
+        getRiderRequests()
+            .then(riderReqs => setRiderRequests(riderReqs))
             .catch(err => showError({ message: err.message }))
     }
 
     useEffect(() => {
-        fetchUsers();
+        fetchRiderRequests();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -35,11 +33,11 @@ function UsersTable() {
             :
             <MUIDataTable
                 title="Users List"
-                data={users}
+                data={riderRequests}
                 options={{
                     print: false,
                     responsive: 'standard',
-                    customToolbar: () => <Tooltip title='Refresh'><IconButton onClick={fetchUsers}><Refresh /></IconButton></Tooltip>,
+                    customToolbar: () => <Tooltip title='Refresh'><IconButton onClick={fetchRiderRequests}><Refresh /></IconButton></Tooltip>,
                 }}
                 columns={[
                     {
@@ -180,6 +178,10 @@ function UsersTable() {
             />
         }
     </Box>);
+
+    return (<Box>
+        Rider Req
+    </Box>);
 }
 
-export default UsersTable;
+export default RiderRequests;
