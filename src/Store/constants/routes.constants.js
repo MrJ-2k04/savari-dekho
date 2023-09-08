@@ -93,6 +93,7 @@ export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
 
 // Rider Stuff
 export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
+export const API_UPLOAD_VEHICLE_DOCS = `${API_ENDPOINT}/requests/vehicle`;
 
 // Admin
 export const API_GET_USERS = `${API_ENDPOINT}/users`;

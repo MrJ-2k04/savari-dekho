@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -173,6 +173,15 @@ const useApi = () => {
     throw new Error(ack.message || "Couldn't upload the documents");
   }
 
+  const uploadVehicleDocs = async (docsJson) => {
+    const ack = await apiRequestWithReauth(API_UPLOAD_VEHICLE_DOCS, jsonToFormData(docsJson));
+    if (ack.type === 'success') {
+      syncUser();
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't add vehicle");
+  }
+
   // ######################################################### FOR ADMINS #########################################################
 
   const getUsersList = async () => {
@@ -274,6 +283,7 @@ const useApi = () => {
     cancelPayment,
     // Rider
     uploadRiderDocs,
+    uploadVehicleDocs,
 
     // Admin
     getUsersList
