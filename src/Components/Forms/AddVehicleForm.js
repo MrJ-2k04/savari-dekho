@@ -4,22 +4,26 @@ import { Autocomplete, Box, FormControl, FormHelperText, Grid, InputLabel, MenuI
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { BOOLEAN_OPTIONS, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS } from "Store/constants";
-import { selectIsDarkMode, selectUser } from "Store/selectors";
+import { BOOLEAN_OPTIONS, ROUTE_HOME, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS } from "Store/constants";
+import { selectIsDarkMode } from "Store/selectors";
 import { isEmptyString, showError } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiFileInput } from "mui-file-input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 function AddVehicleForm() {
 
-    const user = useSelector(selectUser);
-    const isDark = useSelector(selectIsDarkMode);
-    const docsInputBorderColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
+    const { state } = useLocation();
+    const nav = useNavigate();
+    const docsInputBorderColor = useSelector(selectIsDarkMode) ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
+    const { loading, uploadVehicleDocs } = useApi();
+    
+    
+    // ################################################ STATES ################################################
 
-    const { loading, } = useApi();
 
     const [rcBook, setDlFront] = useState(null)
     const [insurance, setInsurance] = useState(null)
@@ -31,10 +35,10 @@ function AddVehicleForm() {
     const [plateNumber, setPlateNumber] = useState('');
     const [brand, setBrand] = useState('');
     const [model, setModel] = useState('');
-
+    
     const [airBags, setAirBags] = useState('');  // Optional
     const [makeYear, setMakeYear] = useState(null);  // Optional
-
+    
 
     // Error States
     const [rcBookError, setRcBookError] = useState("");
@@ -48,6 +52,10 @@ function AddVehicleForm() {
     const [brandError, setBrandError] = useState('');
     const [modelError, setModelError] = useState('');
     const [makeYearError, setMakeYearError] = useState(''); // Optional field error
+
+
+    // ################################################ HANDLERS ################################################
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -130,7 +138,7 @@ function AddVehicleForm() {
             insurance,
             type: vehicleType,
             fuelType: vehicleFuel,
-            color: VEHICLE_COLOR_OPTIONS[vehicleColor],
+            color: JSON.stringify(VEHICLE_COLOR_OPTIONS[vehicleColor]),
             totalSeats: totalSeats,
             hasAc,
             plateNumber,
@@ -139,11 +147,15 @@ function AddVehicleForm() {
         };
 
         // Submit the Form using API
-        console.log("Submit", payload);
+        uploadVehicleDocs(payload).then(ack => {
+            if(!state){
+                nav(ROUTE_HOME);
+            }
+        }).catch(err => showError({ message: err.message }));
     }
 
     const handlePlateNumberChange = e => {
-        let newNumber = e.target.value.replace(/[^A-Za-z0-9-]/g, '').toUpperCase();
+        let newNumber = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
         setPlateNumberError('');
         setPlateNumber(newNumber);
     }
