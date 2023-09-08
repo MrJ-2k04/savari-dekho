@@ -3,8 +3,9 @@ import { LoadingButton } from "@mui/lab";
 import { Autocomplete, Box, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import useApi from "Components/Hooks/useApi";
 import { BOOLEAN_OPTIONS, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS } from "Store/constants";
-import { selectIsDarkMode } from "Store/selectors";
+import { selectIsDarkMode, selectUser } from "Store/selectors";
 import { isEmptyString, showError } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiFileInput } from "mui-file-input";
@@ -14,27 +15,30 @@ import { useSelector } from "react-redux";
 
 function AddVehicleForm() {
 
+    const user = useSelector(selectUser);
     const isDark = useSelector(selectIsDarkMode);
     const docsInputBorderColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
 
+    const { loading, } = useApi();
+
+    const [rcBook, setDlFront] = useState(null)
+    const [insurance, setInsurance] = useState(null)
     const [vehicleType, setVehicleType] = useState('');
     const [vehicleFuel, setVehicleFuel] = useState('');
     const [vehicleColor, setVehicleColor] = useState('');
     const [totalSeats, setTotalSeats] = useState(5);
     const [hasAc, setHasAc] = useState('');
-    const [airBags, setAirBags] = useState('');
-    const [makeYear, setMakeYear] = useState(null);
     const [plateNumber, setPlateNumber] = useState('');
     const [brand, setBrand] = useState('');
     const [model, setModel] = useState('');
 
-    const [rcBook, setDlFront] = useState(null)
-    const [insurance, setInsurance] = useState(null)
+    const [airBags, setAirBags] = useState('');  // Optional
+    const [makeYear, setMakeYear] = useState(null);  // Optional
 
-    const [rcBookError, setRcBookError] = useState("");
-    const [insuranceError, setInsuranceError] = useState("");
 
     // Error States
+    const [rcBookError, setRcBookError] = useState("");
+    const [insuranceError, setInsuranceError] = useState("");
     const [vehicleTypeError, setVehicleTypeError] = useState('');
     const [vehicleFuelError, setVehicleFuelError] = useState('');
     const [vehicleColorError, setVehicleColorError] = useState('');
@@ -43,14 +47,109 @@ function AddVehicleForm() {
     const [plateNumberError, setPlateNumberError] = useState('');
     const [brandError, setBrandError] = useState('');
     const [modelError, setModelError] = useState('');
+    const [makeYearError, setMakeYearError] = useState(''); // Optional field error
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        let isValid = true;
+        let payload = {};
+
+        if (!rcBook) {
+            setRcBookError('Please upload RC Book front page');
+            isValid = false;
+        } else {
+            setRcBookError('');
+        }
+
+        if (!insurance) {
+            setInsuranceError('Please upload vehicle insurance');
+            isValid = false;
+        }
+
+        if (isEmptyString(vehicleType)) {
+            setVehicleTypeError('Please select a vehicle type');
+            isValid = false;
+        }
+
+        if (isEmptyString(vehicleFuel)) {
+            setVehicleFuelError('Please select a vehicle fuel type');
+            isValid = false;
+        }
+
+        if (isEmptyString(vehicleColor)) {
+            setVehicleColorError('Please enter the vehicle color');
+            isValid = false;
+        }
+
+        if (totalSeats <= 0) {
+            setTotalSeatsError('Total seats must be greater than 0');
+            isValid = false;
+        } else if (totalSeats >= 100) {
+            setTotalSeatsError('Total seats must be less than 100');
+            isValid = false;
+        }
+
+        if (isEmptyString(hasAc)) {
+            setHasAcError('Please specify if the vehicle has AC');
+            isValid = false;
+        }
+
+        if (isEmptyString(plateNumber)) {
+            setPlateNumberError('Please enter the vehicle plate number');
+            isValid = false;
+        }
+
+        if (isEmptyString(brand)) {
+            setBrandError('Please enter the vehicle brand');
+            isValid = false;
+        }
+
+        if (isEmptyString(model)) {
+            setModelError('Please enter the vehicle model');
+            isValid = false;
+        }
+
+        if (makeYear) {
+            const year = new Date(makeYear).getFullYear();
+            if (year < 1900 || year > new Date().getFullYear()) {
+                setMakeYearError('Please enter a valid manufacturing year');
+                isValid = false;
+            } else {
+                payload.manufactureYear = year;
+            }
+        }
+        if (airBags) {
+            payload.airBags = airBags;
+        }
+
+        if (!isValid) return;
+
+        payload = {
+            ...payload,
+            rcBook,
+            insurance,
+            type: vehicleType,
+            fuelType: vehicleFuel,
+            color: VEHICLE_COLOR_OPTIONS[vehicleColor],
+            totalSeats: totalSeats,
+            hasAc,
+            plateNumber,
+            brand,
+            model,
+        };
+
+        // Submit the Form using API
+        console.log("Submit", payload);
+    }
 
     const handlePlateNumberChange = e => {
-        let newNumber = e.target.value.replace(' ', '').toUpperCase();
+        let newNumber = e.target.value.replace(/[^A-Za-z0-9-]/g, '').toUpperCase();
         setPlateNumberError('');
         setPlateNumber(newNumber);
     }
 
     const handleSeatsChange = (e) => {
+        setTotalSeatsError('');
         const seats = parseInt(e.target.value);
         if (!seats) {
             setTotalSeats('');
@@ -84,6 +183,7 @@ function AddVehicleForm() {
         if (error) return showError({ message: error })
         setDlFront(newFile);
     }
+
     const handleInsuranceChange = (newFile) => {
         setInsuranceError('');
         if (!newFile) {
@@ -110,16 +210,8 @@ function AddVehicleForm() {
         return null;
     }
 
-    useEffect(() => {
-        console.log(brand);
 
-        return () => {
-
-        }
-    }, [brand])
-
-
-    return (<Box>
+    return (<form onSubmit={handleSubmit} noValidate>
         <Stack spacing={6} justifyContent={'center'} alignItems={'center'}>
             <Typography variant="h2" textAlign='center'>Add a Vehicle</Typography>
 
@@ -231,7 +323,7 @@ function AddVehicleForm() {
                             options={VEHICLE_MANUFACTURERS}
                             fullWidth
                             value={brand}
-                            onChange={(event, newValue) => { setModel(''); setBrand(newValue) }}
+                            onChange={(event, newValue) => { setModel(''); setBrand(newValue); setBrandError(''); }}
                             isOptionEqualToValue={(option, value) => option.toLowerCase().includes(value.toLowerCase())}
                             renderInput={(params) => <TextField {...params} label="Vehicle Brand" error={!isEmptyString(brandError)} helperText={brandError} required />}
                         />
@@ -244,7 +336,7 @@ function AddVehicleForm() {
                             fullWidth
                             freeSolo
                             value={model}
-                            onChange={(event, newValue) => setModel(newValue)}
+                            onChange={(event, newValue) => { setModel(newValue); setModelError(''); }}
                             isOptionEqualToValue={(option, value) => option.toLowerCase().includes(value.toLowerCase())}
                             renderInput={(params) => <TextField {...params} label="Vehicle Model" error={!isEmptyString(modelError)} helperText={modelError} value={model} onChange={e => setModel(e.target.value)} required />}
                         />
@@ -263,7 +355,7 @@ function AddVehicleForm() {
                                 error={!isEmptyString(vehicleColorError)}
                             >
                                 {VEHICLE_COLOR_OPTIONS.map(({ value, name }, index) => (
-                                    <MenuItem key={index} value={name}>
+                                    <MenuItem key={index} value={index}>
                                         <Box display={'flex'} alignItems={'center'} columnGap={2}>
                                             {/* <ListItemIcon sx={{ my: 'auto', height: '100%' }}><Palette sx={{ color: value }} /></ListItemIcon> */}
                                             <Box borderRadius={'50%'} bgcolor={value} height={'19px'} width={'19px'}></Box>
@@ -293,12 +385,14 @@ function AddVehicleForm() {
                                 value={makeYear}
                                 onChange={value => {
                                     setMakeYear(value);
+                                    setMakeYearError('');
                                 }}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,
                                         variant: 'outlined',
-                                        required: true,
+                                        error: !isEmptyString(makeYearError),
+                                        helperText: makeYearError,
                                     }
                                 }}
                             />
@@ -323,6 +417,8 @@ function AddVehicleForm() {
                             onChange={handleSeatsChange}
                             label="Total Seats"
                             type="number"
+                            error={!isEmptyString(totalSeatsError)}
+                            helperText={totalSeatsError}
                             fullWidth
                             required
                         />
@@ -337,7 +433,7 @@ function AddVehicleForm() {
                         />
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required error={!isEmptyString(hasAcError)}>
                             <InputLabel id="hasAc">Does your vehicle have A/C ?</InputLabel>
                             <Select
                                 labelId="hasAc"
@@ -347,7 +443,6 @@ function AddVehicleForm() {
                                     setHasAcError('');
                                     setHasAc(e.target.value);
                                 }}
-                                error={!isEmptyString(hasAcError)}
                                 required
                             >
                                 {BOOLEAN_OPTIONS.map((value, index) => {
@@ -358,23 +453,23 @@ function AddVehicleForm() {
                                     );
                                 })}
                             </Select>
-                            <FormHelperText error={!isEmptyString(hasAcError)}>{hasAcError}</FormHelperText>
+                            <FormHelperText>{hasAcError}</FormHelperText>
                         </FormControl>
                     </Grid>
                 </Grid>
             </Box>
 
             <LoadingButton
-                // loading={loading}
+                loading={loading}
+                type="submit"
                 size="large"
                 variant="contained"
-                // onClick={handleUploadDocs}
                 startIcon={<Security />}
             >
                 Proceed to Add
             </LoadingButton>
         </Stack>
-    </Box>);
+    </form>);
 }
 
 export default AddVehicleForm;
