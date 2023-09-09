@@ -44,7 +44,7 @@ function UsersTable() {
             name: "profilePicture",
             label: "Profile",
             options: {
-                customBodyRender: renderImage,
+                customBodyRender: renderImage('Profile Picture'),
             }
         },
         {
