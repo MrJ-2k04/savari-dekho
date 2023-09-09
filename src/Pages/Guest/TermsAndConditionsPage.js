@@ -5,7 +5,7 @@ function TermsAndCondititionsPage() {
     return (<MinimalLayout>
         <Container>
             <Box textAlign={'center'}>
-                T & C
+                Terms & Conditions Page
             </Box>
         </Container>
     </MinimalLayout>);
