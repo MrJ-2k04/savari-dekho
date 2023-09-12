@@ -19,9 +19,12 @@ export const ROUTE_PROFILE_DASHBOARD = "/profile";
 export const ROUTE_RIDE_HISTORY = "/rides";
 
 // For Riders
-export const ROUTE_VERIFY_RIDER = "/verify/rider";
-export const ROUTE_VERIFY_VEHICLE = "/verify/vehicle";
+export const ROUTE_VERIFY_RIDER = "/verify";
 export const ROUTE_RIDE_PUBLISH = "/rides/publish";
+export const ROUTE_VEHICLE = "/vehicle";
+export const ROUTE_VEHICLE_ADD = "/vehicle/add";
+export const ROUTE_VEHICLE_DETAILS = "/vehicle/:id";
+
 
 // For Guests only
 export const ROUTE_LOGIN = "/login";
@@ -60,7 +63,9 @@ export const USER_ROUTES = [
 export const RIDER_ROUTES = [
     ROUTE_RIDE_PUBLISH,
     ROUTE_VERIFY_RIDER,
-    ROUTE_VERIFY_VEHICLE
+    ROUTE_VEHICLE,
+    ROUTE_VEHICLE_ADD,
+    ROUTE_VEHICLE_DETAILS,
 ]
 export const ADMIN_ROUTES = [
     ROUTE_ADMIN,
@@ -92,10 +97,11 @@ export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
 export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
 
 // Rider Stuff
+export const API_VEHICLES = `${API_ENDPOINT}/vehicles`;
 export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
 export const API_UPLOAD_VEHICLE_DOCS = `${API_ENDPOINT}/requests/vehicle`;
 
 // Admin
 export const API_GET_USERS = `${API_ENDPOINT}/users`;
-export const API_RIDER_REQUESTS = `${API_ENDPOINT}/requests/rider`;
-export const API_VEHICLE_REQUESTS = `${API_ENDPOINT}/requests/vehicle`;
+export const API_GET_RIDER_REQUESTS = `${API_ENDPOINT}/requests/rider`;
+export const API_GET_VEHICLE_REQUESTS = `${API_ENDPOINT}/requests/vehicle`;

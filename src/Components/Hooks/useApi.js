@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDER_REQUESTS, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLE_REQUESTS } from "Store/constants";
+import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_USERS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_GET_RIDER_REQUESTS, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_GET_VEHICLE_REQUESTS, API_VEHICLES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -182,6 +182,22 @@ const useApi = () => {
     throw new Error(ack.message || "Couldn't add vehicle");
   }
 
+  const getVehicles = async () => {
+    const ack = await apiRequestWithReauth(API_VEHICLES, null, 'GET');
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Could not fetch vehicles');
+  }
+
+  const getVehicleDetails = async (vehicleId) => {
+    const ack = await apiRequestWithReauth(`${API_VEHICLES}/${vehicleId}`, null, 'GET');
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Could not fetch vehicle details');
+  }
+
   // ######################################################### FOR ADMINS #########################################################
 
   const getUsersList = async () => {
@@ -193,7 +209,7 @@ const useApi = () => {
   }
 
   const getRiderRequests = async () => {
-    const ack = await apiRequestWithReauth(API_RIDER_REQUESTS, null, 'GET');
+    const ack = await apiRequestWithReauth(API_GET_RIDER_REQUESTS, null, 'GET');
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -201,7 +217,7 @@ const useApi = () => {
   }
 
   const getVehicleRequests = async () => {
-    const ack = await apiRequestWithReauth(API_VEHICLE_REQUESTS, null, 'GET');
+    const ack = await apiRequestWithReauth(API_GET_VEHICLE_REQUESTS, null, 'GET');
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -210,14 +226,14 @@ const useApi = () => {
 
 
   const updateRiderRequest = async (newState) => {
-    const ack = await apiRequestWithReauth(API_RIDER_REQUESTS, jsonToFormData(newState), 'PUT');
+    const ack = await apiRequestWithReauth(API_GET_RIDER_REQUESTS, jsonToFormData(newState), 'PUT');
     if (ack.type === 'success') {
       return ack;
     }
     throw new Error(ack.message || 'Could not update the status');
   }
   const updateVehicleRequest = async (newState) => {
-    const ack = await apiRequestWithReauth(API_VEHICLE_REQUESTS, jsonToFormData(newState), 'PUT');
+    const ack = await apiRequestWithReauth(API_GET_VEHICLE_REQUESTS, jsonToFormData(newState), 'PUT');
     if (ack.type === 'success') {
       return ack;
     }
@@ -316,6 +332,8 @@ const useApi = () => {
     // Rider
     uploadRiderDocs,
     uploadVehicleDocs,
+    getVehicles,
+    getVehicleDetails,
 
     // Admin
     getUsersList,

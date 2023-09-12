@@ -1,11 +1,11 @@
 
-import { AddCircle, ArrowForwardIos, Edit, Pending, PendingActions, Save, Verified } from "@mui/icons-material";
+import { AddCircle, ArrowForwardIos, Edit, Pending, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { CITY_OPTIONS, GENDER_OPTIONS, STATE_OPTIONS } from "Store/constants";
+import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_VEHICLE, ROUTE_VEHICLE_ADD, STATE_OPTIONS } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
@@ -13,12 +13,14 @@ import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 function ProfileSection() {
     const user = useSelector(selectUser);
 
     const [localUser, setLocalUser] = useState(user);
-    const { loading, updateUserDetails } = useApi();
+    const [vehicles, setVehicles] = useState([]);
+    const { loading, updateUserDetails, getVehicles } = useApi();
     const dispatch = useDispatch();
 
     const handleFieldChange = field => (e, details) => {
@@ -67,10 +69,19 @@ function ProfileSection() {
         });
     }
 
-    useEffect(() => {
+    const fetchVehicles = () => {
+        getVehicles()
+            .then(newVehicles => setVehicles(newVehicles))
+            .catch(err => showError({ message: err.message }));
+    }
 
+    useEffect(() => {
+        fetchVehicles();
     }, [])
 
+    // useEffect(()=>{
+    //     console.log(vehicles);
+    // },[vehicles]);
 
     return (
         <form onSubmit={handleUpdateUser}>
@@ -278,20 +289,54 @@ function ProfileSection() {
                     <CardHeader title={'Vehicles'} />
                     <CardContent>
                         <Box>
-                            <Stack spacing={4} maxWidth={'400px'} mx={'auto'}>
+                            <Stack spacing={2} maxWidth={'400px'} mx={'auto'}>
                                 <Stack spacing={1}>
-                                    <Button size="large" fullWidth startIcon={<Verified />} endIcon={<ArrowForwardIos />}>
-                                        <Typography flexGrow={1} variant="button" textAlign={'left'}>
-                                            Black TaTa sedan
-                                        </Typography>
-                                    </Button>
-                                    <Button size="large" fullWidth startIcon={<PendingActions />} endIcon={<ArrowForwardIos />}>
+                                    {vehicles.map(vehicle => {
+                                        let Icon;
+                                        switch (vehicle.verificationStatus) {
+                                            case 'verified':
+                                                Icon = Verified;
+                                                break;
+
+                                            case 'not verified':
+                                                Icon = QuestionMark
+                                                break;
+
+                                            case 'pending':
+                                                Icon = PendingActions;
+                                                break;
+
+                                            default:
+                                                Icon = QuestionMark;
+                                                break;
+                                        }
+
+                                        return <Button
+                                            size="large"
+                                            fullWidth startIcon={<Icon />}
+                                            endIcon={<ArrowForwardIos />}
+                                            LinkComponent={Link}
+                                            to={`${ROUTE_VEHICLE}/${vehicle._id}`}>
+                                            <Typography flexGrow={1} variant="button" textAlign={'left'}>
+                                                {vehicle.model}
+                                            </Typography>
+                                        </Button>
+                                    })}
+                                    {/* <Button size="large" fullWidth startIcon={<PendingActions />} endIcon={<ArrowForwardIos />}>
                                         <Typography flexGrow={1} variant="button" textAlign={'left'}>
                                             Gray Ignis
                                         </Typography>
-                                    </Button>
+                                    </Button> */}
                                 </Stack>
-                                <Button variant="contained" size="medium" sx={{ justifyContent: 'start', width: 'fit-content' }} startIcon={<AddCircle />}>Add Car</Button>
+                                <Button
+                                    variant="text"
+                                    color="secondary"
+                                    size="large"
+                                    sx={{ justifyContent: 'start' }}
+                                    startIcon={<AddCircle />}>
+                                    Add Vehicle
+                                </Button>
+
                             </Stack>
                         </Box>
                     </CardContent>

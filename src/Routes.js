@@ -26,10 +26,11 @@ import AboutUsPage from "Pages/Guest/AboutUsPage";
 import PrivacyPolicyPage from "Pages/Guest/PrivacyPolicyPage";
 import TermsAndCondititionsPage from "Pages/Guest/TermsAndConditionsPage";
 import PublishRidePage from "Pages/Rider/PublishRidePage";
+import VehicleDetailsPage from "Pages/Rider/VehicleDetailsPage";
 import VerifyRiderPage from "Pages/Rider/VerifyRiderPage";
 import VerifyVehiclePage from "Pages/Rider/VerifyVehiclePage";
 
-import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_VERIFY_VEHICLE, ROUTE_WALLET } from "Store/constants";
+import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_HISTORY, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_VEHICLE_ADD, ROUTE_WALLET, ROUTE_VEHICLE, ROUTE_VEHICLE_DETAILS } from "Store/constants";
 import { selectAccessToken, selectIsAuthenticated, selectRefreshToken, selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
 import Cookies from "js-cookie";
@@ -66,12 +67,12 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
             switch (route) {
                 case ROUTE_VERIFY_RIDER:
                     if (user.riderVerificationStatus) {
-                        targetRoute.path = ROUTE_VERIFY_VEHICLE;
+                        targetRoute.path = ROUTE_VEHICLE_ADD;
                         targetRoute.state = state;
                     }
                     break;
 
-                case ROUTE_VERIFY_VEHICLE:
+                case ROUTE_VEHICLE_ADD:
                     if (!user.riderVerificationStatus) {
                         targetRoute.path = ROUTE_VERIFY_RIDER;
                         targetRoute.state = state;
@@ -86,9 +87,13 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
                         targetRoute.path = ROUTE_VERIFY_RIDER;
                         targetRoute.state = state || { redirectUrl: route };
                     } else if (!user.vehicles || user.vehicles.length === 0) {
-                        targetRoute.path = ROUTE_VERIFY_VEHICLE;
+                        targetRoute.path = ROUTE_VEHICLE_ADD;
                         targetRoute.state = state || { redirectUrl: route };
                     }
+                    break;
+
+                case ROUTE_VEHICLE:
+                    targetRoute.path = ROUTE_VEHICLE_ADD;
                     break;
 
                 default:
@@ -152,7 +157,8 @@ const Routes = () => {
 
         {/* For Ride Publishers */}
         <Route path={ROUTE_VERIFY_RIDER} element={<VerifyRiderPage />} />
-        <Route path={ROUTE_VERIFY_VEHICLE} element={<VerifyVehiclePage />} />
+        <Route path={ROUTE_VEHICLE_ADD} element={<VerifyVehiclePage />} />
+        <Route path={ROUTE_VEHICLE_DETAILS} element={<VerifyVehiclePage viewMode />} />
         <Route path={ROUTE_RIDE_PUBLISH} element={<PublishRidePage />} />
 
 
