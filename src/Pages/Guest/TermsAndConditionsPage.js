@@ -1,8 +1,5 @@
-import { Box, Button, Container, Divider, FormControlLabel, Stack, Typography } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import MinimalLayout from "Layout/Minimal";
+import { Box, Container, Stack, Typography } from "@mui/material";
 import NavBar from "Layout/Minimal/NavBar";
-import UserLayout from "Layout/User";
 import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
 
 
