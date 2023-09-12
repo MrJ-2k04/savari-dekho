@@ -65,14 +65,14 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
         } else if (RIDER_ROUTES.includes(route)) {
             switch (route) {
                 case ROUTE_VERIFY_RIDER:
-                    if (user.isRider) {
+                    if (user.riderVerificationStatus) {
                         targetRoute.path = ROUTE_VERIFY_VEHICLE;
                         targetRoute.state = state;
                     }
                     break;
 
                 case ROUTE_VERIFY_VEHICLE:
-                    if (!user.isRider) {
+                    if (!user.riderVerificationStatus) {
                         targetRoute.path = ROUTE_VERIFY_RIDER;
                         targetRoute.state = state;
                     }
@@ -82,7 +82,7 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
                     break;
 
                 case ROUTE_RIDE_PUBLISH:
-                    if (!user.isRider) {
+                    if (!user.riderVerificationStatus) {
                         targetRoute.path = ROUTE_VERIFY_RIDER;
                         targetRoute.state = state || { redirectUrl: route };
                     } else if (!user.vehicles || user.vehicles.length === 0) {

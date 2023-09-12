@@ -1,13 +1,24 @@
-import { Avatar, Box } from "@mui/material";
+import { CloudDone, Sync } from "@mui/icons-material";
+import { Box, Stack, Typography } from "@mui/material";
+import ImageModal from "Components/Common/ImageModal";
 
 
-export const renderImage = (src, tableMeta) => {
-    return <Avatar
+export const TableTitle = ({ title, loading }) => {
+    return <Stack direction={'row'} spacing={2} alignItems={'center'}>
+        <Typography variant="h4" color={'primary'}>{title}</Typography>
+        {loading ?
+            <SynchronizingIcon />
+            :
+            <CloudDone color="disabled" />
+        }
+    </Stack>
+}
+
+export const renderImage = title => (src, tableMeta) => {
+    return <ImageModal
+        alt={tableMeta?.columnData?.label}
         src={src}
-        alt={tableMeta?.columnData?.label} 
-        loading="lazy"
-        variant="rounded"
-        style={{ width: 40, height: 40 }}
+        title={title}
     />
 }
 
@@ -29,3 +40,20 @@ export const renderColor = (color) => {
         {color.name}
     </Box>
 }
+
+export const SynchronizingIcon = ({ props }) =>
+    <Sync
+        color="disabled"
+        sx={{
+            animation: "spin 2s linear infinite",
+            "@keyframes spin": {
+                "0%": {
+                    transform: "rotate(360deg)",
+                },
+                "100%": {
+                    transform: "rotate(0deg)",
+                },
+            },
+        }}
+        {...props}
+    />
