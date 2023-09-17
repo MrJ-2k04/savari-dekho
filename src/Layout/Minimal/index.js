@@ -1,8 +1,9 @@
 
-import { Box, Grid, styled } from "@mui/material";
-import NavBar from "./NavBar";
-import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
+import { Box, styled } from "@mui/material";
 import Animate from "Components/Other/Animate";
+import { APP_BAR_MOBILE } from "Store/constants";
+import MinimalNavbar from "./MinimalNavbar";
+import MinimalFooter from "./MinimalFooter";
 
 
 const MinimalLayout = ({ children }) => {
@@ -30,12 +31,13 @@ const MinimalLayout = ({ children }) => {
 
   return (
     <RootStyle>
-      <NavBar />
+      <MinimalNavbar transparent />
       <Animate>
         <MainStyle>
           {children}
         </MainStyle>
       </Animate>
+      {/* <MinimalFooter /> */}
     </RootStyle>
   );
 };

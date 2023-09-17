@@ -14,10 +14,10 @@ import Logo from "Components/Common/Logo";
 import ThemeModeSwitch from "Components/Common/ThemeModeSwitch";
 
 
-const RootStyle = styled(AppBar)(({ theme, transparent }) => ({
+const RootStyle = styled(AppBar)(({ theme, type }) => ({
   boxShadow: "none",
   color: theme.palette.text.primary,
-  ...(!transparent ? {
+  ...(type === "standard" ? {
     backdropFilter: "blur(6px)",
     WebkitBackdropFilter: "blur(6px)", // Fix on Mobile
     backgroundColor: alpha(theme.palette.background.default, 0.72),
@@ -25,13 +25,13 @@ const RootStyle = styled(AppBar)(({ theme, transparent }) => ({
 }));
 
 
-export default function NavBar({ transparent = true }) {
+export default function MinimalNavbar({ transparent = false }) {
 
   return (
     <RootStyle
       // variant="elevation"
       color="transparent"
-      transparent={transparent}
+      type={transparent ? "transparent" : "standard"}
     >
       <Toolbar>
         <Logo />

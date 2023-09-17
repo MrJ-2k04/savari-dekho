@@ -1,14 +1,14 @@
 import { Box, Container } from "@mui/material";
-import MinimalLayout from "Layout/Minimal";
+import StaticPageLayout from "Layout/Other/StaticPageLayout";
 
 function PrivacyPolicyPage() {
-    return (<MinimalLayout>
-        <Container>
+    return (<StaticPageLayout>
+        <Container maxWidth='md'>
             <Box textAlign={'center'}>
                 Privacy Policy
             </Box>
         </Container>
-    </MinimalLayout>);
+    </StaticPageLayout>);
 }
 
 export default PrivacyPolicyPage;

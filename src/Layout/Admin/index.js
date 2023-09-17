@@ -1,4 +1,4 @@
-import AdminFooter from "./AdminFooter";
+import MinimalFooter from "../Minimal/MinimalFooter";
 import { Grid, styled } from "@mui/material";
 import AdminNavbar from "./AdminNavbar";
 import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
@@ -48,7 +48,7 @@ const AdminLayout = ({ children }) => {
             {children}
           </Animate>
         </Grid>
-        <AdminFooter />
+        <MinimalFooter />
       </MainStyle>
     </RootStyle >
   );

@@ -1,14 +1,14 @@
 import { Box, Container } from "@mui/material";
-import MinimalLayout from "Layout/Minimal";
+import StaticPageLayout from "Layout/Other/StaticPageLayout";
 
 function AboutUsPage() {
-    return (<MinimalLayout>
-        <Container>
+    return (<StaticPageLayout>
+        <Container maxWidth='md'>
             <Box textAlign={'center'}>
                 About Us
             </Box>
         </Container>
-    </MinimalLayout>);
+    </StaticPageLayout>);
 }
 
 export default AboutUsPage;

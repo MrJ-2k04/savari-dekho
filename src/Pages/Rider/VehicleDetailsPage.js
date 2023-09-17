@@ -1,6 +1,7 @@
 import useApi from "Components/Hooks/useApi";
 import UserLayout from "Layout/User";
 import { showError } from "Utils";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function VehicleDetailsPage() {
