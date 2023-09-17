@@ -16,9 +16,10 @@ function PrivacyPolicyPage() {
                         <Typography variant="h3">Last Updated: [17 SEPTEMBER , 2023]</Typography>
 
                         <Typography variant="body1">
-                            Your privacy is important to us. This Privacy Policy outlines how we collect, use, disclose, and protect your personal information when you visit our website [Your Website URL] or use our services.
+                            Your privacy is important to us. This Privacy Policy outlines how we collect, use, disclose, and protect your personal information when you visit our website[Savari Dekho Ltd] or use our services.
                             By accessing or using our services, you consent to the practices described in this Privacy Policy.
                         </Typography>
+
 
                         <Typography variant="h4">Information We Collect</Typography>
                         <Typography variant="body1">
@@ -35,8 +36,8 @@ function PrivacyPolicyPage() {
                                     You can control the use of cookies through your browser settings.
                                 </ListItemText>
                             </ListItem>
-
                         </List>
+
 
                         <Typography variant="h4">How We Use Your Information</Typography>
                         <Typography variant="body1">
@@ -68,8 +69,8 @@ function PrivacyPolicyPage() {
                                     Comply with legal obligations.
                                 </ListItemText>
                             </ListItem>
-
                         </List>
+
 
                         <Typography variant="h4">Disclosure of Your Information</Typography>
                         <Typography variant="body1">
@@ -86,8 +87,8 @@ function PrivacyPolicyPage() {
                                     You can control the use of cookies through your browser settings.
                                 </ListItemText>
                             </ListItem>
-
                         </List>
+
 
                         <Typography variant="h4">Information We Collect</Typography>
                         <Typography variant="body1">
@@ -110,9 +111,8 @@ function PrivacyPolicyPage() {
                                     Business partners for marketing and advertising purposes if you consent.
                                 </ListItemText>
                             </ListItem>
-
-
                         </List>
+
 
                         <Typography variant="h4"> Your Choices</Typography>
                         <Typography variant="body1">
@@ -136,10 +136,9 @@ function PrivacyPolicyPage() {
                                 </ListItemText>
                             </ListItem>
 
-
                         </List>
-                        <Typography variant="h4">  Security</Typography>
 
+                        <Typography variant="h4">  Security</Typography>
                         <List component="ul" dense>
                             <ListItem>
                                 <ListItemText>
@@ -151,7 +150,6 @@ function PrivacyPolicyPage() {
                         </List>
 
                         <Typography variant="h4"> Links to Other Websites</Typography>
-
                         <List component="ul" dense>
                             <ListItem>
                                 <ListItemText>
@@ -163,7 +161,6 @@ function PrivacyPolicyPage() {
                         </List>
 
                         <Typography variant="h4">Changes to this Privacy Policy</Typography>
-
                         <List component="ul" dense>
                             <ListItem>
                                 <ListItemText>
@@ -174,9 +171,7 @@ function PrivacyPolicyPage() {
 
                         </List>
 
-
                         <Typography variant="h4">Contact Us</Typography>
-
                         <List component="ul" dense>
                             <ListItem>
                                 <ListItemText>
@@ -186,31 +181,10 @@ function PrivacyPolicyPage() {
 
                         </List>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     </Stack>
                 </Stack>
             </Container>
-        </StaticPageLayout>
-    );
+        </StaticPageLayout>);
 }
 
 export default PrivacyPolicyPage;
