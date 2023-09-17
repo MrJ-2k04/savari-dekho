@@ -1,5 +1,5 @@
 
-import { AddCircle, ArrowForwardIos, Edit, Pending, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
+import { AddCircle, ArrowForwardIos, Cancel, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -78,10 +78,6 @@ function ProfileSection() {
     useEffect(() => {
         fetchVehicles();
     }, [])
-
-    // useEffect(()=>{
-    //     console.log(vehicles);
-    // },[vehicles]);
 
     return (
         <form onSubmit={handleUpdateUser}>
@@ -289,31 +285,32 @@ function ProfileSection() {
                     <CardHeader title={'Vehicles'} />
                     <CardContent>
                         <Box>
-                            <Stack spacing={2} maxWidth={'400px'} mx={'auto'}>
-                                <Stack spacing={1}>
-                                    {vehicles.map(vehicle => {
+                            <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
+                                {vehicles.length > 0 ? <Stack spacing={1}>
+                                    {vehicles.map((vehicle, i) => {
                                         let Icon;
                                         switch (vehicle.verificationStatus) {
                                             case 'verified':
-                                                Icon = Verified;
+                                                Icon = <Verified color="success" />;
                                                 break;
 
                                             case 'not verified':
-                                                Icon = QuestionMark
+                                                Icon = <Cancel color="error" />
                                                 break;
 
                                             case 'pending':
-                                                Icon = PendingActions;
+                                                Icon = <PendingActions color="warning" />;
                                                 break;
 
                                             default:
-                                                Icon = QuestionMark;
+                                                Icon = <QuestionMark color="primary" />;
                                                 break;
                                         }
 
                                         return <Button
+                                            key={i}
                                             size="large"
-                                            fullWidth startIcon={<Icon />}
+                                            fullWidth startIcon={Icon}
                                             endIcon={<ArrowForwardIos />}
                                             LinkComponent={Link}
                                             to={`${ROUTE_VEHICLE}/${vehicle._id}`}>
@@ -322,18 +319,16 @@ function ProfileSection() {
                                             </Typography>
                                         </Button>
                                     })}
-                                    {/* <Button size="large" fullWidth startIcon={<PendingActions />} endIcon={<ArrowForwardIos />}>
-                                        <Typography flexGrow={1} variant="button" textAlign={'left'}>
-                                            Gray Ignis
-                                        </Typography>
-                                    </Button> */}
-                                </Stack>
+                                </Stack> : <Typography variant="subtitle1" px={1}>No Vehicles Found!</Typography>}
                                 <Button
                                     variant="text"
-                                    color="secondary"
+                                    // color="secondary"
                                     size="large"
                                     sx={{ justifyContent: 'start' }}
-                                    startIcon={<AddCircle />}>
+                                    startIcon={<AddCircle />}
+                                    LinkComponent={Link}
+                                    to={ROUTE_VEHICLE_ADD}
+                                >
                                     Add Vehicle
                                 </Button>
 

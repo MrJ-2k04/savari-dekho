@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 function VehicleRequests() {
 
-    const { loading, getVehicleRequests, updateVehicleRequests } = useApi();
+    const { loading, getVehicleRequests, updateVehicleRequest: updateVehicleRequests } = useApi();
     const [vehicleRequests, setVehicleRequests] = useState([]);
 
     const handleColumnChange = (tableMeta, _onChange, newValue) => {

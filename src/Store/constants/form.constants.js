@@ -403,3 +403,9 @@ export const VEHICLE_MODELS = {
     "Tesla": ["Tesla Model 3", "Tesla Model S", "Tesla Model X", "Tesla Model Y"],
     "Unknown": ["Unknown"],
 };
+
+export const VEHICLE_VERIFICATION_STATUS = {
+    PENDING: "pending",
+    VERIFIED: "verified",
+    NOT_VERIFIED: "not verified"
+}

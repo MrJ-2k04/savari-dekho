@@ -1,31 +1,37 @@
-import { Security } from "@mui/icons-material";
+import { ArrowBackIos, Cancel, Delete, PendingActions, QuestionMark, Save, Security, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Autocomplete, Box, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { BOOLEAN_OPTIONS, ROUTE_HOME, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS } from "Store/constants";
+import { BOOLEAN_OPTIONS, ROUTE_PROFILE_DASHBOARD, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS, VEHICLE_VERIFICATION_STATUS } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
-import { isEmptyString, showError } from "Utils";
+import { isEmptyString, showError, showSuccess } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiFileInput } from "mui-file-input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 
-function AddVehicleForm() {
+function VehicleForm({ viewMode = false }) {
 
     const { state } = useLocation();
     const nav = useNavigate();
+    const { id } = useParams();
     const docsInputBorderColor = useSelector(selectIsDarkMode) ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
-    const { loading, uploadVehicleDocs } = useApi();
-    
-    
+    const { loading, uploadVehicleDocs, getVehicleDetails, updateVehicleById, deleteVehicleById } = useApi();
+
+
+
+
     // ################################################ STATES ################################################
 
+    // For ViewMode
+    const [vehicleId, setVehicleId] = useState(id || null);
+    const [verificationStatus, setVerificationStatus] = useState("");
 
-    const [rcBook, setDlFront] = useState(null)
+    const [rcBook, setRcBook] = useState(null)
     const [insurance, setInsurance] = useState(null)
     const [vehicleType, setVehicleType] = useState('');
     const [vehicleFuel, setVehicleFuel] = useState('');
@@ -35,10 +41,10 @@ function AddVehicleForm() {
     const [plateNumber, setPlateNumber] = useState('');
     const [brand, setBrand] = useState('');
     const [model, setModel] = useState('');
-    
+
     const [airBags, setAirBags] = useState('');  // Optional
     const [makeYear, setMakeYear] = useState(null);  // Optional
-    
+
 
     // Error States
     const [rcBookError, setRcBookError] = useState("");
@@ -53,9 +59,50 @@ function AddVehicleForm() {
     const [modelError, setModelError] = useState('');
     const [makeYearError, setMakeYearError] = useState(''); // Optional field error
 
+    // ################################################ COMPUTED PROPERTIES ################################################
 
-    // ################################################ HANDLERS ################################################
+    const getStatusIcon = () => {
+        if (!viewMode) return <></>
+        switch (verificationStatus) {
+            case VEHICLE_VERIFICATION_STATUS.VERIFIED:
+                return <Verified fontSize="large" color="success" />;
 
+            case VEHICLE_VERIFICATION_STATUS.NOT_VERIFIED:
+                return <Cancel fontSize="large" color="error" />
+
+            case VEHICLE_VERIFICATION_STATUS.PENDING:
+                return <PendingActions fontSize="large" color="warning" />;
+
+            default:
+                return <QuestionMark fontSize="large" color="primary" />;
+        }
+    }
+
+    // ################################################ API HANDLERS ################################################
+
+    const syncVehicle = () => {
+        getVehicleDetails(id)
+            .then(details => {
+                setVehicleId(details._id);
+                setVerificationStatus(details.verificationStatus);
+
+                setRcBook(details.rcBook);
+                setInsurance(details.insurance);
+                setVehicleType(details.type);
+                setVehicleFuel(details.fuelType);
+                setVehicleColor(VEHICLE_COLOR_OPTIONS.findIndex(obj => obj.name === details?.color?.name));
+                setTotalSeats(details.totalSeats);
+                setHasAc(details.hasAc);
+                setPlateNumber(details.plateNumber);
+                setBrand(details.brand);
+                setModel(details.model);
+                setAirBags(details.airBags);
+                if (details.manufactureYear) {
+                    setMakeYear(new Date(String(details.manufactureYear)));
+                }
+            })
+            .catch(err => showError({ message: err.message }));
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -146,13 +193,30 @@ function AddVehicleForm() {
             model,
         };
 
-        // Submit the Form using API
-        uploadVehicleDocs(payload).then(ack => {
-            if(!state){
-                nav(ROUTE_HOME);
-            }
-        }).catch(err => showError({ message: err.message }));
+        if (viewMode) {
+            updateVehicleById(vehicleId, payload)
+                .then(ack => {
+                    showSuccess({ message: ack.message });
+                    syncVehicle();
+                }).catch(err => showError({ message: err.message }))
+        } else {
+            // ADD New Vehicle using API
+            uploadVehicleDocs(payload).then(ack => {
+                if (!state) {
+                    nav(ROUTE_PROFILE_DASHBOARD);
+                }
+            }).catch(err => showError({ message: err.message }));
+        }
     }
+
+    const handleDelete = () => {
+        deleteVehicleById(vehicleId).then(async (ack) => {
+            await showSuccess({ message: ack.message || "Vehicle Deleted Successfully!" })
+            nav(-1);
+        }).catch(err => showError({ message: err.message }))
+    }
+
+    // ################################################ STATE HANDLERS ################################################
 
     const handlePlateNumberChange = e => {
         let newNumber = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -188,12 +252,12 @@ function AddVehicleForm() {
     const handleRcBookChange = (newFile) => {
         setRcBookError('');
         if (!newFile) {
-            setDlFront(null);
+            setRcBook(null);
             return;
         }
         const error = validateFile(newFile);
         if (error) return showError({ message: error })
-        setDlFront(newFile);
+        setRcBook(newFile);
     }
 
     const handleInsuranceChange = (newFile) => {
@@ -223,17 +287,27 @@ function AddVehicleForm() {
     }
 
 
+    useEffect(() => {
+        if (!viewMode) return;
+
+        syncVehicle();
+    }, []);
+
+
     return (<form onSubmit={handleSubmit} noValidate>
         <Stack spacing={6} justifyContent={'center'} alignItems={'center'}>
-            <Typography variant="h2" textAlign='center'>Add a Vehicle</Typography>
+            <Stack direction={'row'} alignItems={'center'} spacing={2}>
+                {getStatusIcon()}
+                <Typography variant="h2" width={{ xs: 'min-content', sm: 'fit-content' }} textAlign='center'>{!viewMode ? "Add a Vehicle" : model}</Typography>
+            </Stack>
 
             <Box width={'100%'}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <Box component={'fieldset'} p={2} borderRadius={'8px'} height={'fit-content'} borderColor={docsInputBorderColor}>
-                            <Box component={'legend'} px={1} color={'text.secondary'}>RC Book *</Box>
+                            <Box component={'legend'} px={1} color={'text.secondary'}>RC Book {viewMode ? "" : "*"}</Box>
                             <Stack spacing={2} alignItems={'center'}>
-                                <MuiFileInput
+                                {!viewMode && <MuiFileInput
                                     fullWidth
                                     placeholder="Choose file"
                                     error={!isEmptyString(rcBookError)}
@@ -247,16 +321,21 @@ function AddVehicleForm() {
                                         disableUnderline: true, // This removes the underline (border) from the TextField
                                     }}
                                     variant="standard"
-                                />
-                                {rcBook && <Box component={'img'} src={URL.createObjectURL(rcBook)} alt="" height={'200px'} />}
+                                />}
+                                {rcBook && <Box
+                                    component={'img'}
+                                    src={viewMode ? rcBook : URL.createObjectURL(rcBook)}
+                                    alt="Insurance"
+                                    height={'200px'}
+                                />}
                             </Stack>
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Box component={'fieldset'} p={2} borderRadius={'8px'} height={'fit-content'} borderColor={docsInputBorderColor}>
-                            <Box component={'legend'} px={1} color={'text.secondary'}>Insurance *</Box>
+                            <Box component={'legend'} px={1} color={'text.secondary'}>Insurance {viewMode ? "" : "*"}</Box>
                             <Stack spacing={2} alignItems={'center'}>
-                                <MuiFileInput
+                                {!viewMode && <MuiFileInput
                                     fullWidth
                                     placeholder="Choose file"
                                     error={!isEmptyString(insuranceError)}
@@ -270,8 +349,13 @@ function AddVehicleForm() {
                                         disableUnderline: true, // This removes the underline (border) from the TextField
                                     }}
                                     variant="standard"
-                                />
-                                {insurance && <Box component={'img'} src={URL.createObjectURL(insurance)} alt="" height={'200px'} />}
+                                />}
+                                {insurance && <Box
+                                    component={'img'}
+                                    src={viewMode ? insurance : URL.createObjectURL(insurance)}
+                                    alt="Insurance"
+                                    height={'200px'}
+                                />}
                             </Stack>
                         </Box>
                     </Grid>
@@ -471,17 +555,46 @@ function AddVehicleForm() {
                 </Grid>
             </Box>
 
-            <LoadingButton
-                loading={loading}
-                type="submit"
-                size="large"
-                variant="contained"
-                startIcon={<Security />}
-            >
-                Proceed to Add
-            </LoadingButton>
+            <Stack direction={'row'} spacing={3} rowGap={3} width={'100%'} flexWrap={'wrap'} justifyContent={'space-between'}>
+
+                {viewMode &&
+                    <>
+                        <Button
+                            startIcon={<Delete />}
+                            size="large"
+                            variant="outlined"
+                            color="error"
+                            onClick={handleDelete}
+                            sx={{ mr: 'auto', order: { xs: 3, sm: 0 }, width: { xs: '100%', sm: 'fit-content' } }}
+                        >
+                            Delete
+                        </Button>
+                        <Button
+                            startIcon={<ArrowBackIos />}
+                            size="large"
+                            color="secondary"
+                            variant="outlined"
+                            onClick={e => nav(ROUTE_PROFILE_DASHBOARD)}
+                            sx={{ ml: "0 !important" }}
+                        >
+                            Go Back
+                        </Button>
+                    </>
+                }
+
+                <LoadingButton
+                    loading={loading}
+                    type="submit"
+                    size="large"
+                    variant="contained"
+                    startIcon={!viewMode ? <Security /> : <Save />}
+                    sx={{ mx: 'auto' }}
+                >
+                    {!viewMode ? "Proceed to Add" : "Save changes"}
+                </LoadingButton>
+            </Stack>
         </Stack>
-    </form>);
+    </form >);
 }
 
-export default AddVehicleForm;
+export default VehicleForm;

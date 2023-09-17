@@ -45,6 +45,12 @@ export default function GlobalStyles() {
             //   WebkitAppearance: "none",
             // },
           },
+          "&[type=file]": {
+            cursor: "pointer",
+            "&::-webkit-file-upload-button": {
+              cursor: 'pointer',
+            }
+          }
         },
         textarea: {
           "&::-webkit-input-placeholder": {

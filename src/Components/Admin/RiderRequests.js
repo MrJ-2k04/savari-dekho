@@ -9,7 +9,7 @@ function RiderRequests() {
 
     // ############################################# STATES #############################################
 
-    const { loading, getRiderRequests, updateRiderRequests } = useApi();
+    const { loading, getRiderRequests, updateRiderRequest: updateRiderRequests } = useApi();
     const [riderRequests, setRiderRequests] = useState([]);
 
 
