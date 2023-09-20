@@ -5,7 +5,7 @@ import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormCo
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_VEHICLE, ROUTE_VEHICLE_ADD, STATE_OPTIONS } from "Store/constants";
+import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_VEHICLE, ROUTE_VEHICLE_ADD, ROUTE_WALLET, STATE_OPTIONS } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
@@ -84,9 +84,18 @@ function ProfileSection() {
             <Stack spacing={4}>
                 <Card>
                     <CardContent>
-                        <Box display={'flex'} width={'100%'} alignItems={'center'}>
-                            <Stack flexGrow={1}>
-                                <Avatar sx={{ width: '100px', height: '100px' }}>
+                        <Box display={'flex'} width={'100%'} alignItems={'center'} flexWrap={'wrap'}>
+                            <Box flexGrow={1}>
+                                <Stack width={'fit-content'} justifyContent='start'>
+                                    <Typography p={1} variant="h3" color={'primary'}>{user.firstName} {user.lastName}</Typography>
+                                    <Button variant="text" LinkComponent={Link} to={ROUTE_WALLET} sx={{width: 'fit-content'}}>
+                                        <Typography color={'primary'} variant="h5">{`₹${user.balance}`}</Typography>
+                                    </Button>
+                                </Stack>
+                            </Box>
+                            <Stack>
+                                {/* <AvatarSection /> */}
+                                <Avatar sx={{ width: '86px', height: '86px' }} src={user.profilePicture}>
                                     {user.firstName[0]}
                                 </Avatar>
                             </Stack>
