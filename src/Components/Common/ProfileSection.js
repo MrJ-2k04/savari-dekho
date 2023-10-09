@@ -1,7 +1,7 @@
 
 import { AddCircle, ArrowForwardIos, Cancel, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
@@ -14,6 +14,7 @@ import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import EditProfilePictureModal from "./EditProfilePictureModal";
 
 function ProfileSection() {
     const user = useSelector(selectUser);
@@ -87,17 +88,15 @@ function ProfileSection() {
                         <Box display={'flex'} width={'100%'} alignItems={'center'} flexWrap={'wrap'}>
                             <Box flexGrow={1}>
                                 <Stack width={'fit-content'} justifyContent='start'>
-                                    <Typography p={1} variant="h3" color={'primary'}>{user.firstName} {user.lastName}</Typography>
-                                    <Button variant="text" LinkComponent={Link} to={ROUTE_WALLET} sx={{width: 'fit-content'}}>
+                                    <Typography px={1} variant="h3" color={'primary'}>{user.firstName} {user.lastName}</Typography>
+                                    <Button variant="text" LinkComponent={Link} to={ROUTE_WALLET} sx={{ width: 'fit-content' }}>
                                         <Typography color={'primary'} variant="h5">{`₹${user.balance}`}</Typography>
                                     </Button>
                                 </Stack>
                             </Box>
                             <Stack>
                                 {/* <AvatarSection /> */}
-                                <Avatar sx={{ width: '86px', height: '86px' }} src={user.profilePicture}>
-                                    {user.firstName[0]}
-                                </Avatar>
+                                <EditProfilePictureModal />
                             </Stack>
                         </Box>
                     </CardContent>

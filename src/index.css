@@ -39,6 +39,12 @@ input[autocomplete="one-time-code"] {
 
 
 
+.swal-container {
+    z-index: 99999;
+}
+
+
+
 
 /* ::-webkit-scrollbar {
   width: 8px;

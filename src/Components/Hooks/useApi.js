@@ -57,7 +57,6 @@ const useApi = () => {
     getUserDetails().then(userDetails => {
       dispatch(authActions.setUser(userDetails));
     }).catch(err => {
-      console.error(err.message);
       dispatch(authActions.logout());
     });
   }

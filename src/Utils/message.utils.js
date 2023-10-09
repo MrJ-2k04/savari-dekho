@@ -1,19 +1,23 @@
 
 
-
-
 export function showSuccess({ title = "Success", message = "" }) {
-    return window.Swal.fire(
+    return window.Swal.fire({
         title,
-        message,
-        'success'
-    );
+        text: message,
+        icon: 'success',
+        customClass: {
+            container: 'swal-container',
+        }
+    });
 }
 
 export function showError({ title = "Error", message = "" }) {
-    return window.Swal.fire(
+    return window.Swal.fire({
         title,
-        message,
-        'error'
-    );
+        text: message,
+        icon: 'error',
+        customClass: {
+            container: 'swal-container',
+        }
+    });
 }
