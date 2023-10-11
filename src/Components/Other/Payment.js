@@ -1,7 +1,7 @@
 import { CurrencyRupee } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { API_CHECKOUT_SCRIPT, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE } from "Store/constants";
-import axios from "axios"
+import { API_PAYMENT_CREATE, API_PAYMENT_VALIDATE } from "Store/constants";
+import axios from "axios";
 
 function Payment() {
     return (
@@ -14,12 +14,6 @@ export default Payment;
 
 async function displayRazorpay() {
     try {
-        const res = await loadScript(API_CHECKOUT_SCRIPT);
-
-        if (!res) {
-            alert("Razorpay SDK failed to load. Are you online?");
-            return;
-        }
 
         // Creating a new payment order
         const result = await axios.post(API_PAYMENT_CREATE);

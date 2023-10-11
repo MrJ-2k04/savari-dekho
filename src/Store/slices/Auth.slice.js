@@ -1,19 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit'
+import Cookies from 'js-cookie';
 
 
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    USER: null,
-    AUTH_READY: true,
+    user: null,
+    accessToken: Cookies.get('accessToken') || null,
+    refreshToken: Cookies.get('refreshToken') || null,
+    authReady: false,
   },
   reducers: {
-    login: (state, action) => {
-      return { ...state, USER: action.payload };
+    setTokens: (state, action) => {
+      const { accessToken, refreshToken } = action.payload;
+      return { ...state, accessToken, refreshToken };
+    },
+    setUser: (state, action) => {
+      return { ...state, user: action.payload, authReady: true };
     },
     logout: (state, action) => {
-      return { ...state, USER: null };
-    }
+      return { ...state, user: null, accessToken: null, refreshToken: null };
+    },
+    setAuthReadyStatus: (state, action) => {
+      return { ...state, authReady: action.payload }
+    },
   },
 })
 

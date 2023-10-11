@@ -1,5 +1,5 @@
 import { TabContext, TabPanel } from "@mui/lab";
-import { Box, Container, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Container, Tab, Tabs } from "@mui/material";
 import RideCard from "Components/Common/RideCard";
 import UserLayout from "Layout/User";
 import { useState } from "react";
@@ -31,7 +31,7 @@ const defBookedRides = [
     },
 ]
 
-function RidesHistory() {
+function RidesHistoryPage() {
 
     const [activeTab, setActiveTab] = useState("1");
     const [publishedRides, setPublishedRides] = useState([]);
@@ -44,7 +44,7 @@ function RidesHistory() {
         <UserLayout>
             <Container maxWidth={'md'}>
                 <TabContext value={activeTab}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', boxShadow: '0px 9px 6px -4px rgba(0,0,0,0.05)' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} centered variant="fullWidth">
                             <Tab label="Your Booked Rides" value={"1"} />
                             <Tab label="Your Published Rides" value={"2"} />
@@ -52,7 +52,7 @@ function RidesHistory() {
                     </Box>
                     <Box>
                         <TabPanel value={"1"}>
-                            {bookedRides.map((ride,index)=>(
+                            {bookedRides.map((ride, index) => (
                                 <RideCard ride={ride} key={index} />
                             ))}
                         </TabPanel>
@@ -66,4 +66,4 @@ function RidesHistory() {
     );
 }
 
-export default RidesHistory;
+export default RidesHistoryPage;

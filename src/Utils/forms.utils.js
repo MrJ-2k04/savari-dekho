@@ -55,24 +55,39 @@ export function formatMobileNumber(mobileNumber) {
     const phoneNumber = formattedNumber.slice(index + 1).replace(/\s/g, ""); // Extract the phone number and remove all spaces
     const finalMobileNumber = `${countryCode}-${phoneNumber}`;
     const validMobileNumberLength = 10;
-    if (finalMobileNumber.length < (countryCode.length + validMobileNumberLength + 1)) {
+    // console.log(finalMobileNumber.length,countryCode.length,validMobileNumberLength);
+    if (
+        finalMobileNumber.length !== (countryCode.length + validMobileNumberLength + 1)
+        // finalMobileNumber.length < (countryCode.length + validMobileNumberLength + 1)
+        // ||
+        // finalMobileNumber.length > (countryCode.length + validMobileNumberLength + 3)
+    ) {
         return "";
     }
     return finalMobileNumber;
 };
+
+export function unformatMobileNumber(mobileNumber) {
+    if (isEmptyString(mobileNumber)) return "";
+    if (mobileNumber.includes("+")) return mobileNumber;
+
+    const splittedNumber = mobileNumber.split('-');
+    const result = `+${splittedNumber[0]} ${splittedNumber[1]}`;
+    return result;
+}
 
 
 // -------------------------------------------------------- CONVERSION FUNCTIONS --------------------------------------------------------
 
 
 export function parseFormData(targetForm) {
-    if (typeof targetForm === 'object') {
-        const formData = new FormData();
-        Object.entries(targetForm).forEach(([k, v]) => {
-            formData.append(k, v);
-        })
-        return
-    }
+    // if (typeof targetForm === 'object') {
+    //     const formData = new FormData();
+    //     Object.entries(targetForm).forEach(([k, v]) => {
+    //         formData.append(k, v);
+    //     })
+    //     return formData;
+    // }
     const formData = new FormData(targetForm);
     const data = {};
     for (let [key, value] of formData.entries()) {

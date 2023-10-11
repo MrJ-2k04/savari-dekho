@@ -1,16 +1,18 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 // import Payment from "Components/Payment";
+import heroImg from "Assets/SVGs/hero.svg";
+import heroDarkImg from "Assets/SVGs/heroDark1.svg";
+import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
+import ConstructionSrc from "Assets/images/UnderConstruction.png";
 import UserLayout from "Layout/User";
 import { THEME } from "Store/constants";
+import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
-import heroImg from "Assets/SVGs/hero.svg";
-import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
-import { ExpandMore } from "@mui/icons-material";
-import ConstructionSrc from "Assets/images/UnderConstruction.png";
+
 
 function HomePage() {
 
-    const themeMode = useSelector(state => state.ui.themeMode);
+    const isDarkMode = useSelector(selectIsDarkMode);
 
     return (
         <UserLayout>
@@ -21,7 +23,7 @@ function HomePage() {
                     height: 600,
                     position: "relative",
                     width: "100%",
-                    backgroundImage: { xs: `url(${mobileHeroImg})`, md: `url(${heroImg})` },
+                    backgroundImage: { xs: `url(${mobileHeroImg})`, md: `url(${isDarkMode ? heroDarkImg : heroImg})` },
                     backgroundPosition: "50%",
                     backgroundSize: "cover",
                     backgroundRepeat: "no-repeat",
@@ -92,7 +94,7 @@ function HomePage() {
                         left: 0,
                         marginBottom: -0.1,
                         backgroundImage:
-                            themeMode === THEME.DARK
+                            isDarkMode
                                 ? `url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiMxNDJhM2UiPjxwYXRoIGQ9Ik03MjUuMjkgMTAxLjJDMzI1LjIyIDEyMi40OCAwIDAgMCAwdjE0MGgxMjgwVjBzLTE1NC42NCA3OS45Mi01NTQuNzEgMTAxLjJ6IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PHBhdGggZD0iTTU1Ni40NSAxMTkuNzRDOTUzLjQxIDE0MCAxMjgwIDE0IDEyODAgMTR2MTI2SDBWMHMxNTkuNSA5OS40OCA1NTYuNDUgMTE5Ljc0eiIgZmlsbC1vcGFjaXR5PSIuNSIvPjxwYXRoIGQ9Ik02NDAgMTQwYzM1My40NiAwIDY0MC0xNDAgNjQwLTEzOXYxNDBIMFYwczI4Ni41NCAxNDAgNjQwIDE0MHoiLz48L2c+PC9zdmc+)`
                                 : `url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiNmZmZmZmYiPjxwYXRoIGQ9Ik03MjUuMjkgMTAxLjJDMzI1LjIyIDEyMi40OCAwIDAgMCAwdjE0MGgxMjgwVjBzLTE1NC42NCA3OS45Mi01NTQuNzEgMTAxLjJ6IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PHBhdGggZD0iTTU1Ni40NSAxMTkuNzRDOTUzLjQxIDE0MCAxMjgwIDE0IDEyODAgMTR2MTI2SDBWMHMxNTkuNSA5OS40OCA1NTYuNDUgMTE5Ljc0eiIgZmlsbC1vcGFjaXR5PSIuNSIvPjxwYXRoIGQ9Ik02NDAgMTQwYzM1My40NiAwIDY0MC0xNDAgNjQwLTEzOXYxNDBIMFYwczI4Ni41NCAxNDAgNjQwIDE0MHoiLz48L2c+PC9zdmc+)`,
                     }}

@@ -1,8 +1,8 @@
 
-import { testMiddleware } from './test.middleware';
+import { authMiddleware } from './auth.middleware';
 
 const middlewares = [
-    testMiddleware
+    authMiddleware
 ];
 
 export default middlewares;

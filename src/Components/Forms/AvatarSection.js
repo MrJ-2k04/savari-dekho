@@ -2,7 +2,14 @@ import { showError } from "Utils";
 import { Avatar, Button } from "@mui/material";
 import { PersonAdd } from "@mui/icons-material";
 
-const AvatarSection = ({ value: avatar, onChange: setAvatar, buttonText = "Upload Avatar", buttonSx = {}, size = 80, separateButton=false }) => {
+const AvatarSection = ({ value: avatar,
+  onChange: setAvatar,
+  buttonText = "Upload Avatar",
+  buttonSx = {},
+  size = 80,
+  separateButton = false,
+  maxFileSizeInMb = null,
+}) => {
 
   const handleFileChange = (event) => {
     if (!event.target.value) {
@@ -26,10 +33,10 @@ const AvatarSection = ({ value: avatar, onChange: setAvatar, buttonText = "Uploa
         message: 'This File type is not allowed, please try again',
       });
       return false;
-    } else if (file.size > 1024 * 1024) {
+    } else if (maxFileSizeInMb && file.size > maxFileSizeInMb * 1024) {
       showError({
         title: 'Oops',
-        message: 'The File Size must be less than 1MB',
+        message: `The File Size must be less than ${maxFileSizeInMb}MB`,
       });
       return false;
     }
@@ -49,12 +56,12 @@ const AvatarSection = ({ value: avatar, onChange: setAvatar, buttonText = "Uploa
       {avatar ? (
         <label htmlFor={!separateButton && "avatar-upload"}>
           <Avatar
-            src={URL.createObjectURL(avatar)}
+            src={typeof avatar === 'object' ? URL.createObjectURL(avatar) : avatar}
             alt="Avatar"
             sx={{
               width: size,
               height: size,
-              cursor: separateButton?'':'pointer'
+              cursor: separateButton ? '' : 'pointer'
             }}
           />
         </label>
@@ -64,7 +71,7 @@ const AvatarSection = ({ value: avatar, onChange: setAvatar, buttonText = "Uploa
             sx={{
               width: size,
               height: size,
-              cursor: separateButton?'':'pointer'
+              cursor: separateButton ? '' : 'pointer'
             }}
           ><PersonAdd fontSize={'large'} /></Avatar>
         </label>

@@ -6,7 +6,7 @@ import UserLayout from "Layout/User";
 import { useState } from "react";
 
 
-function Profile() {
+function ProfilePage() {
     const [activeTab, setActiveTab] = useState("1")
 
     const handleTabChange = (event, newValue) => {
@@ -15,7 +15,7 @@ function Profile() {
 
     return (
         <UserLayout>
-            <Container maxWidth={'md'} sx={{ py: 5 }}>
+            <Container maxWidth={'md'}>
                 <TabContext value={activeTab}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} centered variant="fullWidth">
@@ -24,11 +24,11 @@ function Profile() {
                         </Tabs>
                     </Box>
                     <Box>
-                        <TabPanel value={"1"}>
+                        <TabPanel value={"1"} sx={{ px: { xs: 0, md: 3 } }}>
                             <ProfileSection />
                         </TabPanel>
 
-                        <TabPanel value={"2"}>
+                        <TabPanel value={"2"} sx={{ px: { xs: 0, md: 3 } }}>
                             <AccountSection />
                         </TabPanel>
                     </Box>
@@ -38,4 +38,4 @@ function Profile() {
     );
 }
 
-export default Profile;
+export default ProfilePage;
