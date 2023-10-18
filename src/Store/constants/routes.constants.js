@@ -79,6 +79,7 @@ export const ADMIN_ROUTES = [
 
 /* ############################################################## API ENDPOINT ROUTES ############################################################## */
 
+// export const API_ENDPOINT = "http://savaridekho.webwizards.in";
 export const API_ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ENDPOINT : `http://localhost:8080`;
 export const API_REGISTER = `${API_ENDPOINT}/register`;
 export const API_LOGIN = `${API_ENDPOINT}/login`;

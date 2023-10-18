@@ -23,7 +23,7 @@ function ProfilePage() {
                             <Tab label="Account" value={"2"} />
                         </Tabs>
                     </Box>
-                    <Box>
+                    <Box pb={2}>
                         <TabPanel value={"1"} sx={{ px: { xs: 0, md: 3 } }}>
                             <ProfileSection />
                         </TabPanel>

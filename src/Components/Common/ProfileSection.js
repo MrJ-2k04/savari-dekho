@@ -1,27 +1,27 @@
 
-import { AddCircle, ArrowForwardIos, Cancel, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
+import { Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_VEHICLE, ROUTE_VEHICLE_ADD, ROUTE_WALLET, STATE_OPTIONS } from "Store/constants";
+import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_WALLET, STATE_OPTIONS } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
-import { formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
+import { capitalizeWords, formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EditProfilePictureModal from "./EditProfilePictureModal";
+import PhotoFlipCard from "./PhotoFlipCard";
 
 function ProfileSection() {
     const user = useSelector(selectUser);
 
     const [localUser, setLocalUser] = useState(user);
-    const [vehicles, setVehicles] = useState([]);
-    const { loading, updateUserDetails, getVehicles } = useApi();
+    const { loading, updateUserDetails } = useApi();
     const dispatch = useDispatch();
 
     const handleFieldChange = field => (e, details) => {
@@ -70,15 +70,10 @@ function ProfileSection() {
         });
     }
 
-    const fetchVehicles = () => {
-        getVehicles()
-            .then(newVehicles => setVehicles(newVehicles))
-            .catch(err => showError({ message: err.message }));
-    }
-
-    useEffect(() => {
-        fetchVehicles();
-    }, [])
+    // useEffect(() => {
+    //     fetchVehicles();
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [])
 
     return (
         <form onSubmit={handleUpdateUser}>
@@ -288,62 +283,23 @@ function ProfileSection() {
                         >Save Changes</LoadingButton>
                     </CardActions>
                 </Card>
-
-                <Card>
-                    <CardHeader title={'Vehicles'} />
-                    <CardContent>
-                        <Box>
-                            <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
-                                {vehicles.length > 0 ? <Stack spacing={1}>
-                                    {vehicles.map((vehicle, i) => {
-                                        let Icon;
-                                        switch (vehicle.verificationStatus) {
-                                            case 'verified':
-                                                Icon = <Verified color="success" />;
-                                                break;
-
-                                            case 'not verified':
-                                                Icon = <Cancel color="error" />
-                                                break;
-
-                                            case 'pending':
-                                                Icon = <PendingActions color="warning" />;
-                                                break;
-
-                                            default:
-                                                Icon = <QuestionMark color="primary" />;
-                                                break;
-                                        }
-
-                                        return <Button
-                                            key={i}
-                                            size="large"
-                                            fullWidth startIcon={Icon}
-                                            endIcon={<ArrowForwardIos />}
-                                            LinkComponent={Link}
-                                            to={`${ROUTE_VEHICLE}/${vehicle._id}`}>
-                                            <Typography flexGrow={1} variant="button" textAlign={'left'}>
-                                                {vehicle.model}
-                                            </Typography>
-                                        </Button>
-                                    })}
-                                </Stack> : <Typography variant="subtitle1" px={1}>No Vehicles Found!</Typography>}
-                                <Button
-                                    variant="text"
-                                    // color="secondary"
-                                    size="large"
-                                    sx={{ justifyContent: 'start' }}
-                                    startIcon={<AddCircle />}
-                                    LinkComponent={Link}
-                                    to={ROUTE_VEHICLE_ADD}
-                                >
-                                    Add Vehicle
-                                </Button>
-
-                            </Stack>
-                        </Box>
-                    </CardContent>
-                </Card>
+                {user.riderVerificationStatus && <>
+                    <Card>
+                        <CardHeader title={'Driving License'} />
+                        <CardContent>
+                            <Box>
+                                <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
+                                    <Typography>{capitalizeWords(user.riderVerificationStatus)}</Typography>
+                                </Stack>
+                                <PhotoFlipCard front={user.drivingLicenseFront} back={user.drivingLicenseBack} />
+                                {/* <Box display={"flex"} flexWrap={"wrap"}>
+                                    <Box component={"img"} src={user.drivingLicenseFront} />
+                                    <Box component={"img"} src={user.drivingLicenseBack} />
+                                </Box> */}
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </>}
 
             </Stack>
         </form>
