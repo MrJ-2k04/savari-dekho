@@ -1,7 +1,7 @@
 
 
 import { AccountBalance, AddCircle, ArrowForwardIos, Delete, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, CardHeader, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from "@mui/material";
 import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -19,7 +19,7 @@ function AccountSection() {
 
     const [vehicles, setVehicles] = useState([]);
     const [banks, setBanks] = useState([]);
-    const { getVehicles, getBanks } = useApi();
+    const { loading, getVehicles, getBanks } = useApi();
 
     // const banks = [
     //     {
@@ -64,7 +64,8 @@ function AccountSection() {
             <Stack spacing={4}>
 
                 <Card>
-                    <CardHeader title={'Bank Accounts'} />
+                    <CardHeader title={"Bank Accounts"} />
+                    {loading && <LinearProgress />}
                     <CardContent sx={{ pt: 1 }}>
                         <Box>
                             <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
@@ -101,10 +102,11 @@ function AccountSection() {
                 {user.riderVerificationStatus && <>
                     <Card>
                         <CardHeader title={'Vehicles'} />
+                        {loading && <LinearProgress />}
                         <CardContent sx={{ pt: 1 }}>
                             <Box>
                                 <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
-                                    
+
                                     <Stack spacing={1}>
                                         {vehicles.map((vehicle, i) => {
                                             let Icon;
@@ -138,7 +140,7 @@ function AccountSection() {
                                                 </Typography>
                                             </Button>
                                         })}
-                                    </Stack> 
+                                    </Stack>
                                     <Button
                                         variant="text"
                                         // color="secondary"
