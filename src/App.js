@@ -21,7 +21,7 @@ function App() {
 
   /* Update Global User State on Auth change */
   useEffect(() => {
-    dispatch(authActions.setAuthReadyStatus(false));
+    // dispatch(authActions.setAuthReadyStatus(false));
     if (accessToken && refreshToken) {
       syncUser();
       // getUserDetails(accessToken).then((userDetails) => {

@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
+import { API_BANKS, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -160,6 +160,47 @@ const useApi = () => {
     const ack = await apiRequestWithReauth(API_PAYMENT_CANCEL, jsonToFormData({ orderId }), 'PUT');
     return ack.message;
   }
+
+  const createBank = async (bankDetails) => {
+    const ack = await apiRequestWithReauth(API_BANKS, jsonToFormData(bankDetails), "POST");
+    if (ack.type === 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't add the new bank");
+  }
+
+  const getBanks = async () => {
+    const ack = await apiRequestWithReauth(API_BANKS, null, 'GET');
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Could not fetch bank accounts');
+  }
+
+  const getBankDetails = async (bankId) => {
+    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, null, 'GET');
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Could not fetch bank details');
+  }
+
+  const updateBankById = async (bankId, bankDetails) => {
+    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, jsonToFormData(bankDetails), 'PUT');
+    if (ack.type === 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't update bank");
+  }
+
+  const deleteBankById = async (bankId) => {
+    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, null, 'DELETE');
+    if (ack.type === 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't delete bank");
+  }
+
 
   // ######################################################### FOR RIDERS #########################################################
 
@@ -332,18 +373,28 @@ const useApi = () => {
     loading,
     generateOtp,
     validateOtp,
-    getUserDetails,
+    
     syncUser,
+    getUserDetails,
     updateUserDetails,
+    
     loginUser,
     logoutUser,
     registerUser,
     forgotPassword,
     resetPassword,
+    
     fetchWalletTransactions,
     requestPayment,
     validatePayment,
     cancelPayment,
+    
+    createBank,
+    getBanks,
+    getBankDetails,
+    updateBankById,
+    deleteBankById,
+
     // Rider
     uploadRiderDocs,
     uploadVehicleDocs,

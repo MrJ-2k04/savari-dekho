@@ -2,7 +2,7 @@
 
 import { AccountBalance, AddCircle, ArrowForwardIos, Delete, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, CardHeader, Stack, Typography } from "@mui/material";
-import { ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -18,27 +18,28 @@ function AccountSection() {
     const user = useSelector(selectUser);
 
     const [vehicles, setVehicles] = useState([]);
-    const { getVehicles } = useApi();
+    const [banks, setBanks] = useState([]);
+    const { getVehicles, getBanks } = useApi();
 
-    const banks = [
-        {
-            id: 1,
-            ifsc: "ABCD123456",
-            accountNumber: "1234567890",
-            branchName: "Main Branch",
-            name: "State Bank of India",
-            beneficiaryName: "John Doe",
-        },
-        {
-            id: 2,
-            ifsc: "EFGH789012",
-            accountNumber: "9876543210",
-            branchName: "Downtown Branch",
-            name: "Bank of Baroda",
-            beneficiaryName: "Jane Smith",
-        },
-        // Add more bank objects as needed
-    ];
+    // const banks = [
+    //     {
+    //         id: 1,
+    //         ifsc: "ABCD123456",
+    //         accountNumber: "1234567890",
+    //         branchName: "Main Branch",
+    //         name: "State Bank of India",
+    //         beneficiaryName: "John Doe",
+    //     },
+    //     {
+    //         id: 2,
+    //         ifsc: "EFGH789012",
+    //         accountNumber: "9876543210",
+    //         branchName: "Downtown Branch",
+    //         name: "Bank of Baroda",
+    //         beneficiaryName: "Jane Smith",
+    //     },
+    //     // Add more bank objects as needed
+    // ];
 
     const fetchVehicles = () => {
         getVehicles()
@@ -46,8 +47,15 @@ function AccountSection() {
             .catch(err => showError({ message: err.message }));
     }
 
+    const fetchBanks = () => {
+        getBanks()
+            .then(banks => setBanks(banks))
+            .catch(err => showError({ message: err.message }));
+    }
+
     useEffect(() => {
         fetchVehicles();
+        fetchBanks();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -56,8 +64,8 @@ function AccountSection() {
             <Stack spacing={4}>
 
                 <Card>
-                    <CardHeader title={'Bank Details'} />
-                    <CardContent>
+                    <CardHeader title={'Bank Accounts'} />
+                    <CardContent sx={{ pt: 1 }}>
                         <Box>
                             <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
                                 {banks.map((bank, i) =>
@@ -68,9 +76,9 @@ function AccountSection() {
                                         startIcon={<AccountBalance />}
                                         endIcon={<ArrowForwardIos />}
                                         LinkComponent={Link}
-                                        to={ROUTE_RESET_PASSWORD}>
+                                        to={`${ROUTE_BANK}/${bank._id}`}>
                                         <Typography flexGrow={1} variant="button" textAlign={'left'}>
-                                            {`${bank.name} - Account ending ${bank.accountNumber.slice(-4)}`}
+                                            {`${bank.bankName} - Account ending ${bank.accountNumber?.toString().slice(-4)}`}
                                         </Typography>
                                     </Button>
                                 )}
@@ -81,9 +89,9 @@ function AccountSection() {
                                     sx={{ justifyContent: 'start' }}
                                     startIcon={<AddCircle />}
                                     LinkComponent={Link}
-                                    to={ROUTE_VEHICLE_ADD}
+                                    to={ROUTE_BANK_ADD}
                                 >
-                                    Add Bank
+                                    Add Bank Account
                                 </Button>
                             </Stack>
                         </Box>
@@ -93,10 +101,11 @@ function AccountSection() {
                 {user.riderVerificationStatus && <>
                     <Card>
                         <CardHeader title={'Vehicles'} />
-                        <CardContent>
+                        <CardContent sx={{ pt: 1 }}>
                             <Box>
                                 <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
-                                    {vehicles.length > 0 ? <Stack spacing={1}>
+                                    
+                                    <Stack spacing={1}>
                                         {vehicles.map((vehicle, i) => {
                                             let Icon;
                                             switch (vehicle.verificationStatus) {
@@ -129,7 +138,7 @@ function AccountSection() {
                                                 </Typography>
                                             </Button>
                                         })}
-                                    </Stack> : <Typography variant="subtitle1" px={1}>No Vehicles Found!</Typography>}
+                                    </Stack> 
                                     <Button
                                         variant="text"
                                         // color="secondary"

@@ -409,3 +409,8 @@ export const VEHICLE_VERIFICATION_STATUS = {
     VERIFIED: "verified",
     NOT_VERIFIED: "not verified"
 }
+
+export const BANK_ACCOUNT_TYPES = [
+    "savings",
+    "current",
+]
