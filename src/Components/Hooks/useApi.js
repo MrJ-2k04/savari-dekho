@@ -14,7 +14,7 @@ const useApi = () => {
   const dispatch = useDispatch();
 
 
-  // ######################################################### FOR USERS #########################################################
+  // ######################################################### FOR PASSENGERS #########################################################
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
@@ -202,7 +202,7 @@ const useApi = () => {
   }
 
 
-  // ######################################################### FOR RIDERS #########################################################
+  // ######################################################### FOR DRIVERS #########################################################
 
   const uploadRiderDocs = async (docsJson) => {
     const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(docsJson));
@@ -211,6 +211,15 @@ const useApi = () => {
       return ack;
     }
     throw new Error(ack.message || "Couldn't upload the documents");
+  }
+
+  const updateDrivingLicense = async (data) => {
+    const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(data), 'PATCH');
+    if (ack.type === 'success') {
+      syncUser();
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't update the driving license");
   }
 
   const uploadVehicleDocs = async (docsJson) => {
@@ -373,22 +382,22 @@ const useApi = () => {
     loading,
     generateOtp,
     validateOtp,
-    
+
     syncUser,
     getUserDetails,
     updateUserDetails,
-    
+
     loginUser,
     logoutUser,
     registerUser,
     forgotPassword,
     resetPassword,
-    
+
     fetchWalletTransactions,
     requestPayment,
     validatePayment,
     cancelPayment,
-    
+
     createBank,
     getBanks,
     getBankDetails,
@@ -397,6 +406,7 @@ const useApi = () => {
 
     // Rider
     uploadRiderDocs,
+    updateDrivingLicense,
     uploadVehicleDocs,
     getVehicles,
     getVehicleDetails,

@@ -92,7 +92,7 @@ function RiderDocUploadForm() {
 
     return (
         <Stack spacing={6} justifyContent={'center'} alignItems={'center'}>
-            <Typography variant="h2" textAlign='center'>Become a Rider</Typography>
+            <Typography variant="h2" textAlign='center'>Become a Driver</Typography>
             <Box display='flex' gap={2} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'} maxWidth={'400px'}>
                 <AvatarSection value={profilePicture} onChange={handleAvatarChange} />
                 <Typography fontSize={'20px !important'} textAlign={'start'}>Make sure your face is clearly visible</Typography>

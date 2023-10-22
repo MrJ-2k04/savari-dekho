@@ -1,6 +1,4 @@
-import { Flip } from "@mui/icons-material";
-import { Box, Button, styled } from "@mui/material";
-import { useState } from "react";
+import { Box, styled } from "@mui/material";
 
 
 const FlipCardContainer = styled('div')({
@@ -26,6 +24,7 @@ const FlipCardInner = styled('div')(({ flipped }) => ({
     transition: 'transform 0.6s',
     transformStyle: 'preserve-3d',
     transform: flipped ? 'rotateY(180deg)' : "",
+    minHeight: '100px',
 }));
 
 const FlipCardFront = styled('div')({
@@ -33,6 +32,20 @@ const FlipCardFront = styled('div')({
     backfaceVisibility: 'hidden',
     minHeight: 'inherit',
     objectFit: 'cover',
+    ":before": {
+        content: "'Front'",
+        position: 'absolute',
+        textAlign: 'center',
+        height: '100%',
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        transform: 'rotateZ(-30deg)',
+        fontSize: '100px',
+        opacity: '15%',
+        fontWeight: 'bold',
+    }
 });
 
 const FlipCardBack = styled('div')({
@@ -42,15 +55,28 @@ const FlipCardBack = styled('div')({
     transform: 'rotateY(180deg)',
     position: 'absolute',
     top: 0,
+    ":before": {
+        content: "'Back'",
+        position: 'absolute',
+        textAlign: 'center',
+        height: '100%',
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        transform: 'rotateZ(-30deg)',
+        fontSize: '100px',
+        opacity: '15%',
+        fontWeight: 'bold',
+    }
 });
 
 const CardImage = styled('img')({
     borderRadius: '12px',
 });
 
-function PhotoFlipCard({ front, back }) {
-    const [isFlipped, setIsFlipped] = useState(false);
-    const toggleFlip = () => setIsFlipped(!isFlipped);
+function PhotoFlipCard({ front, back, isFlipped = false }) {
+
     return (<>
         <FlipCardContainer>
             <FlipCard>
@@ -64,7 +90,6 @@ function PhotoFlipCard({ front, back }) {
                 </FlipCardInner>
             </FlipCard>
         </FlipCardContainer>
-        <Button endIcon={<Flip />} onClick={toggleFlip}>Flip</Button>
     </>
     );
 }

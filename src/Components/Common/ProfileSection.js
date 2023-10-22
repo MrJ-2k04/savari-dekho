@@ -1,5 +1,5 @@
 
-import { Cancel, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
+import { Cancel, CloudUpload, Edit, Flip, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -11,18 +11,55 @@ import { authActions } from "Store/slices";
 import { formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EditProfilePictureModal from "./EditProfilePictureModal";
 import PhotoFlipCard from "./PhotoFlipCard";
 
+
 function ProfileSection() {
     const user = useSelector(selectUser);
+    const defaultCardImage = { front: user.drivingLicenseFront, back: user.drivingLicenseBack };
 
     const [localUser, setLocalUser] = useState(user);
-    const { loading, updateUserDetails } = useApi();
+    const { loading, updateUserDetails, updateDrivingLicense } = useApi();
+    const [isFlipped, setIsFlipped] = useState(false);
     const dispatch = useDispatch();
+    const [isLicenseEditing, setIsLicenseEditing] = useState(false);
+    const [cardImage, setCardImage] = useState(defaultCardImage);
+
+    const toggleFlip = () => setIsFlipped(!isFlipped);
+    const getVerificationStatus = () => {
+        let Icon, text;
+        switch (user.riderVerificationStatus) {
+            case VERIFICATION_STATUS.VERIFIED:
+                Icon = <Verified color="success" />
+                text = "Verified";
+                break;
+
+            case VERIFICATION_STATUS.PENDING:
+                Icon = <PendingActions color="warning" />
+                text = "Verification pending"
+                break;
+
+            case VERIFICATION_STATUS.NOT_VERIFIED:
+                Icon = <Cancel color="error" />
+                text = "Rejected. Please Reupload";
+                break;
+
+            default:
+                Icon = <QuestionMark color="primary" />
+                text = "";
+                break;
+        }
+        return <Stack direction={'row'} alignItems={'center'} spacing={1} justifyContent={"center"}>
+            {Icon}
+            <Typography variant="subtitle1">{text}</Typography>
+        </Stack>
+    }
+
+    // ############################################# HANDLERS #############################################
 
     const handleFieldChange = field => (e, details) => {
         let value;
@@ -70,34 +107,64 @@ function ProfileSection() {
         });
     }
 
-    const getVerificationStatus = () => {
-        let Icon, text;
-        switch (user.riderVerificationStatus) {
-            case VERIFICATION_STATUS.VERIFIED:
-                Icon = <Verified color="success" />
-                text = "Verified";
-                break;
-
-            case VERIFICATION_STATUS.PENDING:
-                Icon = <PendingActions color="warning" />
-                text = "Verification pending"
-                break;
-
-            case VERIFICATION_STATUS.NOT_VERIFIED:
-                Icon = <Cancel color="error" />
-                text = "Rejected. Please Reupload";
-                break;
-
-            default:
-                Icon = <QuestionMark color="primary" />
-                text = "";
-                break;
-        }
-        return <Stack direction={'row'} alignItems={'center'} spacing={1} justifyContent={"center"}>
-            {Icon}
-            <Typography variant="subtitle1">{text}</Typography>
-        </Stack>
+    const handleLicenseEdit = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = handleFileInputChange;
+        input.click();
     }
+
+    const handleFileReset = () => {
+        setIsLicenseEditing(false);
+        if (isFlipped) {
+            setCardImage({ ...cardImage, back: defaultCardImage.back, file: undefined });
+        } else {
+            setCardImage({ ...cardImage, front: defaultCardImage.front, file: undefined });
+        }
+    }
+
+    const handleFileInputChange = (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            setIsLicenseEditing(false);
+            handleFileReset();
+            return;
+        }
+
+        // URL.createObjectURL(file);
+        if (!file.type.includes("png") && !file.type.includes("jpg") && !file.type.includes("jpeg")) {
+            showError({ message: "Please upload only jpg or png file" });
+            handleFileReset();
+            setIsLicenseEditing(false);
+            return;
+        }
+
+        const newLicense = URL.createObjectURL(file);
+        setCardImage({
+            ...cardImage,
+            [isFlipped ? 'back' : 'front']: newLicense,
+            file,
+        })
+        setIsLicenseEditing(true);
+    }
+
+    const handleLicenseUpload = () => {
+        if (!cardImage.file) return;
+
+        const payload = {
+            [!isFlipped ? 'drivingLicenseFront' : 'drivingLicenseBack']: cardImage.file
+        }
+        updateDrivingLicense(payload).then(ack => {
+            showSuccess({ message: ack.message });
+        }).catch(err => {
+            showError({ message: err.message });
+        }).finally(handleFileReset)
+    }
+
+    useEffect(() => {
+        setCardImage(defaultCardImage);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user])
 
 
     return (
@@ -315,13 +382,31 @@ function ProfileSection() {
                             {getVerificationStatus()}
                         </Stack>} />
                         <CardContent>
-                            <Box>
+                            <PhotoFlipCard front={cardImage.front} back={cardImage.back} isFlipped={isFlipped} />
+                            <Box display="flex" justifyContent="space-between">
+                                <Button endIcon={<Flip />} onClick={toggleFlip} disabled={isLicenseEditing}>Flip</Button>
+                                {!isLicenseEditing ?
+                                    <Button startIcon={<Edit />} onClick={handleLicenseEdit}>Edit {isFlipped ? 'Back' : 'Front'}</Button>
+                                    : <Stack direction='row' spacing={2}>
+                                        <Button
+                                            color="error"
+                                            startIcon={<Cancel />}
+                                            variant="outlined"
+                                            sx={{ ml: 'auto !important' }}
+                                            onClick={handleFileReset}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <LoadingButton
+                                            loading={loading}
+                                            variant="contained"
+                                            onClick={handleLicenseUpload}
+                                            startIcon={<CloudUpload />}
+                                        >
+                                            Upload
+                                        </LoadingButton>
+                                    </Stack>}
 
-                                <PhotoFlipCard front={user.drivingLicenseFront} back={user.drivingLicenseBack} />
-                                {/* <Box display={"flex"} flexWrap={"wrap"}>
-                                    <Box component={"img"} src={user.drivingLicenseFront} />
-                                    <Box component={"img"} src={user.drivingLicenseBack} />
-                                </Box> */}
                             </Box>
                         </CardContent>
                     </Card>
