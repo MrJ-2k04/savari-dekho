@@ -4,7 +4,7 @@ import { Autocomplete, Box, Button, FormControl, FormHelperText, Grid, InputLabe
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { BOOLEAN_OPTIONS, ROUTE_PROFILE_DASHBOARD, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS, VEHICLE_VERIFICATION_STATUS } from "Store/constants";
+import { BOOLEAN_OPTIONS, ROUTE_PROFILE_DASHBOARD, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS, VERIFICATION_STATUS } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { isEmptyString, showError, showSuccess } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
@@ -64,13 +64,13 @@ function VehicleForm({ viewMode = false }) {
     const getStatusIcon = () => {
         if (!viewMode) return <></>
         switch (verificationStatus) {
-            case VEHICLE_VERIFICATION_STATUS.VERIFIED:
+            case VERIFICATION_STATUS.VERIFIED:
                 return <Verified fontSize="large" color="success" />;
 
-            case VEHICLE_VERIFICATION_STATUS.NOT_VERIFIED:
+            case VERIFICATION_STATUS.NOT_VERIFIED:
                 return <Cancel fontSize="large" color="error" />
 
-            case VEHICLE_VERIFICATION_STATUS.PENDING:
+            case VERIFICATION_STATUS.PENDING:
                 return <PendingActions fontSize="large" color="warning" />;
 
             default:
@@ -291,6 +291,7 @@ function VehicleForm({ viewMode = false }) {
         if (!viewMode) return;
 
         syncVehicle();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 

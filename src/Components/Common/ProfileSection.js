@@ -1,14 +1,14 @@
 
-import { Save } from "@mui/icons-material";
+import { Cancel, PendingActions, QuestionMark, Save, Verified } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
-import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_WALLET, STATE_OPTIONS } from "Store/constants";
+import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_WALLET, STATE_OPTIONS, VERIFICATION_STATUS } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
-import { capitalizeWords, formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
+import { formatMobileNumber, showError, showSuccess, unformatMobileNumber } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { useState } from "react";
@@ -70,10 +70,35 @@ function ProfileSection() {
         });
     }
 
-    // useEffect(() => {
-    //     fetchVehicles();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [])
+    const getVerificationStatus = () => {
+        let Icon, text;
+        switch (user.riderVerificationStatus) {
+            case VERIFICATION_STATUS.VERIFIED:
+                Icon = <Verified color="success" />
+                text = "Verified";
+                break;
+
+            case VERIFICATION_STATUS.PENDING:
+                Icon = <PendingActions color="warning" />
+                text = "Verification pending"
+                break;
+
+            case VERIFICATION_STATUS.NOT_VERIFIED:
+                Icon = <Cancel color="error" />
+                text = "Rejected. Please Reupload";
+                break;
+
+            default:
+                Icon = <QuestionMark color="primary" />
+                text = "";
+                break;
+        }
+        return <Stack direction={'row'} alignItems={'center'} spacing={1} justifyContent={"center"}>
+            {Icon}
+            <Typography variant="subtitle1">{text}</Typography>
+        </Stack>
+    }
+
 
     return (
         <form onSubmit={handleUpdateUser}>
@@ -285,12 +310,13 @@ function ProfileSection() {
                 </Card>
                 {user.riderVerificationStatus && <>
                     <Card>
-                        <CardHeader title={'Driving License'} />
+                        <CardHeader title={<Stack direction={'row'} justifyContent={'space-between'}>
+                            <Box>Driving License</Box>
+                            {getVerificationStatus()}
+                        </Stack>} />
                         <CardContent>
                             <Box>
-                                <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
-                                    <Typography>{capitalizeWords(user.riderVerificationStatus)}</Typography>
-                                </Stack>
+
                                 <PhotoFlipCard front={user.drivingLicenseFront} back={user.drivingLicenseBack} />
                                 {/* <Box display={"flex"} flexWrap={"wrap"}>
                                     <Box component={"img"} src={user.drivingLicenseFront} />

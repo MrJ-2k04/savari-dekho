@@ -1,10 +1,9 @@
+import { Flip } from "@mui/icons-material";
 import { Box, Button, styled } from "@mui/material";
 import { useState } from "react";
 
 
 const FlipCardContainer = styled('div')({
-    // background: '#b5b0b0',
-    // height: '99vh',
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -14,44 +13,35 @@ const FlipCardContainer = styled('div')({
     alignItems: 'center',
 });
 
-const FlipCard = styled('div')(({ }) => ({
+const FlipCard = styled(Box)(() => ({
     backgroundColor: 'transparent',
     maxWidth: '500px',
     width: "100%",
-    minHeight: '300px',
+    margin: '30px auto',
     perspective: '1000px',
 }));
 
 const FlipCardInner = styled('div')(({ flipped }) => ({
-    position: 'relative',
-    width: '100%',
-    height: '100%',
     textAlign: 'center',
     transition: 'transform 0.6s',
     transformStyle: 'preserve-3d',
-    boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)',
     transform: flipped ? 'rotateY(180deg)' : "",
 }));
 
 const FlipCardFront = styled('div')({
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
     WebkitBackfaceVisibility: 'hidden',
     backfaceVisibility: 'hidden',
-    backgroundColor: '#bbb',
-    color: 'black',
+    minHeight: 'inherit',
+    objectFit: 'cover',
 });
 
 const FlipCardBack = styled('div')({
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
     WebkitBackfaceVisibility: 'hidden',
     backfaceVisibility: 'hidden',
-    backgroundColor: '#2980b9',
-    color: 'white',
+    minHeight: 'inherit',
     transform: 'rotateY(180deg)',
+    position: 'absolute',
+    top: 0,
 });
 
 const CardImage = styled('img')({
@@ -65,16 +55,16 @@ function PhotoFlipCard({ front, back }) {
         <FlipCardContainer>
             <FlipCard>
                 <FlipCardInner flipped={isFlipped}>
-                    <FlipCardFront>
-                        <CardImage src={front}  />
+                    <FlipCardFront sx={{ position: isFlipped ? 'absolute' : 'relative' }}>
+                        <CardImage src={front} />
                     </FlipCardFront>
-                    <FlipCardBack>
+                    <FlipCardBack sx={{ position: !isFlipped ? 'absolute' : 'relative' }}>
                         <CardImage src={back} />
                     </FlipCardBack>
                 </FlipCardInner>
             </FlipCard>
         </FlipCardContainer>
-        <Button onClick={toggleFlip}>Flip</Button>
+        <Button endIcon={<Flip />} onClick={toggleFlip}>Flip</Button>
     </>
     );
 }
