@@ -7,13 +7,18 @@ import { useTheme } from "@emotion/react";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 
-const MinimalFooter = () => {
+const MinimalFooter = ({ sx }) => {
   const theme = useTheme();
   const isDark = useSelector(selectIsDarkMode);
 
   return (
     <Box
-      sx={{ clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" } }}
+      sx={{
+        // clipPath: {
+        //   md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none"
+        // },
+        ...sx
+      }}
       bgcolor={isDark ? theme.palette.background.paper : theme.palette.background.disabled}
       // bgcolor={theme.palette.background.paper}
       color={theme.palette.text.primary}

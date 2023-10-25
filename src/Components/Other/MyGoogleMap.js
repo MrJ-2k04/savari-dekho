@@ -107,15 +107,14 @@ function MyGoogleMap() {
     return (
         <>
             <Box
-                position="relative"
+                position="absolute"
                 display="flex"
                 flexDirection="column"
                 alignItems="start"
-                height="100vh"
-                width="100vw"
+                height="100%"
+                width="100%"
             >
                 <Box position="absolute" left={0} top={0} height="100%" width="100%">
-
                     {/* Google Map Box */}
                     <GoogleMap
                         center={center}
@@ -130,7 +129,6 @@ function MyGoogleMap() {
                         }}
                         onLoad={(map) => setMap(map)}
                     >
-                        {/* <Marker position={center} /> */}
                         {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
                     </GoogleMap>
                 </Box>

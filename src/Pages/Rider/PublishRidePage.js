@@ -1,9 +1,10 @@
-import UserLayout from "Layout/User";
+import RideForm from "Components/Forms/RideForm";
+import MapPageLayout from "Layout/Other/MapPageLayout";
 
 function PublishRidePage() {
-    return (<UserLayout>
-        Publish Page
-    </UserLayout>);
+    return (<MapPageLayout>
+        <RideForm />
+    </MapPageLayout>);
 }
 
 export default PublishRidePage;
