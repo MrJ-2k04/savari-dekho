@@ -8,6 +8,7 @@ export const ROUTE_USER_DETAILS = "/users/:userId";
 export const ROUTE_SEARCH = "/search";
 export const ROUTE_SEARCH_RESULT = "/search/results/:query";
 export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
+export const ROUTE_RIDE_EDIT = "/rides/:rideId/edit";
 
 export const ROUTE_ABOUT_US = "/about-us";
 export const ROUTE_PRIVACY_POLICY = "/privacy-policy";
@@ -23,7 +24,7 @@ export const ROUTE_BANK_DETAILS = `${ROUTE_BANK}/:id`;
 
 
 
-// For Riders
+// For Drivers
 export const ROUTE_VERIFY_RIDER = "/verify";
 export const ROUTE_RIDE_PUBLISH = "/rides/publish";
 export const ROUTE_VEHICLE = "/vehicle";
@@ -63,13 +64,14 @@ export const USER_ROUTES = [
     ROUTE_WALLET,
     ROUTE_PROFILE_DASHBOARD,
     ROUTE_RIDE_HISTORY,
-    ROUTE_RIDE_PUBLISH,
+    // ROUTE_RIDE_PUBLISH,
     ROUTE_BANK,
     ROUTE_BANK_ADD,
     ROUTE_BANK_DETAILS,
 ];
 export const RIDER_ROUTES = [
     ROUTE_RIDE_PUBLISH,
+    ROUTE_RIDE_EDIT,
     ROUTE_VERIFY_RIDER,
     ROUTE_VEHICLE,
     ROUTE_VEHICLE_ADD,
