@@ -1,5 +1,5 @@
 
-import { API_BANKS, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
+import { API_BANKS, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -263,6 +263,14 @@ const useApi = () => {
     throw new Error(ack.message || 'Could not fetch vehicle details');
   }
 
+  const publishRide = async (rideDetails) => {
+    const ack = await apiRequestWithReauth(API_RIDE, jsonToFormData(rideDetails), 'POST');
+    if (ack.type == 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || 'Failed to publish ride');
+  }
+
   // ######################################################### FOR ADMINS #########################################################
 
   const getUsersList = async () => {
@@ -404,7 +412,7 @@ const useApi = () => {
     updateBankById,
     deleteBankById,
 
-    // Rider
+    // Driver
     uploadRiderDocs,
     updateDrivingLicense,
     uploadVehicleDocs,
@@ -412,6 +420,7 @@ const useApi = () => {
     getVehicleDetails,
     updateVehicleById,
     deleteVehicleById,
+    publishRide,
 
     // Admin
     getUsersList,

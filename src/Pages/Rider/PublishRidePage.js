@@ -3,7 +3,7 @@ import MapPageLayout from "Layout/Other/MapPageLayout";
 
 function PublishRidePage() {
     return (<MapPageLayout>
-        <RideForm />
+        <RideForm isNew />
     </MapPageLayout>);
 }
 

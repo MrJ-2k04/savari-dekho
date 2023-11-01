@@ -8,7 +8,6 @@ import React, { useEffect, useRef, useState } from 'react';
 function MyGoogleMap() {
 
     const [libraries] = useState(['places']);
-    // const isLoaded = true;
     const { isLoaded } = useJsApiLoader({
         // googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries,
@@ -107,12 +106,13 @@ function MyGoogleMap() {
     return (
         <>
             <Box
-                position="absolute"
+                position="relative"
                 display="flex"
                 flexDirection="column"
                 alignItems="start"
                 height="100%"
                 width="100%"
+                minHeight={'400px'}
             >
                 <Box position="absolute" left={0} top={0} height="100%" width="100%">
                     {/* Google Map Box */}
@@ -132,7 +132,7 @@ function MyGoogleMap() {
                         {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
                     </GoogleMap>
                 </Box>
-                <Card sx={{ mt: 4, zIndex: 3 }}>
+                {/* <Card sx={{ mt: 4, zIndex: 3 }}>
                     <CardContent>
                         <Stack display={"flex"} justifyContent={"center"} p={4} spacing={4}>
                             <Box display={"flex"} gap={2} flexDirection={'column'}>
@@ -140,7 +140,7 @@ function MyGoogleMap() {
                                     <TextField label='From' variant='outlined' placeholder="Origin" inputRef={originRef} fullWidth />
                                 </Autocomplete>
 
-                                {/* Waypoints */}
+                                
                                 <Button startIcon={<Add />} variant='contained' color='success' onClick={e => setWaypoints([...waypoints, {}])}>Add Waypoints</Button>
                                 {waypoints.map((waypoint, index) => (
                                     <Box display={'flex'} gap={2} alignItems={'center'} key={`waypointInput${index}`}>
@@ -191,7 +191,7 @@ function MyGoogleMap() {
                             </Box>
                         </Stack>
                     </CardContent>
-                </Card>
+                </Card> */}
             </Box>
         </>
     );

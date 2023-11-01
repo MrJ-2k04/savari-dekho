@@ -17,7 +17,7 @@ export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 // For Registered Users
 export const ROUTE_WALLET = "/wallet";
 export const ROUTE_PROFILE_DASHBOARD = "/profile";
-export const ROUTE_RIDE_HISTORY = "/rides";
+export const ROUTE_RIDES = "/rides";
 export const ROUTE_BANK = "/bank";
 export const ROUTE_BANK_ADD = `${ROUTE_BANK}/add`;
 export const ROUTE_BANK_DETAILS = `${ROUTE_BANK}/:id`;
@@ -63,7 +63,7 @@ export const GUEST_ONLY_ROUTES = [ROUTE_LOGIN, ROUTE_REGISTER];
 export const USER_ROUTES = [
     ROUTE_WALLET,
     ROUTE_PROFILE_DASHBOARD,
-    ROUTE_RIDE_HISTORY,
+    ROUTE_RIDES,
     // ROUTE_RIDE_PUBLISH,
     ROUTE_BANK,
     ROUTE_BANK_ADD,
@@ -108,10 +108,12 @@ export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
 export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
 export const API_BANKS = `${API_ENDPOINT}/bank`;
 
-// Rider Stuff
+// Driver Stuff
 export const API_VEHICLES = `${API_ENDPOINT}/vehicles`;
 export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
 export const API_UPLOAD_VEHICLE_DOCS = `${API_ENDPOINT}/requests/vehicle`;
+export const API_RIDE = `${API_ENDPOINT}/ride`;
+export const API_RIDES = `${API_ENDPOINT}/rides`;
 
 // Admin
 export const API_GET_USERS = `${API_ENDPOINT}/users`;
