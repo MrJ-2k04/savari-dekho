@@ -1,6 +1,6 @@
-import { Add, AirlineSeatReclineExtra, CloudUpload, Delete, Palette } from "@mui/icons-material";
+import { Add, AirlineSeatReclineExtra, Close, CloudUpload, Delete, Map, Palette, Route } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, ListItemIcon, MenuItem, Select, Stack, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Card, CardContent, CardHeader, Fab, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, ListItemIcon, MenuItem, Modal, Select, Slide, Stack, TextField, Typography, Zoom, useMediaQuery, useTheme } from "@mui/material";
 import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
@@ -29,9 +29,9 @@ function RideForm({ isNew = false }) {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const [activeStep, setActiveStep] = useState(0);
     const { loading, publishRide, getVehicles } = useApi();
     const nav = useNavigate();
+    const [isMapVisible, setIsMapVisible] = useState(false);
 
     // Ride States
     const [locations, setLocations] = useState({});
@@ -53,11 +53,11 @@ function RideForm({ isNew = false }) {
 
     // #################################################### STEP HANDLERS ####################################################
 
-    const handleNext = () => {
-        setActiveStep(1);
+    const handleShowMap = () => {
+        setIsMapVisible(true);
     }
-    const handleBack = () => {
-        setActiveStep(0)
+    const handleHideMap = () => {
+        setIsMapVisible(false);
     }
 
     // #################################################### MAP HANDLERS ####################################################
@@ -176,7 +176,7 @@ function RideForm({ isNew = false }) {
             vehicleId,
             emptySeats,
         }
-        if(waypoints.length>0){
+        if (waypoints.length > 0) {
             payload['waypoints'] = JSON.stringify(waypoints);
         }
         // Submit the Form
@@ -208,226 +208,249 @@ function RideForm({ isNew = false }) {
 
     return (<Box position={'absolute'} height={'100%'} width={'100%'}>
 
-        {isMobile ? <>
-            Mobile component
-        </> : <>
-            <Box display={'flex'} width={'100%'} height={'100%'}>
-                <Box width={'100%'} maxWidth={'600px'} sx={{ overflowX: 'hidden' }}>
-                    <Stack width={'100%'} p={4} pb={6} spacing={4} mx={'auto'} minHeight={'100%'}>
-                        <Typography variant="h2" textAlign={'center'} color={'primary'}>
-                            Publish
-                            <Box component={"span"} color={"secondary.main"}> a </Box>
-                            Ride
-                        </Typography>
-                        <Box width={'100%'} display={'flex'} gap={3}>
-                            <TextField
-                                label='From'
-                                placeholder="From State/City"
-                                fullWidth
-                                value={locations[ID_RIDE_FROM] || ''}
-                                onChange={e => handleLocationChange(e.target.value, ID_RIDE_FROM)}
-                                error={!isFalsy(locationErrors[ID_RIDE_FROM])}
-                                helperText={locationErrors[ID_RIDE_FROM]}
-                            />
-                            <TextField
-                                label='Pickup Location'
-                                placeholder="Exact Starting Location"
-                                fullWidth
-                                value={locations[ID_RIDE_PICKUP] || ''}
-                                onChange={e => handleLocationChange(e.target.value, ID_RIDE_PICKUP)}
-                                error={!isFalsy(locationErrors[ID_RIDE_PICKUP])}
-                                helperText={locationErrors[ID_RIDE_PICKUP]}
-                            />
-                        </Box>
-                        <Button
-                            variant="contained"
-                            startIcon={<Add />}
-                            onClick={handleAddWaypoint}
-                        >
-                            Add Stopovers
-                        </Button>
-                        {waypoints.map((waypoint, index) =>
-                            <Box width={'100%'} display={'flex'} gap={3} alignItems={'center'}>
-                                <TextField
-                                    label={`Stopover ${index + 1}`}
-                                    placeholder="In-between Stop"
-                                    fullWidth
-                                    value={waypoint[ID_WAYP_LOCATION] || ''}
-                                    onChange={e => handleWaypointDetailsChange(e.target.value, ID_WAYP_LOCATION, index)}
-                                    error={!isFalsy(waypointErrors[index]?.[ID_WAYP_LOCATION])}
-                                    helperText={waypointErrors[index]?.[ID_WAYP_LOCATION]}
-                                />
-                                <TextField
-                                    fullWidth
-                                    label='Price'
-                                    type="number"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start">₹</InputAdornment>
-                                    }}
-                                    inputProps={{
-                                        inputMode: 'numeric',
-                                        min: 0,
-                                        step: 1
-                                    }}
-                                    value={waypoint[ID_WAYP_PRICE] || ''}
-                                    onChange={e => handleWaypointDetailsChange(parseInt(e.target.value) || "", ID_WAYP_PRICE, index)}
-                                    error={!isFalsy(waypointErrors[index]?.[ID_WAYP_PRICE])}
-                                    helperText={waypointErrors[index]?.[ID_WAYP_PRICE]}
-                                />
-                                <IconButton onClick={e => handleDeleteWaypoint(index)}>
-                                    <Delete />
-                                </IconButton>
-                            </Box>
-                        )}
-                        <Box width={'100%'} display={'flex'} gap={3}>
-                            <TextField
-                                label='To'
-                                placeholder="Destination State/City"
-                                fullWidth
-                                value={locations[ID_RIDE_TO] || ''}
-                                onChange={e => handleLocationChange(e.target.value, ID_RIDE_TO)}
-                                error={!isFalsy(locationErrors[ID_RIDE_TO])}
-                                helperText={locationErrors[ID_RIDE_TO]}
-                            />
-                            <TextField
-                                label='Dropoff location'
-                                placeholder="Exact Ending Location"
-                                fullWidth
-                                value={locations[ID_RIDE_DROPOFF] || ''}
-                                onChange={e => handleLocationChange(e.target.value, ID_RIDE_DROPOFF)}
-                                error={!isFalsy(locationErrors[ID_RIDE_DROPOFF])}
-                                helperText={locationErrors[ID_RIDE_DROPOFF]}
-                            />
-                        </Box>
-                        <LocalizationProvider adapterLocale={inLocale} dateAdapter={AdapterDateFns}>
-                            <MobileDateTimePicker
-                                slotProps={{
-                                    textField: {
-                                        error: !isEmptyString(datetimeError),
-                                        helperText: datetimeError
-                                    },
-                                }}
-                                label='Departure Datetime'
-                                minDateTime={minDateTime}
-                                disablePast
-                                value={departureDatetime}
-                                onAccept={datetime => {
-                                    if (new Date(datetime) < minDateTime) {
-                                        setDatetimeError(`Minimum datetime must be ${minDelayHrs} hours from now`)
-                                    } else {
-                                        setDatetimeError('');
-                                        setDepartureDatetime(datetime);
-                                    }
-                                }}
-                            />
-                        </LocalizationProvider>
+
+        <Box display={'flex'} width={'100%'} height={'100%'}>
+            <Box width={'100%'} maxWidth={'600px'} sx={{ overflowX: 'hidden' }}>
+                <Stack width={'100%'} p={4} pb={6} spacing={4} mx={'auto'} minHeight={'100%'}>
+                    <Typography variant="h2" textAlign={'center'} color={'primary'}>
+                        Publish
+                        <Box component={"span"} color={"secondary.main"}> a </Box>
+                        Ride
+                    </Typography>
+                    <Box width={'100%'} display={'flex'} gap={3}>
                         <TextField
-                            label='Journey Price'
+                            label='From'
+                            placeholder="From State/City"
                             fullWidth
-                            helperText={journeyPriceError}
-                            error={!isEmptyString(journeyPriceError)}
-                            value={journeyPrice}
-                            onChange={e => {
-                                if (isEmptyString(e.target.value)) {
-                                    setJourneyPrice('');
-                                    return;
-                                }
-                                const price = parseInt(e.target.value);
-                                if (isNumeric(price)) {
-                                    setJourneyPrice(price);
-                                    setJourneyPriceError('');
-                                }
+                            value={locations[ID_RIDE_FROM] || ''}
+                            onChange={e => handleLocationChange(e.target.value, ID_RIDE_FROM)}
+                            error={!isFalsy(locationErrors[ID_RIDE_FROM])}
+                            helperText={locationErrors[ID_RIDE_FROM]}
+                        />
+                        <TextField
+                            label='Pickup Location'
+                            placeholder="Exact Starting Location"
+                            fullWidth
+                            value={locations[ID_RIDE_PICKUP] || ''}
+                            onChange={e => handleLocationChange(e.target.value, ID_RIDE_PICKUP)}
+                            error={!isFalsy(locationErrors[ID_RIDE_PICKUP])}
+                            helperText={locationErrors[ID_RIDE_PICKUP]}
+                        />
+                    </Box>
+                    <Button
+                        variant="contained"
+                        startIcon={<Add />}
+                        onClick={handleAddWaypoint}
+                    >
+                        Add Stopovers
+                    </Button>
+                    {waypoints.map((waypoint, index) =>
+                        <Box width={'100%'} display={'flex'} gap={3} alignItems={'center'}>
+                            <TextField
+                                label={`Stopover ${index + 1}`}
+                                placeholder="In-between Stop"
+                                fullWidth
+                                value={waypoint[ID_WAYP_LOCATION] || ''}
+                                onChange={e => handleWaypointDetailsChange(e.target.value, ID_WAYP_LOCATION, index)}
+                                error={!isFalsy(waypointErrors[index]?.[ID_WAYP_LOCATION])}
+                                helperText={waypointErrors[index]?.[ID_WAYP_LOCATION]}
+                            />
+                            <TextField
+                                fullWidth
+                                label='Price'
+                                type="number"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">₹</InputAdornment>
+                                }}
+                                inputProps={{
+                                    inputMode: 'numeric',
+                                    min: 0,
+                                    step: 1
+                                }}
+                                value={waypoint[ID_WAYP_PRICE] || ''}
+                                onChange={e => handleWaypointDetailsChange(parseInt(e.target.value) || "", ID_WAYP_PRICE, index)}
+                                error={!isFalsy(waypointErrors[index]?.[ID_WAYP_PRICE])}
+                                helperText={waypointErrors[index]?.[ID_WAYP_PRICE]}
+                            />
+                            <IconButton onClick={e => handleDeleteWaypoint(index)}>
+                                <Delete />
+                            </IconButton>
+                        </Box>
+                    )}
+                    <Box width={'100%'} display={'flex'} gap={3}>
+                        <TextField
+                            label='To'
+                            placeholder="Destination State/City"
+                            fullWidth
+                            value={locations[ID_RIDE_TO] || ''}
+                            onChange={e => handleLocationChange(e.target.value, ID_RIDE_TO)}
+                            error={!isFalsy(locationErrors[ID_RIDE_TO])}
+                            helperText={locationErrors[ID_RIDE_TO]}
+                        />
+                        <TextField
+                            label='Dropoff location'
+                            placeholder="Exact Ending Location"
+                            fullWidth
+                            value={locations[ID_RIDE_DROPOFF] || ''}
+                            onChange={e => handleLocationChange(e.target.value, ID_RIDE_DROPOFF)}
+                            error={!isFalsy(locationErrors[ID_RIDE_DROPOFF])}
+                            helperText={locationErrors[ID_RIDE_DROPOFF]}
+                        />
+                    </Box>
+                    <LocalizationProvider adapterLocale={inLocale} dateAdapter={AdapterDateFns}>
+                        <MobileDateTimePicker
+                            slotProps={{
+                                textField: {
+                                    error: !isEmptyString(datetimeError),
+                                    helperText: datetimeError
+                                },
                             }}
-                            inputProps={{
-                                inputMode: 'numeric',
-                                min: 0,
-                                step: 1
-                            }}
-                            type="number"
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start">₹</InputAdornment>
+                            label='Departure Datetime'
+                            minDateTime={minDateTime}
+                            disablePast
+                            value={departureDatetime}
+                            onAccept={datetime => {
+                                if (new Date(datetime) < minDateTime) {
+                                    setDatetimeError(`Minimum datetime must be ${minDelayHrs} hours from now`)
+                                } else {
+                                    setDatetimeError('');
+                                    setDepartureDatetime(datetime);
+                                }
                             }}
                         />
+                    </LocalizationProvider>
+                    <TextField
+                        label='Journey Price'
+                        fullWidth
+                        helperText={journeyPriceError}
+                        error={!isEmptyString(journeyPriceError)}
+                        value={journeyPrice}
+                        onChange={e => {
+                            if (isEmptyString(e.target.value)) {
+                                setJourneyPrice('');
+                                return;
+                            }
+                            const price = parseInt(e.target.value);
+                            if (isNumeric(price)) {
+                                setJourneyPrice(price);
+                                setJourneyPriceError('');
+                            }
+                        }}
+                        inputProps={{
+                            inputMode: 'numeric',
+                            min: 0,
+                            step: 1
+                        }}
+                        type="number"
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">₹</InputAdornment>
+                        }}
+                    />
 
-                        <Box>
-                            <FormControl fullWidth required>
-                                <InputLabel id="vehicle" error={!isEmptyString(vehicleError)}>Vehicle</InputLabel>
-                                <Select
-                                    labelId="vehicle"
-                                    label="Vehicle"
-                                    value={vehicleId}
-                                    onChange={(e) => {
-                                        setVehicleError('');
-                                        setVehicleId(e.target.value);
-                                    }}
-                                    error={!isEmptyString(vehicleError)}
-                                >
-                                    {vehicleOptions.map((vehicle, index) => (
-                                        <MenuItem key={index} value={vehicle._id}>
-                                            <Box display={'flex'} alignItems={'center'} columnGap={2}>
-                                                <Box borderRadius={'50%'} bgcolor={vehicle.color?.value} height={'19px'} width={'19px'}></Box>
-                                                {vehicle.model}
-                                            </Box>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <FormHelperText error={!isEmptyString(vehicleError)}>
-                                    {vehicleError}
-                                </FormHelperText>
-                            </FormControl>
-                            <Typography textAlign={'right'} color={'InactiveCaptionText'}>
-                                Can't find your vehicle? <Box component={Link} sx={{ textDecoration: 'none' }} to={ROUTE_VEHICLE_ADD} color="secondary.main">Add new</Box>
-                            </Typography>
-                        </Box>
-
-                        <TextField
-                            label='How many passengers can you carry?'
-                            fullWidth
-                            helperText={emptySeatsError}
-                            error={!isEmptyString(emptySeatsError)}
-                            value={emptySeats}
-                            onChange={e => {
-                                if (isEmptyString(e.target.value)) {
-                                    setEmptySeats('');
-                                    return;
-                                }
-                                const seats = parseInt(e.target.value);
-                                if (isNumeric(seats) && seats > 0) {
-                                    setEmptySeats(seats);
-                                    setEmptySeatsError('');
-                                }
-                            }}
-                            inputProps={{
-                                inputMode: 'numeric',
-                                min: 1,
-                                step: 1
-                            }}
-                            type="number"
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><AirlineSeatReclineExtra /></InputAdornment>
-                            }}
-                        />
-
-                        <Box flexGrow={1} width={'100%'} display={'flex'}>
-                            <LoadingButton
-                                variant="contained"
-                                endIcon={<CloudUpload />}
-                                sx={{ mt: 'auto' }}
-                                fullWidth
-                                onClick={handleSubmit}
-                                loading={loading}
+                    <Box>
+                        <FormControl fullWidth required>
+                            <InputLabel id="vehicle" error={!isEmptyString(vehicleError)}>Vehicle</InputLabel>
+                            <Select
+                                labelId="vehicle"
+                                label="Vehicle"
+                                value={vehicleId}
+                                onChange={(e) => {
+                                    setVehicleError('');
+                                    setVehicleId(e.target.value);
+                                }}
+                                error={!isEmptyString(vehicleError)}
                             >
-                                Publish Ride
-                            </LoadingButton>
-                        </Box>
-                    </Stack>
-                </Box>
-                <Box width={'100%'}>
-                    <MyGoogleMap />
-                </Box>
+                                {vehicleOptions.map((vehicle, index) => (
+                                    <MenuItem key={index} value={vehicle._id}>
+                                        <Box display={'flex'} alignItems={'center'} columnGap={2}>
+                                            <Box borderRadius={'50%'} bgcolor={vehicle.color?.value} height={'19px'} width={'19px'}></Box>
+                                            {vehicle.model}
+                                        </Box>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            <FormHelperText error={!isEmptyString(vehicleError)}>
+                                {vehicleError}
+                            </FormHelperText>
+                        </FormControl>
+                        <Typography textAlign={'right'} color={'InactiveCaptionText'}>
+                            Can't find your vehicle? <Box component={Link} sx={{ textDecoration: 'none' }} to={ROUTE_VEHICLE_ADD} color="secondary.main">Add new</Box>
+                        </Typography>
+                    </Box>
+
+                    <TextField
+                        label='How many passengers can you carry?'
+                        fullWidth
+                        helperText={emptySeatsError}
+                        error={!isEmptyString(emptySeatsError)}
+                        value={emptySeats}
+                        onChange={e => {
+                            if (isEmptyString(e.target.value)) {
+                                setEmptySeats('');
+                                return;
+                            }
+                            const seats = parseInt(e.target.value);
+                            if (isNumeric(seats) && seats > 0) {
+                                setEmptySeats(seats);
+                                setEmptySeatsError('');
+                            }
+                        }}
+                        inputProps={{
+                            inputMode: 'numeric',
+                            min: 1,
+                            step: 1
+                        }}
+                        type="number"
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start"><AirlineSeatReclineExtra /></InputAdornment>
+                        }}
+                    />
+
+                    <Box flexGrow={1} width={'100%'} display={'flex'}>
+                        <LoadingButton
+                            variant="contained"
+                            endIcon={<CloudUpload />}
+                            sx={{ mt: 'auto' }}
+                            fullWidth
+                            onClick={handleSubmit}
+                            loading={loading}
+                            size="large"
+                        >
+                            Publish Ride
+                        </LoadingButton>
+                    </Box>
+                </Stack>
             </Box>
-        </>
-        }
+            {!isMobile ? <Box width={'100%'}>
+                <MyGoogleMap />
+            </Box>
+                : <>
+                    <Zoom in={isMobile}>
+                        <Fab onClick={handleShowMap} color="secondary" sx={{ position: 'absolute', right: theme.spacing(2), bottom: theme.spacing(2) }}>
+                            <Route />
+                        </Fab>
+                    </Zoom>
+                    <Modal open={isMapVisible} onClose={handleHideMap}>
+                        <Slide direction="up" in={isMapVisible}>
+                            <Box component={Card} position={'absolute'} height={'100%'} width={'100%'} borderRadius={'0'} display={'flex'} flexDirection={'column'}>
+                                <CardHeader
+                                    sx={{ py: 2, px: 3 }}
+                                    title={<Typography variant="h4" color={'primary'}>Route</Typography>}
+                                    action={<IconButton onClick={handleHideMap}>
+                                        <Close />
+                                    </IconButton>}
+                                />
+                                <CardContent sx={{ flexGrow: 1, px: 0, py: "0 !important" }}>
+                                    <MyGoogleMap />
+                                </CardContent>
+                            </Box>
+                        </Slide>
+                    </Modal>
+                </>
+            }
+        </Box>
+
+
         {/* <Container maxWidth='md'>
             <Stack spacing={4} py={3}>
                 <Stepper activeStep={activeStep} alternativeLabel>
@@ -460,7 +483,7 @@ function RideForm({ isNew = false }) {
                 </Box>
             </Stack>
         </Container> */}
-    </Box>);
+    </Box >);
 }
 
 export default RideForm;
