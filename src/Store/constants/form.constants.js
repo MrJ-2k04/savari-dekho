@@ -404,8 +404,13 @@ export const VEHICLE_MODELS = {
     "Unknown": ["Unknown"],
 };
 
-export const VEHICLE_VERIFICATION_STATUS = {
+export const VERIFICATION_STATUS = {
     PENDING: "pending",
     VERIFIED: "verified",
     NOT_VERIFIED: "not verified"
 }
+
+export const BANK_ACCOUNT_TYPES = [
+    "savings",
+    "current",
+]

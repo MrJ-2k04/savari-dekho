@@ -8,6 +8,7 @@ export const ROUTE_USER_DETAILS = "/users/:userId";
 export const ROUTE_SEARCH = "/search";
 export const ROUTE_SEARCH_RESULT = "/search/results/:query";
 export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
+export const ROUTE_RIDE_EDIT = "/rides/:rideId/edit";
 
 export const ROUTE_ABOUT_US = "/about-us";
 export const ROUTE_PRIVACY_POLICY = "/privacy-policy";
@@ -16,14 +17,19 @@ export const ROUTE_TERMS_AND_CODITIONS = "/terms-and-conditions";
 // For Registered Users
 export const ROUTE_WALLET = "/wallet";
 export const ROUTE_PROFILE_DASHBOARD = "/profile";
-export const ROUTE_RIDE_HISTORY = "/rides";
+export const ROUTE_RIDES = "/rides";
+export const ROUTE_BANK = "/bank";
+export const ROUTE_BANK_ADD = `${ROUTE_BANK}/add`;
+export const ROUTE_BANK_DETAILS = `${ROUTE_BANK}/:id`;
 
-// For Riders
+
+
+// For Drivers
 export const ROUTE_VERIFY_RIDER = "/verify";
 export const ROUTE_RIDE_PUBLISH = "/rides/publish";
 export const ROUTE_VEHICLE = "/vehicle";
-export const ROUTE_VEHICLE_ADD = "/vehicle/add";
-export const ROUTE_VEHICLE_DETAILS = "/vehicle/:id";
+export const ROUTE_VEHICLE_ADD = `${ROUTE_VEHICLE}/add`;
+export const ROUTE_VEHICLE_DETAILS = `${ROUTE_VEHICLE}/:id`;
 
 
 // For Guests only
@@ -57,11 +63,15 @@ export const GUEST_ONLY_ROUTES = [ROUTE_LOGIN, ROUTE_REGISTER];
 export const USER_ROUTES = [
     ROUTE_WALLET,
     ROUTE_PROFILE_DASHBOARD,
-    ROUTE_RIDE_HISTORY,
-    ROUTE_RIDE_PUBLISH,
+    ROUTE_RIDES,
+    // ROUTE_RIDE_PUBLISH,
+    ROUTE_BANK,
+    ROUTE_BANK_ADD,
+    ROUTE_BANK_DETAILS,
 ];
 export const RIDER_ROUTES = [
     ROUTE_RIDE_PUBLISH,
+    ROUTE_RIDE_EDIT,
     ROUTE_VERIFY_RIDER,
     ROUTE_VEHICLE,
     ROUTE_VEHICLE_ADD,
@@ -79,6 +89,7 @@ export const ADMIN_ROUTES = [
 
 /* ############################################################## API ENDPOINT ROUTES ############################################################## */
 
+// export const API_ENDPOINT = "http://savaridekho.webwizards.in";
 export const API_ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ENDPOINT : `http://localhost:8080`;
 export const API_REGISTER = `${API_ENDPOINT}/register`;
 export const API_LOGIN = `${API_ENDPOINT}/login`;
@@ -95,11 +106,14 @@ export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
 export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;
 export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
 export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
+export const API_BANKS = `${API_ENDPOINT}/bank`;
 
-// Rider Stuff
+// Driver Stuff
 export const API_VEHICLES = `${API_ENDPOINT}/vehicles`;
 export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
 export const API_UPLOAD_VEHICLE_DOCS = `${API_ENDPOINT}/requests/vehicle`;
+export const API_RIDE = `${API_ENDPOINT}/ride`;
+export const API_RIDES = `${API_ENDPOINT}/rides`;
 
 // Admin
 export const API_GET_USERS = `${API_ENDPOINT}/users`;

@@ -128,7 +128,7 @@ function RiderRequests() {
                     { name: 'Verified', value: 'verified' },
                     { name: 'Not Verified', value: 'not verified' },
                     { name: 'Pending', value: 'pending' },
-                    { name: 'None', value: undefined },
+                    { name: 'None', value: 'none' },
                 ])
             }
         },

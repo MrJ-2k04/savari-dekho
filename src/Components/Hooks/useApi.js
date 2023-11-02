@@ -1,5 +1,5 @@
 
-import { API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
+import { API_BANKS, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -14,7 +14,7 @@ const useApi = () => {
   const dispatch = useDispatch();
 
 
-  // ######################################################### FOR USERS #########################################################
+  // ######################################################### FOR PASSENGERS #########################################################
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
@@ -161,7 +161,48 @@ const useApi = () => {
     return ack.message;
   }
 
-  // ######################################################### FOR RIDERS #########################################################
+  const createBank = async (bankDetails) => {
+    const ack = await apiRequestWithReauth(API_BANKS, jsonToFormData(bankDetails), "POST");
+    if (ack.type === 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't add the new bank");
+  }
+
+  const getBanks = async () => {
+    const ack = await apiRequestWithReauth(API_BANKS, null, 'GET');
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Could not fetch bank accounts');
+  }
+
+  const getBankDetails = async (bankId) => {
+    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, null, 'GET');
+    if (ack.type === 'success') {
+      return ack.payload;
+    }
+    throw new Error(ack.message || 'Could not fetch bank details');
+  }
+
+  const updateBankById = async (bankId, bankDetails) => {
+    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, jsonToFormData(bankDetails), 'PUT');
+    if (ack.type === 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't update bank");
+  }
+
+  const deleteBankById = async (bankId) => {
+    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, null, 'DELETE');
+    if (ack.type === 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't delete bank");
+  }
+
+
+  // ######################################################### FOR DRIVERS #########################################################
 
   const uploadRiderDocs = async (docsJson) => {
     const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(docsJson));
@@ -170,6 +211,15 @@ const useApi = () => {
       return ack;
     }
     throw new Error(ack.message || "Couldn't upload the documents");
+  }
+
+  const updateDrivingLicense = async (data) => {
+    const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(data), 'PATCH');
+    if (ack.type === 'success') {
+      syncUser();
+      return ack;
+    }
+    throw new Error(ack.message || "Couldn't update the driving license");
   }
 
   const uploadVehicleDocs = async (docsJson) => {
@@ -211,6 +261,14 @@ const useApi = () => {
       return ack.payload;
     }
     throw new Error(ack.message || 'Could not fetch vehicle details');
+  }
+
+  const publishRide = async (rideDetails) => {
+    const ack = await apiRequestWithReauth(API_RIDE, jsonToFormData(rideDetails), 'POST');
+    if (ack.type == 'success') {
+      return ack;
+    }
+    throw new Error(ack.message || 'Failed to publish ride');
   }
 
   // ######################################################### FOR ADMINS #########################################################
@@ -332,25 +390,37 @@ const useApi = () => {
     loading,
     generateOtp,
     validateOtp,
-    getUserDetails,
+
     syncUser,
+    getUserDetails,
     updateUserDetails,
+
     loginUser,
     logoutUser,
     registerUser,
     forgotPassword,
     resetPassword,
+
     fetchWalletTransactions,
     requestPayment,
     validatePayment,
     cancelPayment,
-    // Rider
+
+    createBank,
+    getBanks,
+    getBankDetails,
+    updateBankById,
+    deleteBankById,
+
+    // Driver
     uploadRiderDocs,
+    updateDrivingLicense,
     uploadVehicleDocs,
     getVehicles,
     getVehicleDetails,
     updateVehicleById,
     deleteVehicleById,
+    publishRide,
 
     // Admin
     getUsersList,
