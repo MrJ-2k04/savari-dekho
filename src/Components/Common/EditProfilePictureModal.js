@@ -97,7 +97,7 @@ function EditProfilePictureModal() {
                             {/* {loading ? <Box display="flex" justifyContent="center" alignItems="center" height='360px' width='100%'>
                                 <CircularProgress />
                             </Box> : */}
-                            <Avatar sx={{ width: '360px', height: '360px', mx: 'auto' }} src={profilePicture}>
+                            <Avatar sx={{ width: '100%', maxWidth: '360px', height: '100%', maxHeight: '360px', mx: 'auto' }} src={profilePicture}>
                                 {user.firstName[0]}
                             </Avatar>
                             {/* } */}

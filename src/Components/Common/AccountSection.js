@@ -2,7 +2,7 @@
 
 import { AccountBalance, AddCircle, ArrowForwardIos, Delete, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from "@mui/material";
-import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_RESET_PASSWORD_PAGE, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -20,26 +20,6 @@ function AccountSection() {
     const [vehicles, setVehicles] = useState([]);
     const [banks, setBanks] = useState([]);
     const { loading, getVehicles, getBanks } = useApi();
-
-    // const banks = [
-    //     {
-    //         id: 1,
-    //         ifsc: "ABCD123456",
-    //         accountNumber: "1234567890",
-    //         branchName: "Main Branch",
-    //         name: "State Bank of India",
-    //         beneficiaryName: "John Doe",
-    //     },
-    //     {
-    //         id: 2,
-    //         ifsc: "EFGH789012",
-    //         accountNumber: "9876543210",
-    //         branchName: "Downtown Branch",
-    //         name: "Bank of Baroda",
-    //         beneficiaryName: "Jane Smith",
-    //     },
-    //     // Add more bank objects as needed
-    // ];
 
     const fetchVehicles = () => {
         getVehicles()
@@ -170,7 +150,7 @@ function AccountSection() {
                                     fullWidth startIcon={<LockReset />}
                                     endIcon={<ArrowForwardIos />}
                                     LinkComponent={Link}
-                                    to={ROUTE_RESET_PASSWORD}>
+                                    to={`${ROUTE_RESET_PASSWORD}/${user._id}`}>
                                     <Typography flexGrow={1} variant="button" textAlign={'left'}>
                                         Reset Password
                                     </Typography>

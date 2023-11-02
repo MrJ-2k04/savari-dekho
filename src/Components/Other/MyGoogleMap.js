@@ -121,7 +121,7 @@ function MyGoogleMap() {
                         zoom={15}
                         mapContainerStyle={{ width: '100%', height: '100%' }}
                         options={{
-                            zoomControl: false,
+                            // zoomControl: false,
                             streetViewControl: false,
                             mapTypeControl: false,
                             fullscreenControl: false,
@@ -132,7 +132,7 @@ function MyGoogleMap() {
                         {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
                     </GoogleMap>
                 </Box>
-                {/* <Card sx={{ mt: 4, zIndex: 3 }}>
+                <Card sx={{ mt: 4, zIndex: 3 }}>
                     <CardContent>
                         <Stack display={"flex"} justifyContent={"center"} p={4} spacing={4}>
                             <Box display={"flex"} gap={2} flexDirection={'column'}>
@@ -191,7 +191,7 @@ function MyGoogleMap() {
                             </Box>
                         </Stack>
                     </CardContent>
-                </Card> */}
+                </Card>
             </Box>
         </>
     );
