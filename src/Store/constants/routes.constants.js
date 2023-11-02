@@ -3,7 +3,8 @@
 
 // For Everyone
 export const ROUTE_HOME = "/";
-export const ROUTE_RESET_PASSWORD = "/reset-password/:userId";
+export const ROUTE_RESET_PASSWORD = "/reset-password";
+export const ROUTE_RESET_PASSWORD_PAGE = "/reset-password/:userId";
 export const ROUTE_USER_DETAILS = "/users/:userId";
 export const ROUTE_SEARCH = "/search";
 export const ROUTE_SEARCH_RESULT = "/search/results/:query";
@@ -51,6 +52,7 @@ export const ROUTE_ADMIN_VERIFICATION_REQS = `${ROUTE_ADMIN}/verification-reques
 export const PUBLIC_ROUTES = [
     ROUTE_HOME,
     ROUTE_RESET_PASSWORD,
+    ROUTE_RESET_PASSWORD_PAGE,
     ROUTE_ABOUT_US,
     ROUTE_PRIVACY_POLICY,
     ROUTE_TERMS_AND_CODITIONS,

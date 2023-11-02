@@ -31,7 +31,7 @@ import VerifyRiderPage from "Pages/Rider/VerifyRiderPage";
 import VerifyVehiclePage from "Pages/Rider/VerifyVehiclePage";
 import BankDetailsPage from "Pages/User/BankDetailsPage";
 
-import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_BANK_DETAILS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_EDIT, ROUTE_RIDES, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VEHICLE, ROUTE_VEHICLE_ADD, ROUTE_VEHICLE_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_WALLET } from "Store/constants";
+import { ADMIN_ROUTES, GUEST_ONLY_ROUTES, PUBLIC_ROUTES, RIDER_ROUTES, ROUTE_ABOUT_US, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE, ROUTE_ADMIN_REPORTS, ROUTE_ADMIN_TRANSACTIONS, ROUTE_ADMIN_USERS, ROUTE_ADMIN_VERIFICATION_REQS, ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_BANK_DETAILS, ROUTE_HOME, ROUTE_LOGIN, ROUTE_PRIVACY_POLICY, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RESET_PASSWORD, ROUTE_RIDE_DETAILS, ROUTE_RIDE_EDIT, ROUTE_RIDES, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, ROUTE_TERMS_AND_CODITIONS, ROUTE_USER_DETAILS, ROUTE_VEHICLE, ROUTE_VEHICLE_ADD, ROUTE_VEHICLE_DETAILS, ROUTE_VERIFY_RIDER, ROUTE_WALLET, ROUTE_RESET_PASSWORD_PAGE } from "Store/constants";
 import { selectAccessToken, selectIsAuthenticated, selectRefreshToken, selectUser } from "Store/selectors";
 import { authActions } from "Store/slices";
 import Cookies from "js-cookie";
@@ -46,6 +46,9 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
     const targetRoute = { path: null, state: null };
 
     if (!isAuthenticated) {
+        if (PUBLIC_ROUTES.some(pRoute => route.includes(pRoute))) {
+            return targetRoute;
+        }
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {
             targetRoute.path = ROUTE_LOGIN;
             targetRoute.state = state || { redirectUrl: route };
@@ -149,7 +152,7 @@ const Routes = () => {
         <Route path={ROUTE_SEARCH_RESULT} element={<SearchResultsPage />} />
         <Route path={ROUTE_RIDE_DETAILS} element={<RideDetailsPage />} />
         <Route path={ROUTE_USER_DETAILS} element={<UserDetailsPage />} />
-        <Route path={ROUTE_RESET_PASSWORD} element={<ResetPasswordPage />} />
+        <Route path={ROUTE_RESET_PASSWORD_PAGE} element={<ResetPasswordPage />} />
 
         {/* For Guests Only */}
         <Route path={ROUTE_LOGIN} element={<LoginPage />} />
