@@ -1,3 +1,4 @@
+import { Container, Typography } from "@mui/material";
 import useApi from "Components/Hooks/useApi";
 import Loader from "Components/Other/Loader";
 import Routes from "Routes";
@@ -9,6 +10,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
+let count = 0;
 
 function App() {
 
@@ -17,7 +19,7 @@ function App() {
   const isAuthReady = useSelector(selectIsAuthReady);
   const { syncUser } = useApi();
   const dispatch = useDispatch();
-
+  console.log("App render", ++count);
 
   /* Update Global User State on Auth change */
   useEffect(() => {
@@ -42,6 +44,9 @@ function App() {
     <div className="App">
       <ThemeConfig>
         {isAuthReady ?
+          // <Container>
+          //   <Typography>App</Typography>
+          // </Container>
           <BrowserRouter>
             <AnimatePresence mode="wait" presenceAffectsLayout={true}>
               <Routes />

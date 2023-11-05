@@ -46,7 +46,7 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
     const targetRoute = { path: null, state: null };
 
     if (!isAuthenticated) {
-        if (PUBLIC_ROUTES.some(pRoute => route.includes(pRoute))) {
+        if (route.includes(ROUTE_RESET_PASSWORD)) {
             return targetRoute;
         }
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {

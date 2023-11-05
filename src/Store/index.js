@@ -1,7 +1,7 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import {
-  authReducer, uiReducer
+  authReducer, mapReducer, uiReducer
 } from './slices';
 import middleware from "./middlewares";
 
@@ -11,7 +11,8 @@ import middleware from "./middlewares";
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    ui: uiReducer
+    ui: uiReducer,
+    map: mapReducer,
   },
   middleware
 });

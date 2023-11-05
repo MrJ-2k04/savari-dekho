@@ -1,49 +1,52 @@
-import { Add, Close, Delete, LocationCity, NearMe } from '@mui/icons-material';
-import { Box, Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, IconButton, Input, Skeleton, Stack, TextField, Typography } from '@mui/material';
-import { Autocomplete, DirectionsRenderer, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import React, { useEffect, useRef, useState } from 'react';
+import { Box, Skeleton } from '@mui/material';
+import { DirectionsRenderer, GoogleMap } from '@react-google-maps/api';
+import { selectIsMapLoaded } from 'Store/selectors';
+import { showError } from 'Utils';
+import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 
 
-function MyGoogleMap() {
+function MyGoogleMap({ from, to, waypoints }) {
+    const center = {
+        lat: 20.5937,
+        lng: 78.9629,
+    };
 
-    const [libraries] = useState(['places']);
-    const { isLoaded } = useJsApiLoader({
-        // googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        libraries,
-    })
+    const isLoaded = useSelector(selectIsMapLoaded);
 
-    const [map, setMap] = useState(null);
-    const [waypoints, setWaypoints] = useState([]);
+    // ################################################## STATES ##################################################
+
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [distance, setDistance] = useState('');
     const [duration, setDuration] = useState('');
 
-    const originRef = useRef(null);
-    const destinationRef = useRef(null);
-    const autocompleteRef = useRef([]);
+    // Refs
+    const map = useRef(null);
+    const markers = useRef([]);
+    // const originRef = useRef(null);
+    // const destinationRef = useRef(null);
+    // const autocompleteRef = useRef([]);
 
-    const center = {
-        lat: 23.0225,
-        lng: 72.5714,
-    };
+    // ################################################## MAP Manupilators ##################################################
 
-    const calculateRoute = async () => {
-        if (originRef.current.value === '' || destinationRef.current.value === '') return;
+    const calculateRoute = async (origin, destination, waypoints) => {
+        if (!isLoaded) return;
 
         // Trim Waypoints Array
         var finalWaypoints = [...waypoints];
-        finalWaypoints = finalWaypoints.filter(wp => wp.location && wp.location.trim() !== '');
-        setWaypoints(finalWaypoints);
-        console.log(finalWaypoints);
+        finalWaypoints = finalWaypoints.map(wp => {
+            if (!wp.location) return undefined;
 
+            return { location: wp.location.description };
+        }).filter(wp => wp);
 
         // eslint-disable-next-line no-undef
         const directionService = new google.maps.DirectionsService();
         try {
             const results = await directionService.route({
-                origin: originRef.current.value,
-                destination: destinationRef.current.value,
+                origin,
+                destination,
                 // eslint-disable-next-line no-undef
                 travelMode: google.maps.TravelMode.DRIVING,
                 waypoints: finalWaypoints,
@@ -51,55 +54,102 @@ function MyGoogleMap() {
             });
 
             setDirectionsResponse(results);
-            setDistance(results.routes[0].legs[0].distance.text)
-            setDuration(results.routes[0].legs[0].duration.text)
-            console.log(results);
+            const newDistance = results.routes[0].legs[0].distance.text;
+            const newDuration = results.routes[0].legs[0].duration.text;
+            setDistance(newDistance);
+            setDuration(newDuration);
         } catch (error) {
             console.log(error);
+            showError({ message: error.message })
         }
     };
 
     const clearRoute = () => {
+        markers.current.forEach(marker => marker.setMap(null));
         setDirectionsResponse(null)
         setDistance('')
         setDuration('')
-        originRef.current.value = ''
-        destinationRef.current.value = ''
+        // originRef.current.value = ''
+        // destinationRef.current.value = ''
     };
 
-    const handleWaypointDelete = (index) => {
-        const newWaypoints = [...waypoints];
-        newWaypoints.splice(index, 1);
+    const placeMarker = (locationString) => {
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ address: locationString }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+                const markerPosition = results[0].geometry.location;
 
-        setWaypoints(newWaypoints);
-    };
-
-    const handleWaypointChange = (index) => {
-        return (place) => {
-            if (place && place.geometry && place.geometry.location) {
-                const selectedWaypoint = {
-                    location: place.formatted_address,
-                };
-                const newWaypoints = [...waypoints];
-                newWaypoints[index] = selectedWaypoint;
-
-                setWaypoints(newWaypoints);
+                // Create a marker and set its position
+                const marker = new window.google.maps.Marker({
+                    position: markerPosition,
+                    map: map.current,
+                    title: locationString, // Optional: Add the location string as the title
+                });
+                markers.current.push(marker);
+                map.current.setCenter(markerPosition);
+            } else {
+                console.error('Geocoding failed: ' + status);
             }
-        };
-    };
+        });
+    }
 
-    const handleTextChange = (index, value) => {
-        const newWaypoints = [...waypoints];
-        newWaypoints[index] = { location: value };
-        setWaypoints(newWaypoints);
-    };
+    // ################################################## OTHER HANDLERS ##################################################
+
+
+    // const handleWaypointDelete = (index) => {
+    //     const newWaypoints = [...waypoints];
+    //     newWaypoints.splice(index, 1);
+
+    //     setWaypoints(newWaypoints);
+    // };
+
+    // const handleWaypointChange = (index) => {
+    //     return (place) => {
+    //         console.log(place);
+    //         if (place && place.geometry && place.geometry.location) {
+    //             const selectedWaypoint = {
+    //                 location: place.formatted_address,
+    //             };
+    //             const newWaypoints = [...waypoints];
+    //             newWaypoints[index] = selectedWaypoint;
+
+    //             setWaypoints(newWaypoints);
+    //         }
+    //     };
+    // };
+
+    // const handleTextChange = (index, value) => {
+    //     const newWaypoints = [...waypoints];
+    //     newWaypoints[index] = { location: value };
+    //     setWaypoints(newWaypoints);
+    // };
+
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        if (from && to) {
+            calculateRoute(from.description, to.description, waypoints);
+            return;
+        } else if (from) {
+            placeMarker(from.description);
+        }
+
+        clearRoute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [from, to, waypoints])
+
+    useEffect(() => {
+        console.log(distance, duration);
+    }, [distance, duration]);
 
     if (!isLoaded) {
-        return <Box display={"flex"} gap={2} flexDirection={"column"}>
-            <Skeleton variant='rectangular' animation="wave" height={"500px"} width={"100%"} />
-            {Array.from({ length: 10 }).map((ele, index) => {
-                return <Skeleton variant='text' animation="wave" key={index} />
-            })}
+        return <Box position="relative"
+            display="flex"
+            flexDirection="column"
+            height="100%"
+            width="100%"
+            minHeight={'400px'}>
+            <Skeleton variant='rectangular' animation="wave" width={"100%"} height={'100%'} />
         </Box>
     }
 
@@ -117,8 +167,9 @@ function MyGoogleMap() {
                 <Box position="absolute" left={0} top={0} height="100%" width="100%">
                     {/* Google Map Box */}
                     <GoogleMap
+                        id='navigator-map'
                         center={center}
-                        zoom={15}
+                        zoom={5}
                         mapContainerStyle={{ width: '100%', height: '100%' }}
                         options={{
                             // zoomControl: false,
@@ -127,12 +178,12 @@ function MyGoogleMap() {
                             fullscreenControl: false,
                             mapId: '1a52ed7dbb9da825',
                         }}
-                        onLoad={(map) => setMap(map)}
+                        onLoad={(gmap) => { map.current = gmap; window.map = gmap; }}
                     >
                         {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
                     </GoogleMap>
                 </Box>
-                <Card sx={{ mt: 4, zIndex: 3 }}>
+                {/* <Card sx={{ mt: 4, zIndex: 3 }}>
                     <CardContent>
                         <Stack display={"flex"} justifyContent={"center"} p={4} spacing={4}>
                             <Box display={"flex"} gap={2} flexDirection={'column'}>
@@ -140,9 +191,9 @@ function MyGoogleMap() {
                                     <TextField label='From' variant='outlined' placeholder="Origin" inputRef={originRef} fullWidth />
                                 </Autocomplete>
 
-                                
+
                                 <Button startIcon={<Add />} variant='contained' color='success' onClick={e => setWaypoints([...waypoints, {}])}>Add Waypoints</Button>
-                                {waypoints.map((waypoint, index) => (
+                                {waypointss.map((waypoint, index) => (
                                     <Box display={'flex'} gap={2} alignItems={'center'} key={`waypointInput${index}`}>
                                         <Autocomplete
                                             onLoad={(autocomplete) => (autocompleteRef.current[index] = autocomplete)}
@@ -182,8 +233,8 @@ function MyGoogleMap() {
                                 <IconButton
                                     aria-label="Center Map"
                                     onClick={() => {
-                                        map.panTo(center);
-                                        map.setZoom(15);
+                                        map.current.panTo(center);
+                                        map.current.setZoom(15);
                                     }}
                                 >
                                     <NearMe />
@@ -191,7 +242,7 @@ function MyGoogleMap() {
                             </Box>
                         </Stack>
                     </CardContent>
-                </Card>
+                </Card> */}
             </Box>
         </>
     );
