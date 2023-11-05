@@ -53,12 +53,13 @@ const useApi = () => {
     throw new Error('Cannot fetch user details');
   }
 
-  const syncUser = () => {
-    getUserDetails().then(userDetails => {
-      dispatch(authActions.setUser(userDetails));
-    }).catch(err => {
-      dispatch(authActions.logout());
-    });
+  const syncUser = async () => {
+    const userDetails = await getUserDetails()
+      .then(userDetails => {
+        dispatch(authActions.setUser(userDetails));
+      }).catch(err => {
+        dispatch(authActions.logout());
+      });
   }
 
   const updateUserDetails = async (user) => {

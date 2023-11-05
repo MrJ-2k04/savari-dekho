@@ -1,4 +1,4 @@
-import { Box, Grid, styled } from "@mui/material";
+import { Box, styled } from "@mui/material";
 import MinimalFooter from "Layout/Minimal/MinimalFooter";
 import NavBar from "Layout/User/NavBar";
 import { APP_BAR_DESKTOP, APP_BAR_MOBILE } from "Store/constants";
