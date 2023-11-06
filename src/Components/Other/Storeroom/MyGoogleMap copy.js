@@ -9,7 +9,6 @@ function MyGoogleMap() {
 
     const [libraries] = useState(['places']);
     const { isLoaded } = useJsApiLoader({
-        // googleMapsApiKey: 'AIzaSyC3aviU6KHXAjoSnxcw6qbOhjnFctbxPkE',
         // googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries,
     })

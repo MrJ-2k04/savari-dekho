@@ -1,6 +1,7 @@
 
 import { LocationOn } from "@mui/icons-material";
 import { Autocomplete, Box, Grid, TextField, Typography, debounce } from "@mui/material";
+import { MAP_SEARCH_COUNTRY_RESTRICTION } from "Store/constants";
 import { selectIsMapLoaded } from "Store/selectors";
 import parse from "autosuggest-highlight/parse";
 import { useEffect, useMemo, useState } from "react";
@@ -16,6 +17,7 @@ function PlaceAutocomplete({
     helperText,
     placeholder,
     fullWidth = false,
+    sx,
 }) {
 
     const isLoaded = useSelector(selectIsMapLoaded);
@@ -34,7 +36,7 @@ function PlaceAutocomplete({
 
         let active = true;
 
-        
+
         if (!isLoaded) return;
         if (!autocompleteService.current && window.google) {
             autocompleteService.current =
@@ -48,8 +50,15 @@ function PlaceAutocomplete({
             return;
         }
 
-        fetch({ input: inputValue }, (results) => {
-            if (active) {
+        const reqParams = {
+            input: inputValue,
+            componentRestrictions: {
+                country: MAP_SEARCH_COUNTRY_RESTRICTION,
+            }
+        }
+
+        fetch(reqParams, (results) => {
+            if(active) {
                 let newOptions = [""];
 
                 if (value) {
@@ -72,6 +81,7 @@ function PlaceAutocomplete({
 
     return (<>
         <Autocomplete
+            sx={sx}
             fullWidth={fullWidth}
             getOptionLabel={(option) =>
                 typeof option === 'string' ? option : option.description
