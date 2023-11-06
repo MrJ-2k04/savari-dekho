@@ -95,6 +95,15 @@ export function unformatMobileNumber(mobileNumber) {
     return result;
 }
 
+export function getPricePrediction(distance) {
+    // const response = {};
+    // const priceList = [
+    //     [0, 0],
+    //     [500]
+    //     [Infinity, 1.75]
+    // ]
+}
+
 
 // -------------------------------------------------------- CONVERSION FUNCTIONS --------------------------------------------------------
 

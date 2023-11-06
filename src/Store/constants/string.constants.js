@@ -2,21 +2,18 @@
 
 // ############################################## SITE SETTINGS ##############################################
 
-// ############################################## SITE SETTINGS ##############################################
-
 export const SITE_TITLE = "Savari Dekho";
 export const SITE_CAPTION = "Unlock Affordable Adventures Across Cities and States";
-
-export const USER = "User";
-export const RIDER = "Rider";
-export const ROLES = {
-  USER,
-  RIDER
-};
 
 export const CONTACT_NUMBER = '+91 79906 74110';
 export const CONTACT_EMAIL_PRIMARY = 'info@webwizards.in';
 export const CONTACT_EMAIL_SECONDARY = 'wizardsweb142@gmail.com';
+
+// Google Map settings
+export const MAP_CENTER = { lat: 20.5937, lng: 78.9629 };
+export const MAP_SEARCH_COUNTRY_RESTRICTION = ["IN"];
+export const GOOGLE_MAP_ID = "1a52ed7dbb9da825";
+export const MIN_DELAY_FOR_BOOKING = 2 * 60;  // 2 hrs
 
 // ############################################## RESPONSE TYPES ##############################################
 

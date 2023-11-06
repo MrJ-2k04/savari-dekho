@@ -1,5 +1,7 @@
+import { useTheme } from '@emotion/react';
 import { Box, Skeleton } from '@mui/material';
 import { DirectionsRenderer, GoogleMap } from '@react-google-maps/api';
+import { GOOGLE_MAP_ID, ID_RIDE_DROPOFF, ID_RIDE_FROM, ID_RIDE_PICKUP, ID_RIDE_TO, MAP_CENTER } from 'Store/constants';
 import { selectIsMapLoaded } from 'Store/selectors';
 import { showError } from 'Utils';
 import { useEffect, useRef, useState } from 'react';
@@ -7,13 +9,10 @@ import { useSelector } from 'react-redux';
 
 
 
-function MyGoogleMap({ from, to, waypoints }) {
-    const center = {
-        lat: 20.5937,
-        lng: 78.9629,
-    };
+function MyGoogleMap({ from, to, waypoints, pickup, dropoff }) {
 
     const isLoaded = useSelector(selectIsMapLoaded);
+    const theme = useTheme();
 
     // ################################################## STATES ##################################################
 
@@ -23,10 +22,7 @@ function MyGoogleMap({ from, to, waypoints }) {
 
     // Refs
     const map = useRef(null);
-    const markers = useRef([]);
-    // const originRef = useRef(null);
-    // const destinationRef = useRef(null);
-    // const autocompleteRef = useRef([]);
+    const markers = useRef({});
 
     // ################################################## MAP Manupilators ##################################################
 
@@ -50,6 +46,7 @@ function MyGoogleMap({ from, to, waypoints }) {
                 // eslint-disable-next-line no-undef
                 travelMode: google.maps.TravelMode.DRIVING,
                 waypoints: finalWaypoints,
+
                 // optimizeWaypoints: true
             });
 
@@ -65,15 +62,26 @@ function MyGoogleMap({ from, to, waypoints }) {
     };
 
     const clearRoute = () => {
-        markers.current.forEach(marker => marker.setMap(null));
+        removeMarker(ID_RIDE_FROM);
+        removeMarker(ID_RIDE_TO);
         setDirectionsResponse(null)
         setDistance('')
         setDuration('')
-        // originRef.current.value = ''
-        // destinationRef.current.value = ''
     };
 
-    const placeMarker = (locationString) => {
+    const removeMarker = (field) => {
+        if (!markers.current[field]) return;
+        markers.current[field].setMap(null);
+        delete markers.current[field];
+    }
+
+    const removeAllMarkers = () => {
+        Object.values(markers.current).forEach(marker => marker.setMap(null));
+        markers.current = {};
+    }
+
+    const placeMarker = (locationString, field, icon = {}) => {
+        removeMarker(field);
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: locationString }, (results, status) => {
             if (status === 'OK' && results[0]) {
@@ -84,8 +92,17 @@ function MyGoogleMap({ from, to, waypoints }) {
                     position: markerPosition,
                     map: map.current,
                     title: locationString, // Optional: Add the location string as the title
+                    icon,
+                    // icon: {
+                    //     url: window.location.origin + "/assets/pickup.svg",
+                    //     scaledSize: new window.google.maps.Size(70, 70),
+                    // }
                 });
-                markers.current.push(marker);
+                if (markers.current[field]) {
+                    markers.current[field]?.setMap(null);
+                    delete markers.current[field]
+                }
+                markers.current[field] = marker;
                 map.current.setCenter(markerPosition);
             } else {
                 console.error('Geocoding failed: ' + status);
@@ -93,47 +110,52 @@ function MyGoogleMap({ from, to, waypoints }) {
         });
     }
 
-    // ################################################## OTHER HANDLERS ##################################################
+    // ################################################## USE-EFFECTS ##################################################
 
-
-    // const handleWaypointDelete = (index) => {
-    //     const newWaypoints = [...waypoints];
-    //     newWaypoints.splice(index, 1);
-
-    //     setWaypoints(newWaypoints);
-    // };
-
-    // const handleWaypointChange = (index) => {
-    //     return (place) => {
-    //         console.log(place);
-    //         if (place && place.geometry && place.geometry.location) {
-    //             const selectedWaypoint = {
-    //                 location: place.formatted_address,
-    //             };
-    //             const newWaypoints = [...waypoints];
-    //             newWaypoints[index] = selectedWaypoint;
-
-    //             setWaypoints(newWaypoints);
-    //         }
-    //     };
-    // };
-
-    // const handleTextChange = (index, value) => {
-    //     const newWaypoints = [...waypoints];
-    //     newWaypoints[index] = { location: value };
-    //     setWaypoints(newWaypoints);
-    // };
-
+    // Pickup Marker Management
     useEffect(() => {
         if (!isLoaded) return;
 
+        if (pickup) {
+            placeMarker(pickup.description, ID_RIDE_PICKUP, {
+                url: window.location.origin + "/assets/pickup.svg",
+                scaledSize: new window.google.maps.Size(70, 70),
+            });
+        } else {
+            removeMarker(ID_RIDE_PICKUP)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pickup]);
+
+    // Dropoff Marker Management
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        if (dropoff) {
+            placeMarker(dropoff.description, ID_RIDE_DROPOFF, {
+                url: window.location.origin + "/assets/dropoff.svg",
+                scaledSize: new window.google.maps.Size(70, 70),
+            });
+        } else {
+            removeMarker(ID_RIDE_DROPOFF)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dropoff]);
+
+    // Route Management
+    useEffect(() => {
+
         if (from && to) {
+            removeMarker(ID_RIDE_FROM);
             calculateRoute(from.description, to.description, waypoints);
             return;
         } else if (from) {
-            placeMarker(from.description);
+            placeMarker(from.description, ID_RIDE_FROM, {
+                url: window.location.origin + "/assets/from.svg",
+                scaledSize: new window.google.maps.Size(35, 35),
+            });
         }
-
+        
         clearRoute();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [from, to, waypoints])
@@ -141,6 +163,10 @@ function MyGoogleMap({ from, to, waypoints }) {
     useEffect(() => {
         console.log(distance, duration);
     }, [distance, duration]);
+
+    useEffect(()=>{
+        return removeAllMarkers;
+    },[]);
 
     if (!isLoaded) {
         return <Box position="relative"
@@ -168,7 +194,7 @@ function MyGoogleMap({ from, to, waypoints }) {
                     {/* Google Map Box */}
                     <GoogleMap
                         id='navigator-map'
-                        center={center}
+                        center={MAP_CENTER}
                         zoom={5}
                         mapContainerStyle={{ width: '100%', height: '100%' }}
                         options={{
@@ -176,73 +202,21 @@ function MyGoogleMap({ from, to, waypoints }) {
                             streetViewControl: false,
                             mapTypeControl: false,
                             fullscreenControl: false,
-                            mapId: '1a52ed7dbb9da825',
+                            mapId: GOOGLE_MAP_ID,
                         }}
-                        onLoad={(gmap) => { map.current = gmap; window.map = gmap; }}
+                        onLoad={(gmap) => map.current = gmap}
                     >
-                        {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
+                        {directionsResponse && <DirectionsRenderer options={{
+                            polylineOptions: {
+                                strokeColor: theme.palette.secondary.main,
+                                strokeWeight: '3',
+                            },
+                            markerOptions: {
+                                zIndex: 9999,
+                            }
+                        }} directions={directionsResponse} />}
                     </GoogleMap>
                 </Box>
-                {/* <Card sx={{ mt: 4, zIndex: 3 }}>
-                    <CardContent>
-                        <Stack display={"flex"} justifyContent={"center"} p={4} spacing={4}>
-                            <Box display={"flex"} gap={2} flexDirection={'column'}>
-                                <Autocomplete>
-                                    <TextField label='From' variant='outlined' placeholder="Origin" inputRef={originRef} fullWidth />
-                                </Autocomplete>
-
-
-                                <Button startIcon={<Add />} variant='contained' color='success' onClick={e => setWaypoints([...waypoints, {}])}>Add Waypoints</Button>
-                                {waypointss.map((waypoint, index) => (
-                                    <Box display={'flex'} gap={2} alignItems={'center'} key={`waypointInput${index}`}>
-                                        <Autocomplete
-                                            onLoad={(autocomplete) => (autocompleteRef.current[index] = autocomplete)}
-                                            onPlaceChanged={() => {
-                                                const place = autocompleteRef.current[index]?.getPlace();
-                                                handleWaypointChange(index)(place);
-                                            }}
-                                        >
-                                            <TextField
-                                                label='Waypoint'
-                                                placeholder={`Waypoint ${index + 1}`}
-                                                value={waypoint.location || ''}
-                                                onChange={(e) => handleTextChange(index, e.target.value)}
-                                            />
-                                        </Autocomplete>
-                                        <IconButton onClick={() => handleWaypointDelete(index)}>
-                                            <Delete />
-                                        </IconButton>
-                                    </Box>
-                                ))}
-
-                                <Autocomplete>
-                                    <TextField label='To' variant='outlined' placeholder="Destination" inputRef={destinationRef} fullWidth />
-                                </Autocomplete>
-                            </Box>
-                            <ButtonGroup sx={{ mx: 'auto' }}>
-                                <Button color="info" variant="contained" onClick={calculateRoute} fullWidth>
-                                    Calculate Route
-                                </Button>
-                                <Button aria-label="Clear Route" onClick={clearRoute}>
-                                    <Close />
-                                </Button>
-                            </ButtonGroup>
-                            <Box mt={4} display="flex" justifyContent="space-between" width={"100%"}>
-                                <Typography>Distance: {distance}</Typography>
-                                <Typography>Duration: {duration}</Typography>
-                                <IconButton
-                                    aria-label="Center Map"
-                                    onClick={() => {
-                                        map.current.panTo(center);
-                                        map.current.setZoom(15);
-                                    }}
-                                >
-                                    <NearMe />
-                                </IconButton>
-                            </Box>
-                        </Stack>
-                    </CardContent>
-                </Card> */}
             </Box>
         </>
     );
