@@ -13,7 +13,7 @@ function RouteList({
         <List sx={{ bgcolor: 'background.paper' }}>
             {waypoints.map((waypoint, index) => {
                 const isActive = index >= startIndex && index <= endIndex;
-                return <ListItem sx={{ py: 0, alignItems: "stretch" }} >
+                return <ListItem key={index} sx={{ py: 0, alignItems: "stretch" }} >
 
                     {/* Time Text */}
                     <Box py={1} sx={{ width: "48px", minWidth: '48px' }}>

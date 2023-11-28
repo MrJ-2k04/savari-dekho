@@ -59,7 +59,7 @@ function RideForm({ isNew = false }) {
     const [emptySeatsError, setEmptySeatsError] = useState('');
 
 
-    // #################################################### STEP HANDLERS ####################################################
+    // #################################################### VISIBILITY HANDLERS ####################################################
 
     const handleShowMap = () => {
         setIsMapVisible(true);

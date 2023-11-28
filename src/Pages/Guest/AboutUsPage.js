@@ -1,10 +1,8 @@
-import styled from "@emotion/styled";
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import f1 from "Assets/images/f1.jpeg";
 import f2 from "Assets/images/f2.jpg";
 import f3 from "Assets/images/f3.jpg";
 import StaticPageLayout from "Layout/Other/StaticPageLayout";
-import { keyframes } from '@emotion/react';
 
 import v1 from "Assets/images/v1.jpg";
 import v2 from "Assets/images/v2.jpg";
