@@ -1,11 +1,13 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Container, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
 // import Payment from "Components/Payment";
 import heroImg from "Assets/SVGs/hero.svg";
 import heroDarkImg from "Assets/SVGs/heroDark1.svg";
 import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
 import ConstructionSrc from "Assets/images/UnderConstruction.png";
+import SearchBar from "Components/Common/SearchBar";
 import UserLayout from "Layout/User";
-import { THEME } from "Store/constants";
+import { SITE_CAPTION, THEME } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 
@@ -50,27 +52,29 @@ function HomePage() {
                         spacing={3}
                     >
                         <Typography variant="h2" sx={{ color: "white" }}>
-                            Unlock Affordable Adventures Across Cities and States
+                            {SITE_CAPTION}
                         </Typography>
 
                         <Button
                             variant="contained"
                             onClick={e => { }}
+                            color="secondary"
                             sx={{
-                                backgroundColor: "white",
-                                width: 110,
+                                // backgroundColor: "white",
+                                // width: 110,
+                                maxWidth: '200px',
                                 p: 2,
                                 borderRadius: 24,
                                 display: "flex",
                                 justifyContent: "center",
-                                ":hover": {
-                                    backgroundColor: "secondary.main",
-                                },
+                                // ":hover": {
+                                //     backgroundColor: "secondary.main",
+                                // },
                             }}
                         >
-                            <Typography variant="subtitle1" color="#254e71">
-                                Talk to us
-                            </Typography>
+                            
+                                Find a Ride
+                            
                         </Button>
                     </Stack>
                 </Box>
@@ -99,13 +103,23 @@ function HomePage() {
                                 : `url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiNmZmZmZmYiPjxwYXRoIGQ9Ik03MjUuMjkgMTAxLjJDMzI1LjIyIDEyMi40OCAwIDAgMCAwdjE0MGgxMjgwVjBzLTE1NC42NCA3OS45Mi01NTQuNzEgMTAxLjJ6IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PHBhdGggZD0iTTU1Ni40NSAxMTkuNzRDOTUzLjQxIDE0MCAxMjgwIDE0IDEyODAgMTR2MTI2SDBWMHMxNTkuNSA5OS40OCA1NTYuNDUgMTE5Ljc0eiIgZmlsbC1vcGFjaXR5PSIuNSIvPjxwYXRoIGQ9Ik02NDAgMTQwYzM1My40NiAwIDY0MC0xNDAgNjQwLTEzOXYxNDBIMFYwczI4Ni41NCAxNDAgNjQwIDE0MHoiLz48L2c+PC9zdmc+)`,
                     }}
                 />
+
             </Box>
 
+            <Container sx={{
+                // position: 'absolute',
+                // bottom: 0,
+                // mb: -4,
+                // zIndex: 10
+                py:4
+            }}>
+                <SearchBar />
+            </Container>
             <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"} justifyContent={'center'} alignItems={'center'}>
                 <Box py={4}>
                     <img width={"100%"} height={"100%"} src={ConstructionSrc} alt="" />
                 </Box>
-                {/* <Stack spacing={2}>
+                {/*<Stack spacing={2}>
                     <Button>Test Button</Button>
                     <Button variant="contained">Test Button</Button>
                     <Button variant="outlined">Test Button</Button>
@@ -192,7 +206,7 @@ function HomePage() {
                     <Skeleton variant="circular" width={40} height={40} />
                     <Skeleton variant="rectangular" width={210} height={60} />
                     <Skeleton variant="rounded" width={210} height={60} />
-                </Stack> */}
+                </Stack>*/}
             </Box>
         </UserLayout>
     );
