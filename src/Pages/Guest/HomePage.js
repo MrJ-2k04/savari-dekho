@@ -1,5 +1,6 @@
-import { ExpandMore } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardMedia, Container, Divider, Skeleton, Stack, TextField, Typography } from "@mui/material";
+import { useTheme } from "@emotion/react";
+import { Code, ExpandMore, Lock, Security, SecurityOutlined, Verified } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Container, Divider, Grid, Skeleton, Stack, TextField, Typography, alpha } from "@mui/material";
 // import Payment from "Components/Payment";
 import heroImg from "Assets/SVGs/hero.svg";
 import heroDarkImg from "Assets/SVGs/heroDark1.svg";
@@ -12,9 +13,36 @@ import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 
 
+function BenefitCard({
+    CardIcon,
+    title,
+    body,
+}) {
+    const theme = useTheme();
+    return <Card sx={{ p: 2, minHeight: '300px', display: 'flex', flexDirection: 'column' }}>
+        <CardHeader avatar={<Box bgcolor={alpha(theme.palette.secondary.main, 0.4)} p={1} display={'flex'} borderRadius={'8px'} >
+            <CardIcon fontSize="large" color="primary" />
+        </Box>
+        }>
+        </CardHeader>
+        <CardContent sx={{ px: 3, py: { xs: 2, md: 3 }, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box flexGrow={1} display={'flex'} flexDirection={'column'} justifyContent={'center'} gap={2}>
+                <Typography gutterBottom variant={'h5'} color={'primary'}>
+                    {title}
+                </Typography>
+                <Typography color={'text.secondary'} fontWeight={'500'}>
+                    {body}
+                </Typography>
+            </Box>
+        </CardContent>
+    </Card>
+}
+
+
 function HomePage() {
 
     const isDarkMode = useSelector(selectIsDarkMode);
+
 
     return (
         <UserLayout>
@@ -34,7 +62,7 @@ function HomePage() {
                     // alignItems: "flex-start"
                 }}
             >
-                <Box
+                {/* <Box
                     sx={{
                         maxWidth: "1080px",
                     }}
@@ -72,15 +100,19 @@ function HomePage() {
                                 // },
                             }}
                         >
-                            
-                                Find a Ride
-                            
+
+                            Find a Ride
+
                         </Button>
                     </Stack>
+                </Box> */}
+                {/* <Box></Box>
+                <Box></Box> */}
+                <Box py={4} maxWidth={'700px'} sx={{ wordWrap: 'break-word' }}>
+                    <Typography variant="h2" sx={{ color: "white" }} textAlign={'center'}>
+                        {SITE_CAPTION}
+                    </Typography>
                 </Box>
-                <Box></Box>
-                <Box></Box>
-
                 <Box
                     component="div"
                     sx={{
@@ -104,17 +136,63 @@ function HomePage() {
                     }}
                 />
 
+                <Container sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    mb: 11,
+                    zIndex: 10
+                    // py:4
+                }}>
+                    <SearchBar />
+                </Container>
             </Box>
 
-            <Container sx={{
-                // position: 'absolute',
-                // bottom: 0,
-                // mb: -4,
-                // zIndex: 10
-                py:4
-            }}>
-                <SearchBar />
+
+            <Container sx={{ py: 4 }} maxWidth='xl'>
+                <Box display={'flex'} width={'100%'} justifyContent={'space-between'} gap={2} flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
+                    <Box width={'100%'} maxWidth={'400px'}>
+                        <Typography variant="h3" textAlign={'start'}>Commute with Confidence</Typography>
+                    </Box>
+                    <Box width={'100%'} maxWidth={{ md: '600px' }}>
+                        <Grid container spacing={{ xs: 3 }} sx={{
+                            "& >:nth-of-type(even)": {
+                                transform: { sm: "translateY(100px)" }
+                            }
+                        }}>
+                            <Grid item xs={12} sm={6}>
+                                <BenefitCard
+                                    title={"Secure payment"}
+                                    body={"Addressing trust deficits in ridesharing platforms, our solution tackles key industry challenges"}
+                                    CardIcon={Security}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <BenefitCard
+                                    title={"Extra Verification"}
+                                    body={"To enhance safety, we require drivers to upload crucial documents such as their RC book and insurance details"}
+                                    CardIcon={Verified}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <BenefitCard
+                                    title={"Trusted Platform"}
+                                    body={"Prioritizing trust, our platform ensures a secure environment for seamless ridesharing experiences"}
+                                    CardIcon={Code}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <BenefitCard
+                                    title={"Full Transparency"}
+                                    body={"Safety is a top priority with our thorough driver verification process, fostering trust and transparency for all ride companions"}
+                                    CardIcon={Lock}
+                                />
+                            </Grid>
+
+                        </Grid>
+                    </Box>
+                </Box>
             </Container>
+
             <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"} justifyContent={'center'} alignItems={'center'}>
                 <Box py={4}>
                     <img width={"100%"} height={"100%"} src={ConstructionSrc} alt="" />
