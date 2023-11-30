@@ -8,9 +8,10 @@ import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
 import ConstructionSrc from "Assets/images/UnderConstruction.png";
 import SearchBar from "Components/Common/SearchBar";
 import UserLayout from "Layout/User";
-import { SITE_CAPTION, THEME } from "Store/constants";
+import { ROUTE_SEARCH, SITE_CAPTION, THEME } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 
 function BenefitCard({
@@ -25,8 +26,8 @@ function BenefitCard({
         </Box>
         }>
         </CardHeader>
-        <CardContent sx={{ px: 3, py: { xs: 2, md: 3 }, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-            <Box flexGrow={1} display={'flex'} flexDirection={'column'} justifyContent={'center'} gap={2}>
+        <CardContent sx={{ px: 3, py: { xs: "1rem !important", md: 3 }, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box flexGrow={1} display={'flex'} flexDirection={'column'} justifyContent={'center'} gap={{ xs: 3, sm: 2 }}>
                 <Typography gutterBottom variant={'h5'} color={'primary'}>
                     {title}
                 </Typography>
@@ -39,14 +40,48 @@ function BenefitCard({
 }
 
 
+function Section({ children, ...props }) {
+    const theme = useTheme();
+    const isDark = useSelector(selectIsDarkMode);
+    return <Box
+        sx={{
+            clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" },
+            // ...sx
+        }}
+        component={'section'}
+        bgcolor={isDark ? theme.palette.background.paper : theme.palette.background.disabled}
+        // bgcolor={theme.palette.background.paper}
+        color={theme.palette.text.primary}
+        {...props}
+    >
+        <Box
+            p={{ md: "106px 24px 24px", xs: "48px 16px 16px" }}
+        >
+            {children}
+        </Box>
+    </Box>
+}
+
+const BackgroundTriangle = <Box position={'absolute'} py={1} sx={{
+    top: 0,
+    bottom: 0,
+    right: 0,
+    opacity: 0.1,
+    zIndex: 0,
+}}>
+    <svg height={'100%'} width={'100%'} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 803.9 891.6">
+        <path fill={'gray'} d="M623.9 16.3c80-46.2 180 11.5 180 103.9l-.1 651.2c0 92.4-100 150.1-180 103.9L60 549.8c-80-46.2-80-161.6 0-207.8L623.9 16.3z" />
+    </svg>
+</Box>
+
+
 function HomePage() {
 
     const isDarkMode = useSelector(selectIsDarkMode);
-
+    const theme = useTheme();
 
     return (
         <UserLayout>
-            {/* <Payment /> */}
             <Box
                 component="section"
                 sx={{
@@ -62,52 +97,6 @@ function HomePage() {
                     // alignItems: "flex-start"
                 }}
             >
-                {/* <Box
-                    sx={{
-                        maxWidth: "1080px",
-                    }}
-                >
-                    <Stack
-                        sx={{
-                            zIndex: 5,
-                            m: 4,
-                            width: { xs: "80%", sm: "50%" },
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                        }}
-                        spacing={3}
-                    >
-                        <Typography variant="h2" sx={{ color: "white" }}>
-                            {SITE_CAPTION}
-                        </Typography>
-
-                        <Button
-                            variant="contained"
-                            onClick={e => { }}
-                            color="secondary"
-                            sx={{
-                                // backgroundColor: "white",
-                                // width: 110,
-                                maxWidth: '200px',
-                                p: 2,
-                                borderRadius: 24,
-                                display: "flex",
-                                justifyContent: "center",
-                                // ":hover": {
-                                //     backgroundColor: "secondary.main",
-                                // },
-                            }}
-                        >
-
-                            Find a Ride
-
-                        </Button>
-                    </Stack>
-                </Box> */}
-                {/* <Box></Box>
-                <Box></Box> */}
                 <Box py={4} maxWidth={'700px'} sx={{ wordWrap: 'break-word' }}>
                     <Typography variant="h2" sx={{ color: "white" }} textAlign={'center'}>
                         {SITE_CAPTION}
@@ -148,50 +137,96 @@ function HomePage() {
             </Box>
 
 
-            <Container sx={{ py: 4 }} maxWidth='xl'>
-                <Box display={'flex'} width={'100%'} justifyContent={'space-between'} gap={2} flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
-                    <Box width={'100%'} maxWidth={'400px'}>
-                        <Typography variant="h3" textAlign={'start'}>Commute with Confidence</Typography>
-                    </Box>
-                    <Box width={'100%'} maxWidth={{ md: '600px' }}>
-                        <Grid container spacing={{ xs: 3 }} sx={{
-                            "& >:nth-of-type(even)": {
-                                transform: { sm: "translateY(100px)" }
-                            }
-                        }}>
-                            <Grid item xs={12} sm={6}>
-                                <BenefitCard
-                                    title={"Secure payment"}
-                                    body={"Addressing trust deficits in ridesharing platforms, our solution tackles key industry challenges"}
-                                    CardIcon={Security}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <BenefitCard
-                                    title={"Extra Verification"}
-                                    body={"To enhance safety, we require drivers to upload crucial documents such as their RC book and insurance details"}
-                                    CardIcon={Verified}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <BenefitCard
-                                    title={"Trusted Platform"}
-                                    body={"Prioritizing trust, our platform ensures a secure environment for seamless ridesharing experiences"}
-                                    CardIcon={Code}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <BenefitCard
-                                    title={"Full Transparency"}
-                                    body={"Safety is a top priority with our thorough driver verification process, fostering trust and transparency for all ride companions"}
-                                    CardIcon={Lock}
-                                />
-                            </Grid>
 
-                        </Grid>
+            <Box component={'section'} position='relative'>
+                {BackgroundTriangle}
+                <Container sx={{ py: 4, pb: { sm: 14 }, position: 'relative' }} maxWidth='xl'>
+                    <Box display={'flex'} width={'100%'} justifyContent={'space-between'} columnGap={2} rowGap={6} flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
+                        <Box width={'100%'} maxWidth={{ md: '600px' }}>
+                            <Stack
+                                sx={{
+                                    zIndex: 5,
+                                    m: 4,
+                                    mx: 'auto',
+                                    width: { xs: "90%", md: "80%" },
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                }}
+                                spacing={4}
+                            >
+                                <Typography variant="h1">
+                                    Commute with Confidence
+                                </Typography>
+                                <Typography fontSize={'20px !important'} color={'text.secondary'}>
+                                    Seamless Rides, Secure Payments - Elevating carpooling with a robust wallet system for a hassle-free experience
+                                </Typography>
+
+                                <Button
+                                    variant="contained"
+                                    onClick={e => { }}
+                                    LinkComponent={Link}
+                                    to={ROUTE_SEARCH}
+                                    color="secondary"
+                                    sx={{
+                                        // backgroundColor: "white",
+                                        // width: 110,
+                                        maxWidth: { sm: '200px' },
+                                        p: 2,
+                                        borderRadius: 24,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        // ":hover": {
+                                        //     backgroundColor: "secondary.main",
+                                        // },
+                                    }}
+                                >
+                                    Find a Ride
+                                </Button>
+                            </Stack>
+                            {/* <Typography variant="h3" textAlign={'start'}>Commute with Confidence</Typography> */}
+                        </Box>
+                        <Box width={'100%'} maxWidth={{ md: '600px' }}>
+                            <Grid container spacing={{ xs: 3 }} sx={{
+                                "& >:nth-of-type(even)": {
+                                    transform: { sm: "translateY(100px)" }
+                                }
+                            }}>
+                                <Grid item xs={12} sm={6}>
+                                    <BenefitCard
+                                        title={"Secure payment"}
+                                        body={"Addressing trust deficits in ridesharing platforms, our solution tackles key industry challenges"}
+                                        CardIcon={Security}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <BenefitCard
+                                        title={"Extra Verification"}
+                                        body={"To enhance safety, we require drivers to upload crucial documents such as their RC book and insurance details"}
+                                        CardIcon={Verified}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <BenefitCard
+                                        title={"Trusted Platform"}
+                                        body={"Prioritizing trust, our platform ensures a secure environment for seamless ridesharing experiences"}
+                                        CardIcon={Code}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <BenefitCard
+                                        title={"Full Transparency"}
+                                        body={"Safety is a top priority with our thorough driver verification process, fostering trust and transparency for all ride companions"}
+                                        CardIcon={Lock}
+                                    />
+                                </Grid>
+
+                            </Grid>
+                        </Box>
                     </Box>
-                </Box>
-            </Container>
+                </Container>
+            </Box>
 
             <Box mx={"auto"} maxWidth={500} gap={4} display={"flex"} flexDirection={"column"} justifyContent={'center'} alignItems={'center'}>
                 <Box py={4}>
