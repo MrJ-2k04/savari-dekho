@@ -1,5 +1,5 @@
 
-import { API_BANKS, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES } from "Store/constants";
+import { API_BANKS, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_SEARCH_HISTORY, API_SEARCH_RIDE, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -14,7 +14,26 @@ const useApi = () => {
   const dispatch = useDispatch();
 
 
-  // ######################################################### FOR PASSENGERS #########################################################
+
+  // ######################################################### FOR EVERYONE #########################################################
+
+
+  const searchRide = async (params) => {
+    const queryString = new URLSearchParams(params).toString();
+    const ack = await apiRequestWithReauth(`${API_SEARCH_RIDE}?${queryString}`, null, 'GET');
+    if (ack.type === RES.SUCCESS) {
+      return ack.payload;
+    }
+    throw new Error(ack.message || "Server Error");
+  }
+
+  const getSearchHistory = async () => {
+    const ack = await apiRequestWithReauth(API_SEARCH_HISTORY, null, 'GET');
+    if (ack.type === RES.SUCCESS) {
+      return ack.payload;
+    }
+    return [];
+  }
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
@@ -126,6 +145,8 @@ const useApi = () => {
       throw new Error(error.message);
     }
   }
+
+  // ######################################################### FOR PASSENGERS #########################################################
 
   const fetchWalletTransactions = async () => {
     const ack = await apiRequestWithReauth(API_TRANSACTION, null, 'GET');
@@ -402,6 +423,8 @@ const useApi = () => {
     forgotPassword,
     resetPassword,
 
+    searchRide,
+    getSearchHistory,
     fetchWalletTransactions,
     requestPayment,
     validatePayment,

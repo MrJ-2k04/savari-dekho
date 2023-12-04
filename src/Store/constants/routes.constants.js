@@ -103,6 +103,8 @@ export const API_FORGOT_PASSWORD = `${API_ENDPOINT}/forgot-password`;
 export const API_TRANSACTION = `${API_ENDPOINT}/transaction`;
 export const API_GENERATE_OTP = `${API_ENDPOINT}/generate-otp`;
 export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
+export const API_SEARCH_HISTORY = `${API_ENDPOINT}/search-history`; // GET
+export const API_SEARCH_RIDE = `${API_ENDPOINT}/search`; // GET
 
 // Payment Stuff
 export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;
