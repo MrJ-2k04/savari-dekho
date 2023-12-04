@@ -1,5 +1,5 @@
 
-import { Box, CircularProgress, List, ListItem, ListItemButton, ListItemText, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, List, ListItemButton, ListItemText, Stack, Typography } from "@mui/material";
 import SearchBar from "Components/Common/SearchBar";
 import useApi from "Components/Hooks/useApi";
 import { ROUTE_SEARCH } from "Store/constants";
@@ -40,7 +40,7 @@ function SearchResultsForm() {
         }
 
         if (searchParams.get("date")) {
-            params["date"] = searchParams.get("date");
+            params["date"] = new Date(...searchParams.get("date").split("-").reverse());
         }
 
         searchRide(params).then(rides => {
