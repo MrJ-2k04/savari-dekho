@@ -10,7 +10,9 @@ function RouteList({
     const color = "secondary.main"
 
     return (<>
-        <List sx={{ bgcolor: 'background.paper' }}>
+        <List
+            // sx={{ bgcolor: 'background.paper' }}
+        >
             {waypoints.map((waypoint, index) => {
                 const isActive = index >= startIndex && index <= endIndex;
                 return <ListItem key={index} sx={{ py: 0, alignItems: "stretch" }} >

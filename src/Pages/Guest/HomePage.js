@@ -1,19 +1,17 @@
 import { useTheme } from "@emotion/react";
-import { Code, ExpandMore, Lock, Security, SecurityOutlined, Verified } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Container, Divider, Grid, Skeleton, Stack, TextField, Typography, alpha } from "@mui/material";
+import { Code, Lock, Security, Verified } from "@mui/icons-material";
+import { Box, Button, Card, CardContent, CardHeader, Container, Grid, Stack, Typography, alpha } from "@mui/material";
 // import Payment from "Components/Payment";
+import publishSvg from "Assets/SVGs/Publish.svg";
+import thiefSvg from "Assets/SVGs/Thief.svg";
 import heroImg from "Assets/SVGs/hero.svg";
 import heroDarkImg from "Assets/SVGs/heroDark1.svg";
-import mobileHeroImg from "Assets/SVGs/heroMobile.svg";
-import ConstructionSrc from "Assets/images/UnderConstruction.png";
 import SearchBar from "Components/Common/SearchBar";
 import UserLayout from "Layout/User";
-import { ROUTE_SEARCH, SITE_CAPTION, THEME } from "Store/constants";
+import { ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, SITE_CAPTION } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import thiefSvg from "Assets/SVGs/Thief.svg";
-import publishSvg from "Assets/SVGs/Publish.svg";
 
 
 function BenefitCard({
@@ -42,27 +40,27 @@ function BenefitCard({
 }
 
 
-function Section({ children, ...props }) {
-    const theme = useTheme();
-    const isDark = useSelector(selectIsDarkMode);
-    return <Box
-        sx={{
-            clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" },
-            // ...sx
-        }}
-        component={'section'}
-        bgcolor={isDark ? theme.palette.background.paper : theme.palette.background.disabled}
-        // bgcolor={theme.palette.background.paper}
-        color={theme.palette.text.primary}
-        {...props}
-    >
-        <Box
-            p={{ md: "106px 24px 24px", xs: "48px 16px 16px" }}
-        >
-            {children}
-        </Box>
-    </Box>
-}
+// function Section({ children, ...props }) {
+//     const theme = useTheme();
+//     const isDark = useSelector(selectIsDarkMode);
+//     return <Box
+//         sx={{
+//             clipPath: { md: "polygon(0 11%, 100% 0%, 100% 100%, 0 100%)", xs: "none" },
+//             // ...sx
+//         }}
+//         component={'section'}
+//         bgcolor={isDark ? theme.palette.background.paper : theme.palette.background.disabled}
+//         // bgcolor={theme.palette.background.paper}
+//         color={theme.palette.text.primary}
+//         {...props}
+//     >
+//         <Box
+//             p={{ md: "106px 24px 24px", xs: "48px 16px 16px" }}
+//         >
+//             {children}
+//         </Box>
+//     </Box>
+// }
 
 function SlantShape({ color }) {
     return <>
@@ -313,7 +311,7 @@ function HomePage() {
                                         ":hover": {
                                             bgcolor: alpha('#FFF', 0.8)
                                         }
-                                    }} >Find A Ride</Button>
+                                    }} >Find a Ride</Button>
                             </Stack>
                         </Grid>
                     </Grid>
@@ -345,26 +343,22 @@ function HomePage() {
                     <Grid container>
                         <Grid item xs={12} md={6}>
                             <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
-                                <Typography color={'white'} variant="h3">Your safety is our priority</Typography>
-                                <Typography color={'rgba(255,255,255,0.9)'}>At BlaBlaCar, we're working hard to make our platform as secure as it can be. But when scams do happen, we want you to know exactly how to avoid and report them. Follow our tips to help us keep you safe.</Typography>
+                                <Typography variant="h3">Driving in your car soon?</Typography>
+                                <Typography>Good news, drivers: get rewarded for your good habits! Earn the Carpool Bonus by completing 3 carpools in 3 months. See eligibility conditions.</Typography>
                                 <Box />
                                 <Button
                                     LinkComponent={Link}
-                                    to={ROUTE_SEARCH}
+                                    to={ROUTE_RIDE_PUBLISH}
                                     variant="contained"
+                                    color="secondary"
                                     sx={{
                                         borderRadius: '50px',
                                         maxWidth: { xs: '100%', md: '200px' },
                                         py: 1,
-                                        color: 'black',
-                                        bgcolor: 'white',
-                                        ":hover": {
-                                            bgcolor: alpha('#FFF', 0.8)
-                                        }
-                                    }} >Find A Ride</Button>
+                                    }} >Publish a Ride</Button>
                             </Stack>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid order={{ xs: -1, md: 1 }} item xs={12} md={6}>
                             <Box
                                 sx={{
                                     background: `url(${publishSvg}) no-repeat center`,
