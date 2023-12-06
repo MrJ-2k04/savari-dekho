@@ -12,6 +12,8 @@ import { ROUTE_SEARCH, SITE_CAPTION, THEME } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import thiefSvg from "Assets/SVGs/Thief.svg";
+import publishSvg from "Assets/SVGs/Publish.svg";
 
 
 function BenefitCard({
@@ -272,17 +274,52 @@ function HomePage() {
             </Box>
 
 
+            {/* Thief Section */}
             <Box component={'section'}
                 position={'relative'}
                 bgcolor={'secondary.main'}
-                pt={{ xs: 6, md: 12 }}
+                pt={{ xs: 6, md: 0 }}
                 pb={2}
                 mt={{ xs: -6, md: -12 }}
                 zIndex={0}
             >
-                Publish a Ride section
 
-                <Box py={{ xs: 4, md: 8 }} />
+                <Container>
+                    <Grid container>
+                        <Grid item xs={12} md={6}>
+                            <Box
+                                sx={{
+                                    background: `url(${thiefSvg}) no-repeat center`,
+                                    height: { xs: 300, sm: 400, md: 500 },
+                                    width: '100%',
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
+                                <Typography color={'white'} variant="h3">Your safety is our priority</Typography>
+                                <Typography color={'rgba(255,255,255,0.9)'}>At BlaBlaCar, we're working hard to make our platform as secure as it can be. But when scams do happen, we want you to know exactly how to avoid and report them. Follow our tips to help us keep you safe.</Typography>
+                                <Box />
+                                <Button
+                                    LinkComponent={Link}
+                                    to={ROUTE_SEARCH}
+                                    variant="contained"
+                                    sx={{
+                                        borderRadius: '50px',
+                                        maxWidth: { xs: '100%', md: '200px' },
+                                        py: 1,
+                                        color: 'black',
+                                        bgcolor: 'white',
+                                        ":hover": {
+                                            bgcolor: alpha('#FFF', 0.8)
+                                        }
+                                    }} >Find A Ride</Button>
+                            </Stack>
+                        </Grid>
+                    </Grid>
+                </Container>
+
+                <Box py={{ xs: 6, md: 0 }} />
 
                 <Box sx={{
                     bottom: 0,
@@ -302,9 +339,42 @@ function HomePage() {
                 </Box>
             </Box>
 
-            <Box component={'section'} position={'relative'}>
-                Thief section
-
+            {/* Publish a Ride Section */}
+            <Box component={'section'} position={'relative'} pb={4}>
+                <Container>
+                    <Grid container>
+                        <Grid item xs={12} md={6}>
+                            <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
+                                <Typography color={'white'} variant="h3">Your safety is our priority</Typography>
+                                <Typography color={'rgba(255,255,255,0.9)'}>At BlaBlaCar, we're working hard to make our platform as secure as it can be. But when scams do happen, we want you to know exactly how to avoid and report them. Follow our tips to help us keep you safe.</Typography>
+                                <Box />
+                                <Button
+                                    LinkComponent={Link}
+                                    to={ROUTE_SEARCH}
+                                    variant="contained"
+                                    sx={{
+                                        borderRadius: '50px',
+                                        maxWidth: { xs: '100%', md: '200px' },
+                                        py: 1,
+                                        color: 'black',
+                                        bgcolor: 'white',
+                                        ":hover": {
+                                            bgcolor: alpha('#FFF', 0.8)
+                                        }
+                                    }} >Find A Ride</Button>
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Box
+                                sx={{
+                                    background: `url(${publishSvg}) no-repeat center`,
+                                    height: { xs: 300, sm: 400, md: 500 },
+                                    width: '100%',
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
+                </Container>
                 <SlantShape color={'secondary.main'} />
             </Box>
 
