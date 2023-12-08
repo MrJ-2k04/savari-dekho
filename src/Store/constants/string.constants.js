@@ -9,6 +9,30 @@ export const CONTACT_NUMBER = '+91 79906 74110';
 export const CONTACT_EMAIL_PRIMARY = 'info@webwizards.in';
 export const CONTACT_EMAIL_SECONDARY = 'wizardsweb142@gmail.com';
 
+export const TESTIMONIALS = [
+  {
+    image: 'https://www.tutorialrepublic.com/examples/images/clients/1.jpg',
+    content:
+      'Phasellus vitae suscipit justo. Mauris pharetra feugiat ante id lacinia. Etiam faucibus mauris id tempor egestas. Duis luctus turpis at accumsan tincidunt. Phasellus risus risus, volutpat vel tellus ac, tincidunt fringilla massa. Etiam hendrerit dolor eget rutrum',
+    name: 'PAULA WILSON',
+    role: 'Media Analyst',
+  },
+  {
+    image: 'https://www.tutorialrepublic.com/examples/images/clients/2.jpg',
+    content:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    name: 'JOHN DOE',
+    role: 'Software Engineer',
+  },
+  {
+    image: 'https://www.tutorialrepublic.com/examples/images/clients/3.jpg',
+    content:
+      'Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa.',
+    name: 'JANE DOE',
+    role: 'Product Manager',
+  },
+];
+
 // Google Map settings
 export const MAP_CENTER = { lat: 20.5937, lng: 78.9629 };
 export const MAP_SEARCH_COUNTRY_RESTRICTION = ["IN"];

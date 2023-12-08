@@ -1,14 +1,16 @@
 
 import { Close, FilterAlt, FilterAltOutlined, FilterList, Group } from "@mui/icons-material";
-import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CircularProgress, IconButton, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CircularProgress, Divider, IconButton, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import SearchBar from "Components/Common/SearchBar";
 import useApi from "Components/Hooks/useApi";
-import { ROUTE_SEARCH } from "Store/constants";
-import { showError } from "Utils";
+import { ROUTE_RIDES, ROUTE_SEARCH, ROUTE_SEARCH_RESULT } from "Store/constants";
+import { showError, showSuccess } from "Utils";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import searchSvg from "Assets/SVGs/Search.svg";
+import { LoadingButton } from "@mui/lab";
 
 
 function SearchResultsForm() {
@@ -16,11 +18,26 @@ function SearchResultsForm() {
     const nav = useNavigate();
     const { loading, searchRide } = useApi();
 
+    // ############################################# COMPUTED #############################################
+
+    const params = {
+        from: searchParams.get("from"),
+        fromPlaceId: searchParams.get("fromPlaceId"),
+        to: searchParams.get("to"),
+        toPlaceId: searchParams.get("toPlaceId"),
+        seats: searchParams.get("seats"),
+    }
+    if (searchParams.get("date")) {
+        params["date"] = new Date(...searchParams.get("date").split("-").reverse());
+    }
+
     // ############################################# States #############################################
 
+    const [creatingRideAlert, setCreatingRideAlert] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([
         {
+            id: "sdfjfdgh33w4r",
             from: "Ahmedabad",
             fromTime: "8:00",
             to: "Surat",
@@ -33,6 +50,7 @@ function SearchResultsForm() {
             },
         },
         {
+            id: "sdfjfdgh33w4r",
             from: "Surat",
             fromTime: "8:00",
             to: "Ahmedabad",
@@ -48,6 +66,14 @@ function SearchResultsForm() {
 
     // ############################################# Handlers #############################################
 
+    const handleRideAlertCreation = () => {
+        setCreatingRideAlert(true);
+        setTimeout(() => {
+            setCreatingRideAlert(false);
+            console.log(params);
+            showSuccess({ message: "You will be notified via email whenever a Ride is available" });
+        }, 1000);
+    }
 
 
     // ############################################# Effects #############################################
@@ -64,18 +90,6 @@ function SearchResultsForm() {
 
 
         // Retrieve Search Results from Backend
-        const params = {
-            from: searchParams.get("from"),
-            fromPlaceId: searchParams.get("fromPlaceId"),
-            to: searchParams.get("to"),
-            toPlaceId: searchParams.get("toPlaceId"),
-            seats: searchParams.get("seats"),
-        }
-
-        if (searchParams.get("date")) {
-            params["date"] = new Date(...searchParams.get("date").split("-").reverse());
-        }
-
         searchRide(params).then(rides => {
             if (rides.length === 0) {
                 // handle no search result found
@@ -93,21 +107,32 @@ function SearchResultsForm() {
         <Stack spacing={4}>
             <SearchBar
                 from={{
-                    fullName: searchParams.get("from"),
-                    placeId: searchParams.get("fromPlaceId"),
+                    fullName: params.from,
+                    placeId: params.fromPlaceId,
                 }}
                 to={{
-                    fullName: searchParams.get("to"),
-                    placeId: searchParams.get("toPlaceId"),
+                    fullName: params.to,
+                    placeId: params.toPlaceId,
                 }}
                 date={searchParams.get("date")}
-                seats={searchParams.get("seats")}
+                seats={params.seats}
             />
-            <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} width={'100%'} gap={2}>
+            <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} width={'100%'} gap={4}>
                 <MHidden width="mdDown">
-                    <Box width={'100%'}>
-                        <Typography>Filters</Typography>
-                    </Box>
+
+                    <Stack width={'100%'} maxWidth={'400px'} spacing={2}>
+                        <Box display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                            <Typography color={'primary'} variant="h3">Filters</Typography>
+                            <FilterAlt color="primary" fontSize="large" />
+                        </Box>
+                        <Stack spacing={1}>
+                            <Typography>Item 1</Typography>
+                            <Typography>Item 2</Typography>
+                            <Typography>Item 3</Typography>
+                        </Stack>
+                    </Stack>
+                    <Divider orientation="vertical" flexItem />
+
                 </MHidden>
                 <MHidden width="mdUp">
                     <Button
@@ -118,17 +143,41 @@ function SearchResultsForm() {
                     >Apply Filters</Button>
                 </MHidden>
                 <Box width={'100%'}>
-                    {loading ? <>
+                    {loading && !creatingRideAlert ? <>
                         <CircularProgress />
                     </>
                         :
                         searchResults.length === 0 ?
-                            <>No Search Found</>
+                            <>
+                                <Box py={2}>
+                                    <Stack spacing={2} alignItems={'center'}>
+                                        <Box
+                                            sx={{
+                                                background: `url(${searchSvg}) no-repeat center`,
+                                                backgroundSize: 'cover',
+                                                height: { xs: 300, sm: 400, },
+                                                width: '100%',
+                                            }}
+                                        />
+                                        <Typography variant="h3" color={'primary'} textAlign={'center'}>No Rides found...</Typography>
+                                        <Box />
+                                        <LoadingButton
+                                            variant="contained"
+                                            color="secondary"
+                                            sx={{ width: 'fit-content' }}
+                                            onClick={handleRideAlertCreation}
+                                            loading={creatingRideAlert}
+                                        >
+                                            Create Ride Alert
+                                        </LoadingButton>
+                                    </Stack>
+                                </Box>
+                            </>
                             :
                             <Stack spacing={4}>
                                 {searchResults.map((result, index) =>
                                     <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
-                                        <CardActionArea>
+                                        <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${result.id}`}>
                                             <CardContent sx={{ p: 1 }}>
                                                 <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                                                     <Box>

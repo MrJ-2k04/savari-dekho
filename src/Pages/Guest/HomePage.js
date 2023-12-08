@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Code, Lock, Security, Verified } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, CardHeader, Container, Grid, Stack, Typography, alpha } from "@mui/material";
+import { Box, Button, Card, CardContent, CardHeader, Container, Grid, IconButton, Slider, Stack, SwipeableDrawer, Typography, alpha } from "@mui/material";
 // import Payment from "Components/Payment";
 import publishSvg from "Assets/SVGs/Publish.svg";
 import thiefSvg from "Assets/SVGs/Thief.svg";
@@ -374,7 +374,9 @@ function HomePage() {
 
             <Box component={'section'} position={'relative'} bgcolor={'secondary.main'}>
 
-                Testimonials
+                <div style={{ textAlign: 'center', marginTop: 50 }}>
+                    
+                </div>
                 {/* <Box py={10} /> */}
 
                 <SlantShape color="background.default" />
