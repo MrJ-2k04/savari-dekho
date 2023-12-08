@@ -1,16 +1,17 @@
 
-import { Close, FilterAlt, FilterAltOutlined, FilterList, Group } from "@mui/icons-material";
-import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CircularProgress, Divider, IconButton, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import { AddCircle, Close, FilterAlt, FilterAltOutlined, FilterList, Group } from "@mui/icons-material";
+import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, IconButton, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import SearchBar from "Components/Common/SearchBar";
 import useApi from "Components/Hooks/useApi";
-import { ROUTE_RIDES, ROUTE_SEARCH, ROUTE_SEARCH_RESULT } from "Store/constants";
+import { ROUTE_RIDES, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_TYPE_OPTIONS } from "Store/constants";
 import { showError, showSuccess } from "Utils";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import searchSvg from "Assets/SVGs/Search.svg";
 import { LoadingButton } from "@mui/lab";
+import { TextField } from "@mui/material";
 
 
 function SearchResultsForm() {
@@ -64,6 +65,8 @@ function SearchResultsForm() {
         },
     ]);
 
+    const [countPerson, setCountPerson] = useState(1);
+    const [countChild, setCountChild] = useState(1);
     // ############################################# Handlers #############################################
 
     const handleRideAlertCreation = () => {
@@ -75,7 +78,13 @@ function SearchResultsForm() {
         }, 1000);
     }
 
+    const handlePersonCount = () => {
+        setCountPerson(countPerson + 1);
+    }
 
+    const handleCountChild = () => {
+        setCountChild(countChild + 1);
+    }
     // ############################################# Effects #############################################
 
     useEffect(() => {
@@ -125,10 +134,67 @@ function SearchResultsForm() {
                             <Typography color={'primary'} variant="h3">Filters</Typography>
                             <FilterAlt color="primary" fontSize="large" />
                         </Box>
-                        <Stack spacing={1}>
-                            <Typography>Item 1</Typography>
-                            <Typography>Item 2</Typography>
-                            <Typography>Item 3</Typography>
+                        <Stack spacing={2} sx={{color:'primary.main'}}>
+                            <Box>
+                                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                                    <FormLabel component="legend" >Type of cars</FormLabel>
+                                    <FormGroup>
+                                        {
+                                            VEHICLE_TYPE_OPTIONS.map((vehicleType, index) =>
+
+                                                <FormControlLabel key={index}
+                                                    control={
+                                                        <Checkbox name={vehicleType} />
+                                                    }
+                                                    label={vehicleType}
+                                                />
+                                            )
+                                        }
+                                    </FormGroup>
+                           
+                                </FormControl>
+                            </Box>
+
+                            <Box>
+                                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                                    <FormLabel component="legend">Type of fuels</FormLabel>
+                                    <FormGroup>
+                                        {
+                                            VEHICLE_FUEL_TYPES.map((fuelType, index) =>
+
+                                                <FormControlLabel key={index}
+                                                    control={
+                                                        <Checkbox name={fuelType} />
+                                                    }
+                                                    label={fuelType}
+                                                />
+                                            )
+                                        }
+                                    </FormGroup>
+                    
+                                </FormControl>
+                            </Box>
+                           
+                            <Box>
+                                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                                    <FormLabel component="legend">AC</FormLabel>
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox name="Yes" />
+                                            }
+                                            label="Yes"
+                                        />
+                                         <FormControlLabel
+                                            control={
+                                                <Checkbox name="No" />
+                                            }
+                                            label="No"
+                                        />
+                                    </FormGroup>
+                                
+                                </FormControl>
+                            </Box>
                         </Stack>
                     </Stack>
                     <Divider orientation="vertical" flexItem />
