@@ -1,17 +1,16 @@
 
-import { AddCircle, Close, FilterAlt, FilterAltOutlined, FilterList, Group } from "@mui/icons-material";
-import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, IconButton, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import { Close, FilterAlt, Group } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, LinearProgress, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import searchSvg from "Assets/SVGs/Search.svg";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import SearchBar from "Components/Common/SearchBar";
 import useApi from "Components/Hooks/useApi";
-import { ROUTE_RIDES, ROUTE_SEARCH, ROUTE_SEARCH_RESULT, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_TYPE_OPTIONS } from "Store/constants";
+import { ROUTE_RIDES, ROUTE_SEARCH, VEHICLE_FUEL_TYPES, VEHICLE_TYPE_OPTIONS } from "Store/constants";
 import { showError, showSuccess } from "Utils";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import searchSvg from "Assets/SVGs/Search.svg";
-import { LoadingButton } from "@mui/lab";
-import { TextField } from "@mui/material";
 
 
 function SearchResultsForm() {
@@ -63,10 +62,21 @@ function SearchResultsForm() {
                 name: "Denny",
             },
         },
+        {
+            id: "sdfjfdgh33w4r",
+            from: "Surat",
+            fromTime: "8:00",
+            to: "Ahmedabad",
+            toTime: "11:30",
+            price: 700,
+            seats: 2,
+            publisher: {
+                profileUrl: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+                name: "Denny",
+            },
+        },
     ]);
-
-    const [countPerson, setCountPerson] = useState(1);
-    const [countChild, setCountChild] = useState(1);
+    
     // ############################################# Handlers #############################################
 
     const handleRideAlertCreation = () => {
@@ -77,14 +87,7 @@ function SearchResultsForm() {
             showSuccess({ message: "You will be notified via email whenever a Ride is available" });
         }, 1000);
     }
-
-    const handlePersonCount = () => {
-        setCountPerson(countPerson + 1);
-    }
-
-    const handleCountChild = () => {
-        setCountChild(countChild + 1);
-    }
+    
     // ############################################# Effects #############################################
 
     useEffect(() => {
@@ -130,11 +133,11 @@ function SearchResultsForm() {
                 <MHidden width="mdDown">
 
                     <Stack width={'100%'} maxWidth={'400px'} spacing={2}>
-                        <Box display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                        <Box display={'flex'} alignItems={'center'} pl={3}>
                             <Typography color={'primary'} variant="h3">Filters</Typography>
                             <FilterAlt color="primary" fontSize="large" />
                         </Box>
-                        <Stack spacing={2} sx={{color:'primary.main'}}>
+                        <Stack spacing={1} sx={{ color: 'primary.main' }}>
                             <Box>
                                 <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
                                     <FormLabel component="legend" >Type of cars</FormLabel>
@@ -151,7 +154,7 @@ function SearchResultsForm() {
                                             )
                                         }
                                     </FormGroup>
-                           
+
                                 </FormControl>
                             </Box>
 
@@ -171,10 +174,10 @@ function SearchResultsForm() {
                                             )
                                         }
                                     </FormGroup>
-                    
+
                                 </FormControl>
                             </Box>
-                           
+
                             <Box>
                                 <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
                                     <FormLabel component="legend">AC</FormLabel>
@@ -185,14 +188,14 @@ function SearchResultsForm() {
                                             }
                                             label="Yes"
                                         />
-                                         <FormControlLabel
+                                        <FormControlLabel
                                             control={
                                                 <Checkbox name="No" />
                                             }
                                             label="No"
                                         />
                                     </FormGroup>
-                                
+
                                 </FormControl>
                             </Box>
                         </Stack>
@@ -201,19 +204,23 @@ function SearchResultsForm() {
 
                 </MHidden>
                 <MHidden width="mdUp">
-                    <Button
-                        onClick={() => setIsFilterOpen(true)}
-                        variant="contained"
-                        sx={{ width: 'fit-content', ml: 'auto' }}
-                        endIcon={<FilterAlt />}
-                    >Apply Filters</Button>
+                    <Box display={'flex'} alignItems={'center'} px={1}>
+                        {!loading && <Typography variant="h4" color={'text.secondary'}>{searchResults.length} rides available</Typography>}
+                        <Button
+                            onClick={() => setIsFilterOpen(true)}
+                            variant="contained"
+                            sx={{ width: 'fit-content', ml: 'auto' }}
+                            endIcon={<FilterAlt />}
+                        >Apply Filters</Button>
+                    </Box>
                 </MHidden>
                 <Box width={'100%'}>
                     {loading && !creatingRideAlert ? <>
-                        <CircularProgress />
+                        <LinearProgress />
                     </>
                         :
                         searchResults.length === 0 ?
+                            /* No Rides Found */
                             <>
                                 <Box py={2}>
                                     <Stack spacing={2} alignItems={'center'}>
@@ -240,7 +247,11 @@ function SearchResultsForm() {
                                 </Box>
                             </>
                             :
-                            <Stack spacing={4}>
+                            /* Results found */
+                            <Stack spacing={3}>
+                                <MHidden width="mdDown">
+                                    <Typography variant="h4" color={'text.secondary'}>{searchResults.length} rides available</Typography>
+                                </MHidden>
                                 {searchResults.map((result, index) =>
                                     <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
                                         <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${result.id}`}>
