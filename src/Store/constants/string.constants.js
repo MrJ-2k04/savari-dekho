@@ -56,8 +56,9 @@ export const FAQS = [
   },
   {
     question: "Can I choose my travel companions?",
-    answer: "Yes, you have the flexibility to choose your travel companions. Review profiles, ratings, and preferences to find the perfect match for your carpooling journey."
+    answer: "Yes, with Savari Dekho, you have the flexibility to review profiles, ratings, and preferences, allowing you to find the perfect travel companions for your carpooling journey."
   }
+
 ];
 
 

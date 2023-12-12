@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Code, Lock, Security, Verified } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Stack, Typography, alpha } from "@mui/material";
+import { Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
 // import Payment from "Components/Payment";
 import publishSvg from "Assets/SVGs/Publish.svg";
 import thiefSvg from "Assets/SVGs/Thief.svg";
@@ -99,9 +99,11 @@ function HomePage() {
 
     const isDarkMode = useSelector(selectIsDarkMode);
     const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     return (
         <UserLayout>
+            {/* Hero Section */}
             <Box
                 component="section"
                 sx={{
@@ -164,7 +166,7 @@ function HomePage() {
             </Box>
 
 
-
+            {/* Benefit Cards Section */}
             <Box component={'section'} position='relative' zIndex={10}>
                 {BackgroundTriangle}
                 <Container sx={{ py: 4, pb: { sm: 14 }, position: 'relative' }} maxWidth='xl'>
@@ -337,6 +339,7 @@ function HomePage() {
                 </Box>
             </Box>
 
+
             {/* Publish a Ride Section */}
             <Box component={'section'} position={'relative'} pb={4}>
                 <Container>
@@ -372,30 +375,40 @@ function HomePage() {
                 <SlantShape color={'secondary.main'} />
             </Box>
 
-            {/* Testimonials */}
+
+            {/* Testimonials Section */}
             <Box component={'section'} position={'relative'} bgcolor={'secondary.main'}>
                 <Container>
-                    <Typography variant="h2" color={'white'}>Why Savari Dekho</Typography>
-                    <Box my={4} />
-                    <Grid container spacing={8}>
+                    <Typography variant="h2" textAlign={'center'}>Testimonials</Typography>
+                </Container>
+                <Box py={4} />
+                <SlantShape color="background.default" />
+            </Box>
+
+            {/* Why Section */}
+            <Box component={'section'}>
+                <Container>
+                    <Typography variant="h2" color={'secondary'}>Why Savari Dekho?</Typography>
+                    <Box my={6} />
+                    <Grid container columnSpacing={8} rowSpacing={4}>
                         <Grid item xs={12} md={6}>
                             <Stack spacing={4}>
                                 {FAQS.slice(0, FAQS.length / 2).map((faq, index) =>
-                                    <Stack key={index} color={'white'} spacing={1}>
-                                        <Typography variant="h4">{faq.question}</Typography>
-                                        <Typography>{faq.answer}</Typography>
-                                        <Divider />
+                                    <Stack key={index} spacing={2}>
+                                        <Typography variant="h4" color={'primary'}>{faq.question}</Typography>
+                                        <Typography color={'text.secondary'}>{faq.answer}</Typography>
+                                        {(index !== Math.floor(FAQS.length / 2) - 1 || isSmallScreen) && <Divider />}
                                     </Stack>
                                 )}
                             </Stack>
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <Stack spacing={4} mt={-4}>
+                            <Stack spacing={4}>
                                 {FAQS.slice(FAQS.length / 2).map((faq, index) =>
-                                    <Stack key={index} color={'white'} spacing={1}>
-                                        <Typography variant="h4">{faq.question}</Typography>
-                                        <Typography>{faq.answer}</Typography>
-                                        <Divider />
+                                    <Stack key={index} spacing={2}>
+                                        <Typography variant="h4" color={'primary'}>{faq.question}</Typography>
+                                        <Typography color={'text.secondary'}>{faq.answer}</Typography>
+                                        {(index !== Math.floor(FAQS.length / 2) - 1) && <Divider />}
                                     </Stack>
                                 )}
                             </Stack>
@@ -403,15 +416,6 @@ function HomePage() {
                     </Grid>
                 </Container>
                 <Box py={4} />
-
-                <SlantShape color="background.default" />
-
-            </Box>
-
-            <Box component={'section'}>
-                <Container>
-                </Container>
-                {/* <Box py={10} /> */}
             </Box>
 
 
@@ -420,7 +424,7 @@ function HomePage() {
                     <img width={"100%"} height={"100%"} src={ConstructionSrc} alt="" />
                 </Box>
             </Box> */}
-        </UserLayout>
+        </UserLayout >
     );
 }
 
