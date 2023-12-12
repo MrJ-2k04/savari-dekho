@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Code, Lock, Security, Verified } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, CardHeader, Container, Grid, IconButton, Slider, Stack, SwipeableDrawer, Typography, alpha } from "@mui/material";
+import { Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Stack, Typography, alpha } from "@mui/material";
 // import Payment from "Components/Payment";
 import publishSvg from "Assets/SVGs/Publish.svg";
 import thiefSvg from "Assets/SVGs/Thief.svg";
@@ -8,7 +8,7 @@ import heroImg from "Assets/SVGs/hero.svg";
 import heroDarkImg from "Assets/SVGs/heroDark1.svg";
 import SearchBar from "Components/Common/SearchBar";
 import UserLayout from "Layout/User";
-import { ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, SITE_CAPTION } from "Store/constants";
+import { FAQS, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, SITE_CAPTION } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -372,19 +372,45 @@ function HomePage() {
                 <SlantShape color={'secondary.main'} />
             </Box>
 
+            {/* Testimonials */}
             <Box component={'section'} position={'relative'} bgcolor={'secondary.main'}>
-
-                <div style={{ textAlign: 'center', marginTop: 50 }}>
-                    
-                </div>
-                {/* <Box py={10} /> */}
+                <Container>
+                    <Typography variant="h2" color={'white'}>Why Savari Dekho</Typography>
+                    <Box my={4} />
+                    <Grid container spacing={8}>
+                        <Grid item xs={12} md={6}>
+                            <Stack spacing={4}>
+                                {FAQS.slice(0, FAQS.length / 2).map((faq, index) =>
+                                    <Stack key={index} color={'white'} spacing={1}>
+                                        <Typography variant="h4">{faq.question}</Typography>
+                                        <Typography>{faq.answer}</Typography>
+                                        <Divider />
+                                    </Stack>
+                                )}
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Stack spacing={4} mt={-4}>
+                                {FAQS.slice(FAQS.length / 2).map((faq, index) =>
+                                    <Stack key={index} color={'white'} spacing={1}>
+                                        <Typography variant="h4">{faq.question}</Typography>
+                                        <Typography>{faq.answer}</Typography>
+                                        <Divider />
+                                    </Stack>
+                                )}
+                            </Stack>
+                        </Grid>
+                    </Grid>
+                </Container>
+                <Box py={4} />
 
                 <SlantShape color="background.default" />
 
             </Box>
 
             <Box component={'section'}>
-                FAQs
+                <Container>
+                </Container>
                 {/* <Box py={10} /> */}
             </Box>
 

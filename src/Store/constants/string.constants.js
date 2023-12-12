@@ -33,6 +33,34 @@ export const TESTIMONIALS = [
   },
 ];
 
+export const FAQS = [
+  {
+    question: "What is Savari Dekho?",
+    answer: "Savari Dekho is a carpooling platform that connects drivers with empty seats to passengers traveling in the same direction. It's a cost-effective and eco-friendly way to travel."
+  },
+  {
+    question: "How does carpooling work?",
+    answer: "Carpooling with Savari Dekho is simple. Drivers offer their available seats, and passengers can find rides going their way. The platform facilitates convenient and affordable travel for both drivers and passengers."
+  },
+  {
+    question: "Is it safe to carpool with Savari Dekho?",
+    answer: "Yes, safety is our top priority. We implement various safety features, including user verifications, reviews, and ratings. Users can choose their travel companions based on shared preferences and reviews from the community."
+  },
+  {
+    question: "What are the benefits of carpooling?",
+    answer: "Carpooling benefits both drivers and passengers. Drivers save on fuel costs, reduce traffic congestion, and contribute to a greener environment. Passengers enjoy affordable and comfortable rides while meeting new people."
+  },
+  {
+    question: "How do I join Savari Dekho?",
+    answer: "Joining Savari Dekho is easy. Simply sign up, create a profile, and start offering or booking rides. Whether you're a driver with extra seats or a passenger looking for a ride, Savari Dekho connects you with travel companions."
+  },
+  {
+    question: "Can I choose my travel companions?",
+    answer: "Yes, you have the flexibility to choose your travel companions. Review profiles, ratings, and preferences to find the perfect match for your carpooling journey."
+  }
+];
+
+
 // Google Map settings
 export const MAP_CENTER = { lat: 20.5937, lng: 78.9629 };
 export const MAP_SEARCH_COUNTRY_RESTRICTION = ["IN"];
