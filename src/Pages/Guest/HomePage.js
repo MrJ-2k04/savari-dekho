@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { Code, Lock, Security, Verified } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
 // import Payment from "Components/Payment";
 import publishSvg from "Assets/SVGs/Publish.svg";
 import thiefSvg from "Assets/SVGs/Thief.svg";
@@ -8,7 +8,7 @@ import heroImg from "Assets/SVGs/hero.svg";
 import heroDarkImg from "Assets/SVGs/heroDark1.svg";
 import SearchBar from "Components/Common/SearchBar";
 import UserLayout from "Layout/User";
-import { FAQS, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, SITE_CAPTION } from "Store/constants";
+import { FAQS, ROUTE_RIDE_PUBLISH, ROUTE_SEARCH, SITE_CAPTION, TESTIMONIALS } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -379,7 +379,22 @@ function HomePage() {
             {/* Testimonials Section */}
             <Box component={'section'} position={'relative'} bgcolor={'secondary.main'}>
                 <Container>
-                    <Typography variant="h2" textAlign={'center'}>Testimonials</Typography>
+                    <Typography variant="h1" textAlign={'center'} color={'white'}>Testimonials</Typography>
+                    <Box py={4} />
+                    <Stack spacing={4} direction={{ xs: "column", md: 'row' }} justifyContent={'center'} alignItems={'center'}>
+                        {TESTIMONIALS.map((testi, index) =>
+                            <Card sx={{ maxWidth: '400px' }} key={index}>
+                                <CardContent>
+                                    <Stack spacing={3} width={'100%'}>
+                                        <Box width={'100%'} display={'flex'} justifyContent={'center'}>
+                                            <Avatar sx={{ mx: 'auto', width: 76, height: 76 }}><img src={testi.image} alt="" /></Avatar>
+                                        </Box>
+                                        <Typography color={'text.secondary'} sx={{ fontStyle: 'italic' }}>"{testi.content}"</Typography>
+                                        <Typography color={'primary'} sx={{ fontWeight: 700 }}>{testi.name} - {testi.role}</Typography>
+                                    </Stack>
+                                </CardContent>
+                            </Card>)}
+                    </Stack>
                 </Container>
                 <Box py={4} />
                 <SlantShape color="background.default" />

@@ -13,25 +13,26 @@ export const TESTIMONIALS = [
   {
     image: 'https://www.tutorialrepublic.com/examples/images/clients/1.jpg',
     content:
-      'Phasellus vitae suscipit justo. Mauris pharetra feugiat ante id lacinia. Etiam faucibus mauris id tempor egestas. Duis luctus turpis at accumsan tincidunt. Phasellus risus risus, volutpat vel tellus ac, tincidunt fringilla massa. Etiam hendrerit dolor eget rutrum',
-    name: 'PAULA WILSON',
-    role: 'Media Analyst',
+      'Savari Dekho has transformed my daily commute! The platform is user-friendly, and I\'ve met wonderful travel companions. The experience has been smooth, and I highly recommend it.',
+    name: 'ANANYA SINGH',
+    role: 'Frequent Commuter',
   },
   {
     image: 'https://www.tutorialrepublic.com/examples/images/clients/2.jpg',
     content:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    name: 'JOHN DOE',
-    role: 'Software Engineer',
+      'Being a part of Savari Dekho community is fantastic. It\'s more than just ridesharing; it\'s about building connections and making each journey enjoyable. I\'ve had great experiences so far!',
+    name: 'RAJAT VERMA',
+    role: 'Community Member',
   },
   {
     image: 'https://www.tutorialrepublic.com/examples/images/clients/3.jpg',
     content:
-      'Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa.',
-    name: 'JANE DOE',
-    role: 'Product Manager',
+      'Savari Dekho makes carpooling convenient and eco-friendly. I appreciate the safety features and the opportunity to share rides with like-minded individuals. It has truly made commuting a breeze!',
+    name: 'PRIYA MEHTA',
+    role: 'Environment Enthusiast',
   },
 ];
+
 
 export const FAQS = [
   {
