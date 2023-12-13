@@ -298,7 +298,9 @@ function HomePage() {
                         <Grid item xs={12} md={6}>
                             <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
                                 <Typography color={'white'} variant="h3">Your safety is our priority</Typography>
-                                <Typography color={'rgba(255,255,255,0.9)'}>At BlaBlaCar, we're working hard to make our platform as secure as it can be. But when scams do happen, we want you to know exactly how to avoid and report them. Follow our tips to help us keep you safe.</Typography>
+                                <Typography color={'rgba(255,255,255,0.9)'}> At Savari Dekho, we are dedicated to ensuring the utmost security on our platform. We work diligently to make our services as secure as possible. In the unfortunate event of scams, we want you to feel empowered to avoid and report them promptly.Travel with confidence, knowing that your safety is our top priority.
+
+</Typography>
                                 <Box />
                                 <Button
                                     LinkComponent={Link}
@@ -346,8 +348,8 @@ function HomePage() {
                     <Grid container>
                         <Grid item xs={12} md={6}>
                             <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
-                                <Typography variant="h3">Driving in your car soon?</Typography>
-                                <Typography>Good news, drivers: get rewarded for your good habits! Earn the Carpool Bonus by completing 3 carpools in 3 months. See eligibility conditions.</Typography>
+                                <Typography variant="h3">Drive Responsibly, Earn Rewards!</Typography>
+                                <Typography>Attention, Drivers! A thrilling opportunity is here – unlock rewards for your responsible driving! Introducing the Carpool Bonus: Drive with us, complete 3 carpools in 3 months, and dive into a world of benefits. Explore eligibility conditions below to get started on your rewarding journey.</Typography>
                                 <Box />
                                 <Button
                                     LinkComponent={Link}
