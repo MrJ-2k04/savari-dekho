@@ -1,28 +1,21 @@
 
 import { LocationOn } from "@mui/icons-material";
-import { Autocomplete, Box, Grid, TextField, Typography, debounce } from "@mui/material";
+import { Autocomplete, Box, Grid, Popper, TextField, Typography, debounce } from "@mui/material";
 import { MAP_SEARCH_COUNTRY_RESTRICTION } from "Store/constants";
 import { selectIsMapLoaded } from "Store/selectors";
+import { combineObjects } from "Utils";
 import parse from "autosuggest-highlight/parse";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 const autocompleteService = { current: null };
 
-function PlaceAutocomplete({
-    value,
-    onChange,
-    label,
-    error,
-    helperText,
-    placeholder,
-    fullWidth = false,
-    sx,
-}) {
+function PlaceAutocomplete(props) {
 
     const isLoaded = useSelector(selectIsMapLoaded);
     const [inputValue, setInputValue] = useState('');
     const [options, setOptions] = useState([""]);
+    const { value, onChange, ...rest } = props;
 
     const fetch = useMemo(
         () =>
@@ -35,7 +28,6 @@ function PlaceAutocomplete({
     useEffect(() => {
 
         let active = true;
-
 
         if (!isLoaded) return;
         if (!autocompleteService.current && window.google) {
@@ -58,7 +50,7 @@ function PlaceAutocomplete({
         }
 
         fetch(reqParams, (results) => {
-            if(active) {
+            if (active) {
                 let newOptions = [""];
 
                 if (value) {
@@ -81,8 +73,8 @@ function PlaceAutocomplete({
 
     return (<>
         <Autocomplete
-            sx={sx}
-            fullWidth={fullWidth}
+            sx={rest.sx}
+            fullWidth={Boolean(rest.fullWidth)}
             getOptionLabel={(option) =>
                 typeof option === 'string' ? option : option.description
             }
@@ -107,16 +99,18 @@ function PlaceAutocomplete({
             onInputChange={(event, newInputValue) => {
                 setInputValue(newInputValue);
             }}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    label={label}
-                    error={error}
-                    helperText={helperText}
-                    placeholder={placeholder}
-                    fullWidth={fullWidth}
+            renderInput={(params) => {
+                return <TextField
+                    {...combineObjects(rest, params)}
+                    InputProps={combineObjects(rest.InputProps, params.InputProps)}
+                // label={rest.label||params.}
+                // error={rest.error}
+                // helperText={rest.helperText||params.helperText}
+                // placeholder={rest.placeholder||params.placeholder}
+                // fullWidth={rest.fullWidth||params.fullWidth}
+                // variant={variant}
                 />
-            )}
+            }}
             renderOption={(props, option) => {
                 // console.log(props,option, a, b, options);
                 if (option === "") return <></>;

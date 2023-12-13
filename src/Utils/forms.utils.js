@@ -104,9 +104,29 @@ export function getPricePrediction(distance) {
     // ]
 }
 
+export async function sleep(delayMs) {
+    return new Promise((res, rej) => setTimeout(() => res(), delayMs))
+}
+
 
 // -------------------------------------------------------- CONVERSION FUNCTIONS --------------------------------------------------------
 
+export function combineObjects(obj1, obj2) {
+    const result = {};
+    if (!(obj1 && obj2)) return obj1 ?? obj2 ?? {}
+
+    for (const key of Object.keys(obj1)) {
+        result[key] = obj1[key] !== undefined ? obj1[key] : obj2[key];
+    }
+
+    for (const key of Object.keys(obj2)) {
+        if (obj1[key] === undefined) {
+            result[key] = obj2[key];
+        }
+    }
+
+    return result;
+}
 
 export function parseFormData(targetForm) {
     // if (typeof targetForm === 'object') {

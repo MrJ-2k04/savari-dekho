@@ -9,6 +9,60 @@ export const CONTACT_NUMBER = '+91 79906 74110';
 export const CONTACT_EMAIL_PRIMARY = 'info@webwizards.in';
 export const CONTACT_EMAIL_SECONDARY = 'wizardsweb142@gmail.com';
 
+export const TESTIMONIALS = [
+  {
+    image: 'https://www.tutorialrepublic.com/examples/images/clients/1.jpg',
+    content:
+      'Savari Dekho has transformed my daily commute! The platform is user-friendly, and I\'ve met wonderful travel companions. The experience has been smooth, and I highly recommend it.',
+    name: 'ANANYA SINGH',
+    role: 'Frequent Commuter',
+  },
+  {
+    image: 'https://www.tutorialrepublic.com/examples/images/clients/2.jpg',
+    content:
+      'Being a part of Savari Dekho community is fantastic. It\'s more than just ridesharing; it\'s about building connections and making each journey enjoyable. I\'ve had great experiences so far!',
+    name: 'RAJAT VERMA',
+    role: 'Community Member',
+  },
+  {
+    image: 'https://www.tutorialrepublic.com/examples/images/clients/3.jpg',
+    content:
+      'Savari Dekho makes carpooling convenient and eco-friendly. I appreciate the safety features and the opportunity to share rides with like-minded individuals. It has truly made commuting a breeze!',
+    name: 'PRIYA MEHTA',
+    role: 'Environment Enthusiast',
+  },
+];
+
+
+export const FAQS = [
+  {
+    question: "What is Savari Dekho?",
+    answer: "Savari Dekho is a carpooling platform that connects drivers with empty seats to passengers traveling in the same direction. It's a cost-effective and eco-friendly way to travel."
+  },
+  {
+    question: "How does carpooling work?",
+    answer: "Carpooling with Savari Dekho is simple. Drivers offer their available seats, and passengers can find rides going their way. The platform facilitates convenient and affordable travel for both drivers and passengers."
+  },
+  {
+    question: "Is it safe to carpool with Savari Dekho?",
+    answer: "Yes, safety is our top priority. We implement various safety features, including user verifications, reviews, and ratings. Users can choose their travel companions based on shared preferences and reviews from the community."
+  },
+  {
+    question: "What are the benefits of carpooling?",
+    answer: "Carpooling benefits both drivers and passengers. Drivers save on fuel costs, reduce traffic congestion, and contribute to a greener environment. Passengers enjoy affordable and comfortable rides while meeting new people."
+  },
+  {
+    question: "How do I join Savari Dekho?",
+    answer: "Joining Savari Dekho is easy. Simply sign up, create a profile, and start offering or booking rides. Whether you're a driver with extra seats or a passenger looking for a ride, Savari Dekho connects you with travel companions."
+  },
+  {
+    question: "Can I choose my travel companions?",
+    answer: "Yes, with Savari Dekho, you have the flexibility to review profiles, ratings, and preferences, allowing you to find the perfect travel companions for your carpooling journey."
+  }
+
+];
+
+
 // Google Map settings
 export const MAP_CENTER = { lat: 20.5937, lng: 78.9629 };
 export const MAP_SEARCH_COUNTRY_RESTRICTION = ["IN"];

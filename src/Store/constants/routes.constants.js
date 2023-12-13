@@ -6,8 +6,8 @@ export const ROUTE_HOME = "/";
 export const ROUTE_RESET_PASSWORD = "/reset-password";
 export const ROUTE_RESET_PASSWORD_PAGE = "/reset-password/:userId";
 export const ROUTE_USER_DETAILS = "/users/:userId";
-export const ROUTE_SEARCH = "/search";
-export const ROUTE_SEARCH_RESULT = "/search/results/:query";
+export const ROUTE_SEARCH = "/search-rides";
+export const ROUTE_SEARCH_RESULT = "/search";
 export const ROUTE_RIDE_DETAILS = "/rides/:rideId";
 export const ROUTE_RIDE_EDIT = "/rides/:rideId/edit";
 
@@ -103,6 +103,8 @@ export const API_FORGOT_PASSWORD = `${API_ENDPOINT}/forgot-password`;
 export const API_TRANSACTION = `${API_ENDPOINT}/transaction`;
 export const API_GENERATE_OTP = `${API_ENDPOINT}/generate-otp`;
 export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
+export const API_SEARCH_HISTORY = `${API_ENDPOINT}/search-history`; // GET
+export const API_SEARCH_RIDE = `${API_ENDPOINT}/search`; // GET
 
 // Payment Stuff
 export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;

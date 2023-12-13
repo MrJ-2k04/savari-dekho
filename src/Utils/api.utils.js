@@ -16,3 +16,24 @@ export const loadMapLibrary = async (library) => {
 }
 
 export const isLibraryLoaded = (library) => Boolean(window?.google?.maps[library]);
+
+export const getValidLocation = (placeObj) => {
+    return new Promise((res, rej) => {
+        const geocoder = new window.google.maps.Geocoder();
+        const result = {
+            placeId: placeObj.place_id,
+            fullName: placeObj.description,
+            primaryText: placeObj.structured_formatting.main_text,
+            secondaryText: placeObj.structured_formatting.secondary_text,
+            geometry: null,
+        };
+        geocoder.geocode({ placeId: placeObj.place_id }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+                result.geometry = results[0].geometry.location.toJSON();
+                res(result);
+            } else {
+                rej('Geocoding failed: ' + status);
+            }
+        });
+    })
+}
