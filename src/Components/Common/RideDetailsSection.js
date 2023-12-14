@@ -5,7 +5,7 @@ import { Badge, Box, Card, CardContent, CardHeader, Fab, IconButton, ListItem, L
 import RouteList from "Components/Common/RouteList";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import MyGoogleMap from "Components/MapItems/MyGoogleMap";
-import { ID_RIDE_DROPOFF, ID_RIDE_FROM, ID_RIDE_PICKUP, ID_RIDE_TO, PREFERENCES } from "Store/constants";
+import { PREFERENCES } from "Store/constants";
 import { useState } from "react";
 
 const StyledBadge = styled(Badge)(({ isvisible }) => ({

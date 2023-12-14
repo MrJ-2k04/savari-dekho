@@ -118,6 +118,8 @@ export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
 export const API_UPLOAD_VEHICLE_DOCS = `${API_ENDPOINT}/requests/vehicle`;
 export const API_RIDE = `${API_ENDPOINT}/ride`;
 export const API_RIDES = `${API_ENDPOINT}/rides`;
+export const API_RIDES_BOOKED = `${API_RIDE}/booked`;
+export const API_RIDES_PUBLISHED = `${API_RIDE}/published`;
 
 // Admin
 export const API_GET_USERS = `${API_ENDPOINT}/users`;

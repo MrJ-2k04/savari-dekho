@@ -1,41 +1,42 @@
 import { TabContext, TabPanel } from "@mui/lab";
 import { Box, Container, Tab, Tabs } from "@mui/material";
-import RideCard from "Components/Common/RideCard";
+import RidesHistorySection from "Components/SingleUse/RidesHistorySection";
 import UserLayout from "Layout/User";
+import { API_RIDES_BOOKED, API_RIDES_PUBLISHED } from "Store/constants";
 import { useState } from "react";
 
-const defBookedRides = [
-    {
-        from: 'Point A',
-        to: 'Point B',
-        waypoints: [],
-        price: 1650,
-        departureDatetime: new Date().toLocaleDateString(),
-        emptySeats: 3
-    },
-    {
-        from: 'Point A',
-        to: 'Point B',
-        waypoints: [],
-        price: 1650,
-        departureDatetime: new Date().toLocaleDateString(),
-        emptySeats: 3
-    },
-    {
-        from: 'Point A',
-        to: 'Point B',
-        waypoints: [],
-        price: 1650,
-        departureDatetime: new Date().toLocaleDateString(),
-        emptySeats: 3
-    },
-]
+// const defBookedRides = [
+//     {
+//         from: 'Point A',
+//         to: 'Point B',
+//         waypoints: [],
+//         price: 1650,
+//         departureDatetime: new Date().toLocaleDateString(),
+//         emptySeats: 3
+//     },
+//     {
+//         from: 'Point A',
+//         to: 'Point B',
+//         waypoints: [],
+//         price: 1650,
+//         departureDatetime: new Date().toLocaleDateString(),
+//         emptySeats: 3
+//     },
+//     {
+//         from: 'Point A',
+//         to: 'Point B',
+//         waypoints: [],
+//         price: 1650,
+//         departureDatetime: new Date().toLocaleDateString(),
+//         emptySeats: 3
+//     },
+// ]
 
 function RidesHistoryPage() {
 
     const [activeTab, setActiveTab] = useState("1");
-    const [publishedRides, setPublishedRides] = useState([]);
-    const [bookedRides, setBookedRides] = useState([...defBookedRides]);
+    // const [publishedRides, setPublishedRides] = useState([]);
+    // const [bookedRides, setBookedRides] = useState([...defBookedRides]);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
@@ -52,12 +53,10 @@ function RidesHistoryPage() {
                     </Box>
                     <Box>
                         <TabPanel value={"1"}>
-                            {bookedRides.map((ride, index) => (
-                                <RideCard ride={ride} key={index} />
-                            ))}
+                            <RidesHistorySection fetchUrl={API_RIDES_BOOKED} notFoundText="No rides booked yet" />
                         </TabPanel>
                         <TabPanel value={"2"}>
-
+                            <RidesHistorySection fetchUrl={API_RIDES_PUBLISHED} notFoundText="No rides published yet" />
                         </TabPanel>
                     </Box>
                 </TabContext>

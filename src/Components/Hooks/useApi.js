@@ -73,7 +73,7 @@ const useApi = () => {
   }
 
   const syncUser = async () => {
-    const userDetails = await getUserDetails()
+    await getUserDetails()
       .then(userDetails => {
         dispatch(authActions.setUser(userDetails));
       }).catch(err => {
@@ -287,10 +287,18 @@ const useApi = () => {
 
   const publishRide = async (rideDetails) => {
     const ack = await apiRequestWithReauth(API_RIDE, jsonToFormData(rideDetails), 'POST');
-    if (ack.type == 'success') {
+    if (ack.type === RES.SUCCESS) {
       return ack;
     }
     throw new Error(ack.message || 'Failed to publish ride');
+  }
+
+  const getRidesHistory = async (url) => {
+    const ack = await apiRequestWithReauth(url, null, 'GET');
+    if (ack.type === RES.SUCCESS) {
+      return ack.payload;
+    }
+    throw new Error(ack.message || "Internal Server Error");
   }
 
   // ######################################################### FOR ADMINS #########################################################
@@ -423,6 +431,7 @@ const useApi = () => {
     forgotPassword,
     resetPassword,
 
+    getRidesHistory,
     searchRide,
     getSearchHistory,
     fetchWalletTransactions,
