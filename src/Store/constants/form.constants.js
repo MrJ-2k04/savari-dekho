@@ -1,3 +1,4 @@
+import { AcUnit, AccessibilityNew, AirlineSeatReclineExtra, Checkroom, ChildCare, DirectionsBus, Fastfood, MusicNote, Pets, PhotoSizeSelectLarge, SmokeFree, VolumeOff, Wifi } from "@mui/icons-material";
 
 
 
@@ -193,6 +194,22 @@ export const CITY_OPTIONS = {
         "Purulia", "South 24 Parganas", "Uttar Dinajpur"
     ],
 };
+
+export const PREFERENCES = [
+    { id: "NO_SMK", title: "No Smoking", Icon: SmokeFree },
+    { id: "NO_CHD", title: "No Child", Icon: ChildCare },
+    { id: "NO_PET", title: "Pets not allowed", Icon: Pets },
+    { id: "QT_RID", title: "Quiet Ride", Icon: VolumeOff },
+    { id: "MU_RID", title: "Music Allowed", Icon: MusicNote },
+    { id: "AC_RID", title: "Air Conditioning", Icon: AcUnit },
+    { id: "LG_SPC", title: "Luggage Space", Icon: Checkroom },
+    { id: "FLX_STP", title: "Flexible Stops", Icon: DirectionsBus },
+    { id: "CMF_ST", title: "Comfortable Seats", Icon: AirlineSeatReclineExtra },
+    { id: "WIFI", title: "Wi-Fi Available", Icon: Wifi },
+    { id: "ACS_DIS", title: "Accessible for Disabilities", Icon: AccessibilityNew },
+    { id: "FD_ALWD", title: "Food and Drinks Allowed", Icon: Fastfood },
+    { id: "WIN_SHD", title: "Window Shades", Icon: PhotoSizeSelectLarge },
+];
 
 
 export const VEHICLE_TYPE_OPTIONS = [

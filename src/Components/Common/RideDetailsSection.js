@@ -1,11 +1,11 @@
 
 import { useTheme } from "@emotion/react";
 import { Close, Route } from "@mui/icons-material";
-import { Badge, Box, Card, CardContent, CardHeader, Fab, IconButton, Modal, Slide, Typography, Zoom, styled, useMediaQuery } from "@mui/material";
+import { Badge, Box, Card, CardContent, CardHeader, Fab, IconButton, ListItem, ListItemIcon, ListItemText, Modal, Slide, Typography, Zoom, styled, useMediaQuery } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import MyGoogleMap from "Components/MapItems/MyGoogleMap";
-import { ID_RIDE_DROPOFF, ID_RIDE_FROM, ID_RIDE_PICKUP, ID_RIDE_TO } from "Store/constants";
+import { ID_RIDE_DROPOFF, ID_RIDE_FROM, ID_RIDE_PICKUP, ID_RIDE_TO, PREFERENCES } from "Store/constants";
 import { useState } from "react";
 
 const StyledBadge = styled(Badge)(({ isvisible }) => ({
@@ -80,6 +80,12 @@ function RideDetailsSection() {
                 <Box display={'flex'} width={'100%'} height={'100%'}>
                     <Box width={'100%'} sx={{ overflowX: 'hidden' }}>
                         <RouteList waypoints={waypoints} price={540} startIndex={0} endIndex={3} />
+                        {PREFERENCES.map((pref, index) => {
+                            return <ListItem key={index}>
+                                <ListItemIcon><pref.Icon /></ListItemIcon>
+                                <ListItemText>{pref.title}</ListItemText>
+                            </ListItem>
+                        })}
                     </Box>
                     {!isMobile ? <Box width={'100%'}>
                         <MyGoogleMap

@@ -1,5 +1,5 @@
 
-import { Close, FilterAlt, Group } from "@mui/icons-material";
+import { AirlineSeatReclineExtra, Close, FilterAlt, Group } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, LinearProgress, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
 import searchSvg from "Assets/SVGs/Search.svg";
@@ -38,10 +38,16 @@ function SearchResultsForm() {
     const [searchResults, setSearchResults] = useState([
         {
             id: "sdfjfdgh33w4r",
+            startLegIndex: 0,  // process
+            endLegIndex: 0,  // process
+            startStepIndex: 1,  // process
+            endStepIndex: 3,  // process
+            startDistance: "5 km", // recalc
+            endDistance: "7 km",  // recalc
+            startTime: "8:00",  // recalc
+            endTime: "11:30",  // recalc
             from: "Ahmedabad",
-            fromTime: "8:00",
             to: "Surat",
-            toTime: "11:30",
             price: 650,
             seats: 3,
             publisher: {
@@ -50,33 +56,45 @@ function SearchResultsForm() {
             },
         },
         {
-            id: "sdfjfdgh33w4r",
+            id: "anotherId",
+            startLegIndex: 1,
+            endLegIndex: 2,
+            startStepIndex: 2,
+            endStepIndex: 4,
+            startDistance: "8 km",
+            endDistance: "12 km",
+            startTime: "10:00",
+            endTime: "13:45",
             from: "Surat",
-            fromTime: "8:00",
-            to: "Ahmedabad",
-            toTime: "11:30",
-            price: 700,
+            to: "Mumbai",
+            price: 800,
             seats: 2,
             publisher: {
                 profileUrl: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-                name: "Denny",
+                name: "John Doe",
             },
         },
         {
-            id: "sdfjfdgh33w4r",
-            from: "Surat",
-            fromTime: "8:00",
-            to: "Ahmedabad",
-            toTime: "11:30",
-            price: 700,
-            seats: 2,
+            id: "thirdId",
+            startLegIndex: 2,
+            endLegIndex: 3,
+            startStepIndex: 3,
+            endStepIndex: 5,
+            startDistance: "12 km",
+            endDistance: "20 km",
+            startTime: "12:30",
+            endTime: "15:30",
+            from: "Mumbai",
+            to: "Pune",
+            price: 500,
+            seats: 4,
             publisher: {
-                profileUrl: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-                name: "Denny",
+                profileUrl: "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8",
+                name: "Alice",
             },
         },
     ]);
-    
+
     // ############################################# Handlers #############################################
 
     const handleRideAlertCreation = () => {
@@ -87,7 +105,7 @@ function SearchResultsForm() {
             showSuccess({ message: "You will be notified via email whenever a Ride is available" });
         }, 1000);
     }
-    
+
     // ############################################# Effects #############################################
 
     useEffect(() => {
@@ -252,9 +270,19 @@ function SearchResultsForm() {
                                 <MHidden width="mdDown">
                                     <Typography variant="h4" color={'text.secondary'}>{searchResults.length} rides available</Typography>
                                 </MHidden>
-                                {searchResults.map((result, index) =>
-                                    <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
-                                        <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${result.id}`}>
+                                {searchResults.map((result, index) => {
+                                    const options = new URLSearchParams({
+                                        startLegIndex: result.startLegIndex,
+                                        endLegIndex: result.endLegIndex,
+                                        startStepIndex: result.startStepIndex,
+                                        endStepIndex: result.endStepIndex,
+                                        from: params.from,
+                                        to: params.to,
+                                        fromPlaceId: params.fromPlaceId,
+                                        toPlaceId: params.toPlaceId,
+                                    });
+                                    return <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
+                                        <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${result.id}?${options.toString()}`}>
                                             <CardContent sx={{ p: 1 }}>
                                                 <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                                                     <Box>
@@ -282,7 +310,6 @@ function SearchResultsForm() {
                                                         <Typography variant="h4">{`₹${result.price}`}</Typography>
                                                     </Box>
                                                 </Box>
-
                                             </CardContent>
                                             <CardActions>
                                                 <Stack direction={'row'} spacing={2} alignItems={'center'} width={'100%'} px={2} pb={1}>
@@ -291,8 +318,8 @@ function SearchResultsForm() {
                                                     </Avatar>
                                                     <Typography variant="subtitle1">{result.publisher.name}</Typography>
                                                     <Tooltip title={`Max ${result.seats} seats available`}>
-                                                        <Box ml={'auto !important'} display={'flex'} gap={1} alignItems={'center'}>
-                                                            <Group />
+                                                        <Box ml={'auto !important'} display={'flex'} gap={0.5} alignItems={'center'}>
+                                                            <AirlineSeatReclineExtra />
                                                             <Typography variant="subtitle1">{result.seats}</Typography>
                                                         </Box>
                                                     </Tooltip>
@@ -300,7 +327,7 @@ function SearchResultsForm() {
                                             </CardActions>
                                         </CardActionArea>
                                     </Card>
-                                )}
+                                })}
                             </Stack>
                     }
                 </Box>
