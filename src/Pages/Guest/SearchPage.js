@@ -89,9 +89,6 @@ function SearchPage() {
                         </React.Fragment>
                     })}
                 </List>
-
-
-                <Link to={`${ROUTE_RIDES}/65436b97e278c64189bae00d`}>Details</Link>
             </Stack>
         </Container>
     </UserLayout>);

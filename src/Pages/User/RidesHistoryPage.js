@@ -1,6 +1,7 @@
 import { TabContext, TabPanel } from "@mui/lab";
 import { Box, Container, Tab, Tabs } from "@mui/material";
-import RidesHistorySection from "Components/SingleUse/RidesHistorySection";
+import BookedRidesHistorySection from "Components/SingleUse/BookedRidesHistorySection";
+import PublishedRidesHistorySection from "Components/SingleUse/PublishedRidesHistorySection";
 import UserLayout from "Layout/User";
 import { API_RIDES_BOOKED, API_RIDES_PUBLISHED } from "Store/constants";
 import { useState } from "react";
@@ -53,10 +54,10 @@ function RidesHistoryPage() {
                     </Box>
                     <Box>
                         <TabPanel value={"1"}>
-                            <RidesHistorySection fetchUrl={API_RIDES_BOOKED} notFoundText="No rides booked yet" />
+                            <BookedRidesHistorySection />
                         </TabPanel>
                         <TabPanel value={"2"}>
-                            <RidesHistorySection fetchUrl={API_RIDES_PUBLISHED} notFoundText="No rides published yet" />
+                            <PublishedRidesHistorySection />
                         </TabPanel>
                     </Box>
                 </TabContext>

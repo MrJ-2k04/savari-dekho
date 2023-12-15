@@ -1,32 +1,30 @@
 import { Box, Card, CardActionArea, CardContent, LinearProgress, Stack, Typography } from "@mui/material";
+import RouteList from "Components/Common/RouteList";
 import useApi from "Components/Hooks/useApi";
-import { ROUTE_RIDES } from "Store/constants";
+import { API_RIDES_BOOKED, ROUTE_RIDES } from "Store/constants";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function RidesHistorySection({
-    notFoundText = "No rides found",
-    fetchUrl,
-}) {
+function BookedRidesHistorySection() {
     const { loading, getRidesHistory } = useApi();
-    const [rides, setRides] = useState([]);
+    const [bookedRides, setBookedRides] = useState([]);
 
     useEffect(() => {
-        getRidesHistory(fetchUrl).then(ridesHistory => {
-            setRides(ridesHistory);
+        getRidesHistory(API_RIDES_BOOKED).then(ridesHistory => {
+            setBookedRides(ridesHistory);
         }).catch(err => {
             console.log(err.message);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (!loading ? <Stack>
-        {rides.map((ride, index) =>
+        {bookedRides.map((ride, index) =>
             <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
                 <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${ride.id}`}>
                     <CardContent sx={{ p: 1 }}>
                         <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                             <Box>
-                                {/* <RouteList waypoints={[
+                                <RouteList waypoints={[
                                     {
                                         location: {
                                             primaryText: ride.from,
@@ -43,7 +41,7 @@ function RidesHistorySection({
                                             // fullName: "Railway Station Cir, Surat, Gujarat",
                                         }
                                     },
-                                ]} /> */}
+                                ]} />
                             </Box>
 
                             <Box display={'flex'} justifyContent={'right'} pr={2} pt={1}>
@@ -71,4 +69,4 @@ function RidesHistorySection({
     </Stack> : <LinearProgress />);
 }
 
-export default RidesHistorySection;
+export default BookedRidesHistorySection;
