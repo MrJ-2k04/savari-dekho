@@ -3,41 +3,11 @@ import { Box, Container, Tab, Tabs } from "@mui/material";
 import BookedRidesHistorySection from "Components/SingleUse/BookedRidesHistorySection";
 import PublishedRidesHistorySection from "Components/SingleUse/PublishedRidesHistorySection";
 import UserLayout from "Layout/User";
-import { API_RIDES_BOOKED, API_RIDES_PUBLISHED } from "Store/constants";
 import { useState } from "react";
-
-// const defBookedRides = [
-//     {
-//         from: 'Point A',
-//         to: 'Point B',
-//         waypoints: [],
-//         price: 1650,
-//         departureDatetime: new Date().toLocaleDateString(),
-//         emptySeats: 3
-//     },
-//     {
-//         from: 'Point A',
-//         to: 'Point B',
-//         waypoints: [],
-//         price: 1650,
-//         departureDatetime: new Date().toLocaleDateString(),
-//         emptySeats: 3
-//     },
-//     {
-//         from: 'Point A',
-//         to: 'Point B',
-//         waypoints: [],
-//         price: 1650,
-//         departureDatetime: new Date().toLocaleDateString(),
-//         emptySeats: 3
-//     },
-// ]
 
 function RidesHistoryPage() {
 
     const [activeTab, setActiveTab] = useState("1");
-    // const [publishedRides, setPublishedRides] = useState([]);
-    // const [bookedRides, setBookedRides] = useState([...defBookedRides]);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);

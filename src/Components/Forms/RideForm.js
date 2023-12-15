@@ -263,15 +263,15 @@ function RideForm({ isNew = false }) {
                         <Button onClick={fillSampleData} variant="outlined">Fill Sample Data</Button>
                         <Box width={'100%'} display={'flex'} gap={3} flexWrap={{ xs: 'wrap', sm: 'nowrap' }}>
                             <PlaceAutocomplete
-                                label='From'
-                                placeholder="From State/City"
+                                label='Pickup'
+                                placeholder="Exact Starting Location"
                                 fullWidth
                                 value={locations[ID_RIDE_FROM] || ''}
                                 onChange={newValue => handleLocationChange(newValue, ID_RIDE_FROM)}
                                 error={!isFalsy(locationErrors[ID_RIDE_FROM])}
                                 helperText={locationErrors[ID_RIDE_FROM]}
                             />
-                            <PlaceAutocomplete
+                            {/* <PlaceAutocomplete
                                 label='Pickup Location'
                                 placeholder="Exact Starting Location"
                                 fullWidth
@@ -279,7 +279,7 @@ function RideForm({ isNew = false }) {
                                 onChange={newValue => handleLocationChange(newValue, ID_RIDE_PICKUP)}
                                 error={!isFalsy(locationErrors[ID_RIDE_PICKUP])}
                                 helperText={locationErrors[ID_RIDE_PICKUP]}
-                            />
+                            /> */}
                         </Box>
                         <Button
                             variant="contained"
@@ -327,15 +327,15 @@ function RideForm({ isNew = false }) {
                         )}
                         <Box width={'100%'} display={'flex'} gap={3} flexWrap={{ xs: 'wrap', sm: 'nowrap' }}>
                             <PlaceAutocomplete
-                                label='To'
-                                placeholder="Destination State/City"
+                                label='Dropoff location'
+                                placeholder="Exact Ending Location"
                                 fullWidth
                                 value={locations[ID_RIDE_TO] || ''}
                                 onChange={newValue => handleLocationChange(newValue, ID_RIDE_TO)}
                                 error={!isFalsy(locationErrors[ID_RIDE_TO])}
                                 helperText={locationErrors[ID_RIDE_TO]}
                             />
-                            <PlaceAutocomplete
+                            {/* <PlaceAutocomplete
                                 label='Dropoff location'
                                 placeholder="Exact Ending Location"
                                 fullWidth
@@ -343,7 +343,7 @@ function RideForm({ isNew = false }) {
                                 onChange={newValue => handleLocationChange(newValue, ID_RIDE_DROPOFF)}
                                 error={!isFalsy(locationErrors[ID_RIDE_DROPOFF])}
                                 helperText={locationErrors[ID_RIDE_DROPOFF]}
-                            />
+                            /> */}
                         </Box>
                         <LocalizationProvider adapterLocale={inLocale} dateAdapter={AdapterDateFns}>
                             <MobileDateTimePicker

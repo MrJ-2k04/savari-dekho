@@ -18,38 +18,39 @@ function BookedRidesHistorySection() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (!loading ? <Stack>
-        {bookedRides.map((ride, index) =>
-            <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
-                <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${ride.id}`}>
-                    <CardContent sx={{ p: 1 }}>
-                        <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
-                            <Box>
-                                <RouteList waypoints={[
-                                    {
-                                        location: {
-                                            primaryText: ride.from,
-                                            time: ride.fromTime,
-                                            // secondaryText: "Block-J",
-                                            // fullName: "Block-J, Ahmedabad, Gujarat",
-                                        }
-                                    },
-                                    {
-                                        location: {
-                                            primaryText: ride.to,
-                                            time: ride.toTime,
-                                            // secondaryText: "Railway Station Cir, Railway Station Area, Varachha",
-                                            // fullName: "Railway Station Cir, Surat, Gujarat",
-                                        }
-                                    },
-                                ]} />
-                            </Box>
+        {bookedRides.length > 0 ?
+            bookedRides.map((ride, index) =>
+                <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
+                    <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${ride.id}`}>
+                        <CardContent sx={{ p: 1 }}>
+                            <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
+                                <Box>
+                                    <RouteList waypoints={[
+                                        {
+                                            location: {
+                                                primaryText: ride.from,
+                                                time: ride.fromTime,
+                                                // secondaryText: "Block-J",
+                                                // fullName: "Block-J, Ahmedabad, Gujarat",
+                                            }
+                                        },
+                                        {
+                                            location: {
+                                                primaryText: ride.to,
+                                                time: ride.toTime,
+                                                // secondaryText: "Railway Station Cir, Railway Station Area, Varachha",
+                                                // fullName: "Railway Station Cir, Surat, Gujarat",
+                                            }
+                                        },
+                                    ]} />
+                                </Box>
 
-                            <Box display={'flex'} justifyContent={'right'} pr={2} pt={1}>
-                                <Typography variant="h4">{`₹${ride.price}`}</Typography>
+                                <Box display={'flex'} justifyContent={'right'} pr={2} pt={1}>
+                                    <Typography variant="h4">{`₹${ride.price}`}</Typography>
+                                </Box>
                             </Box>
-                        </Box>
-                    </CardContent>
-                    {/* <CardActions>
+                        </CardContent>
+                        {/* <CardActions>
                         <Stack direction={'row'} spacing={2} alignItems={'center'} width={'100%'} px={2} pb={1}>
                             <Avatar>
                                 <img src={ride.publisher.profileUrl} alt="Publisher Profile" />
@@ -63,9 +64,13 @@ function BookedRidesHistorySection() {
                             </Tooltip>
                         </Stack>
                     </CardActions> */}
-                </CardActionArea>
-            </Card>
-        )}
+                    </CardActionArea>
+                </Card>
+            ) :
+            <>
+                No Booked Rides Found
+            </>
+        }
     </Stack> : <LinearProgress />);
 }
 

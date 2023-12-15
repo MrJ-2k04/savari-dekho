@@ -3,7 +3,7 @@ import { Box, Container, Divider, List, ListItemButton, ListItemIcon, ListItemTe
 import SearchBar from "Components/Common/SearchBar";
 import useApi from "Components/Hooks/useApi";
 import UserLayout from "Layout/User";
-import { ROUTE_RIDES, ROUTE_SEARCH_RESULT } from "Store/constants";
+import { ROUTE_SEARCH_RESULT } from "Store/constants";
 import { selectIsAuthenticated } from "Store/selectors";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";

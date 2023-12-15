@@ -46,8 +46,11 @@ function PlaceAutocomplete(props) {
             input: inputValue,
             componentRestrictions: {
                 country: MAP_SEARCH_COUNTRY_RESTRICTION,
-            }
+            },
+            types: ["establishment"],
         }
+
+        if (inputValue.length < 2) return;
 
         fetch(reqParams, (results) => {
             if (active) {
