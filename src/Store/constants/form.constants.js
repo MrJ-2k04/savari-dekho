@@ -433,9 +433,7 @@ export const BANK_ACCOUNT_TYPES = [
 ]
 
 // Google Map Form IDs
-export const ID_RIDE_TO = "to";
 export const ID_RIDE_FROM = "from";
-export const ID_RIDE_PICKUP = "pickup";
-export const ID_RIDE_DROPOFF = "dropoff";
+export const ID_RIDE_TO = "to";
 export const ID_WAYP_LOCATION = "location";
 export const ID_WAYP_PRICE = "price";

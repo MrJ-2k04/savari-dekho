@@ -20,15 +20,27 @@ function SearchResultsForm() {
 
     // ############################################# COMPUTED #############################################
 
+    const fromCoords = {
+        lng: parseFloat(searchParams.get("fLng")),
+        lat: parseFloat(searchParams.get("fLat")),
+    };
+    const toCoords = {
+        lng: parseFloat(searchParams.get("tLng")),
+        lat: parseFloat(searchParams.get("tLat")),
+    }
     const params = {
         from: searchParams.get("from"),
         fromPlaceId: searchParams.get("fromPlaceId"),
         to: searchParams.get("to"),
         toPlaceId: searchParams.get("toPlaceId"),
         seats: searchParams.get("seats"),
+        fromCoords: JSON.stringify([fromCoords.lng, fromCoords.lat]),
+        toCoords: JSON.stringify([toCoords.lng, toCoords.lat]),
     }
     if (searchParams.get("date")) {
-        params["date"] = new Date(...searchParams.get("date").split("-").reverse());
+        const dateArray = searchParams.get("date").split("-");
+        dateArray[1] = dateArray[1] - 1;
+        params["date"] = new Date(...dateArray.reverse());
     }
 
     // ############################################# States #############################################
@@ -36,63 +48,63 @@ function SearchResultsForm() {
     const [creatingRideAlert, setCreatingRideAlert] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([
-        {
-            id: "sdfjfdgh33w4r",
-            startLegIndex: 0,  // process
-            endLegIndex: 0,  // process
-            startStepIndex: 1,  // process
-            endStepIndex: 3,  // process
-            startDistance: "5 km", // recalc
-            endDistance: "7 km",  // recalc
-            startTime: "8:00",  // recalc
-            endTime: "11:30",  // recalc
-            from: "Ahmedabad",
-            to: "Surat",
-            price: 650,
-            seats: 3,
-            publisher: {
-                profileUrl: "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8",
-                name: "Jacqueline",
-            },
-        },
-        {
-            id: "anotherId",
-            startLegIndex: 1,
-            endLegIndex: 2,
-            startStepIndex: 2,
-            endStepIndex: 4,
-            startDistance: "8 km",
-            endDistance: "12 km",
-            startTime: "10:00",
-            endTime: "13:45",
-            from: "Surat",
-            to: "Mumbai",
-            price: 800,
-            seats: 2,
-            publisher: {
-                profileUrl: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-                name: "John Doe",
-            },
-        },
-        {
-            id: "thirdId",
-            startLegIndex: 2,
-            endLegIndex: 3,
-            startStepIndex: 3,
-            endStepIndex: 5,
-            startDistance: "12 km",
-            endDistance: "20 km",
-            startTime: "12:30",
-            endTime: "15:30",
-            from: "Mumbai",
-            to: "Pune",
-            price: 500,
-            seats: 4,
-            publisher: {
-                profileUrl: "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8",
-                name: "Alice",
-            },
-        },
+        // {
+        //     id: "sdfjfdgh33w4r",
+        //     startLegIndex: 0,  // process
+        //     endLegIndex: 0,  // process
+        //     startStepIndex: 1,  // process
+        //     endStepIndex: 3,  // process
+        //     startDistance: "5 km", // recalc
+        //     endDistance: "7 km",  // recalc
+        //     startTime: "8:00",  // recalc
+        //     endTime: "11:30",  // recalc
+        //     from: "Ahmedabad",
+        //     to: "Surat",
+        //     price: 650,
+        //     seats: 3,
+        //     publisher: {
+        //         profileUrl: "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8",
+        //         name: "Jacqueline",
+        //     },
+        // },
+        // {
+        //     id: "anotherId",
+        //     startLegIndex: 1,
+        //     endLegIndex: 2,
+        //     startStepIndex: 2,
+        //     endStepIndex: 4,
+        //     startDistance: "8 km",
+        //     endDistance: "12 km",
+        //     startTime: "10:00",
+        //     endTime: "13:45",
+        //     from: "Surat",
+        //     to: "Mumbai",
+        //     price: 800,
+        //     seats: 2,
+        //     publisher: {
+        //         profileUrl: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+        //         name: "John Doe",
+        //     },
+        // },
+        // {
+        //     id: "thirdId",
+        //     startLegIndex: 2,
+        //     endLegIndex: 3,
+        //     startStepIndex: 3,
+        //     endStepIndex: 5,
+        //     startDistance: "12 km",
+        //     endDistance: "20 km",
+        //     startTime: "12:30",
+        //     endTime: "15:30",
+        //     from: "Mumbai",
+        //     to: "Pune",
+        //     price: 500,
+        //     seats: 4,
+        //     publisher: {
+        //         profileUrl: "https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8",
+        //         name: "Alice",
+        //     },
+        // },
     ]);
 
     // ############################################# Handlers #############################################
@@ -118,7 +130,6 @@ function SearchResultsForm() {
             return;
         }
 
-
         // Retrieve Search Results from Backend
         searchRide(params).then(rides => {
             if (rides.length === 0) {
@@ -139,10 +150,12 @@ function SearchResultsForm() {
                 from={{
                     fullName: params.from,
                     placeId: params.fromPlaceId,
+                    geometry: { lng: fromCoords.lng, lat: fromCoords.lat }
                 }}
                 to={{
                     fullName: params.to,
                     placeId: params.toPlaceId,
+                    geometry: { lng: toCoords.lng, lat: toCoords.lat }
                 }}
                 date={searchParams.get("date")}
                 seats={params.seats}
@@ -289,16 +302,18 @@ function SearchResultsForm() {
                                                         <RouteList waypoints={[
                                                             {
                                                                 location: {
-                                                                    primaryText: result.from,
-                                                                    time: result.fromTime,
+                                                                    ...result.from,
+                                                                    // primaryText: result.from,
+                                                                    // time: result.fromTime,
                                                                     // secondaryText: "Block-J",
                                                                     // fullName: "Block-J, Ahmedabad, Gujarat",
                                                                 }
                                                             },
                                                             {
                                                                 location: {
-                                                                    primaryText: result.to,
-                                                                    time: result.toTime,
+                                                                    ...result.to
+                                                                    // primaryText: result.to,
+                                                                    // time: result.toTime,
                                                                     // secondaryText: "Railway Station Cir, Railway Station Area, Varachha",
                                                                     // fullName: "Railway Station Cir, Surat, Gujarat",
                                                                 }
@@ -314,7 +329,7 @@ function SearchResultsForm() {
                                             <CardActions>
                                                 <Stack direction={'row'} spacing={2} alignItems={'center'} width={'100%'} px={2} pb={1}>
                                                     <Avatar>
-                                                        <img src={result.publisher.profileUrl} alt="Publisher Profile" />
+                                                        <img src={result.publisher.profilePicture} alt="Publisher Profile" />
                                                     </Avatar>
                                                     <Typography variant="subtitle1">{result.publisher.name}</Typography>
                                                     <Tooltip title={`Max ${result.seats} seats available`}>

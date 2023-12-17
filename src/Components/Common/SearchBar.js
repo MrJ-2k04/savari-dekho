@@ -7,7 +7,7 @@ import { MHidden } from "Components/@Material-Extend";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
 import { ID_RIDE_FROM, ID_RIDE_TO, ROUTE_SEARCH_RESULT, SEARCH_BAR_SIZE } from "Store/constants";
-import { isEmptyString, isFalsy, isNumeric } from "Utils";
+import { getValidLocation, isEmptyString, isFalsy, isNumeric } from "Utils";
 import { format, parse } from "date-fns";
 import inLocale from "date-fns/locale/en-IN";
 import { useCallback, useRef, useState } from "react";
@@ -117,13 +117,17 @@ function SearchBar({
         return isValid;
     }
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         const searchOptions = {
             from: from.fullName,
             to: to.fullName,
             seats,
             fromPlaceId: from.placeId,
             toPlaceId: to.placeId,
+            fLat: from.geometry.lat,
+            fLng: from.geometry.lng,
+            tLat: to.geometry.lat,
+            tLng: to.geometry.lng,
         }
         if (!isSearchValid()) return;
         searchOptions["date"] = format(date, "dd-MM-yyyy");
@@ -150,13 +154,13 @@ function SearchBar({
             updateError("");
             return;
         }
-        // const value = await getValidLocation(placeObj);
-        const value = {
-            placeId: placeObj.place_id,
-            fullName: placeObj.description,
-            primaryText: placeObj.structured_formatting.main_text,
-            secondaryText: placeObj.structured_formatting.secondary_text,
-        };
+        const value = await getValidLocation(placeObj);
+        // const value = {
+        //     placeId: placeObj.place_id,
+        //     fullName: placeObj.description,
+        //     primaryText: placeObj.structured_formatting.main_text,
+        //     secondaryText: placeObj.structured_formatting.secondary_text,
+        // };
         updateValue(value);
         updateError(""); // Clear error on change
         myCallback();

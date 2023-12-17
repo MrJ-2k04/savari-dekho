@@ -1,6 +1,6 @@
 
 import { LocationOn } from "@mui/icons-material";
-import { Autocomplete, Box, Grid, Popper, TextField, Typography, debounce } from "@mui/material";
+import { Autocomplete, Box, Grid, TextField, Typography, debounce } from "@mui/material";
 import { MAP_SEARCH_COUNTRY_RESTRICTION } from "Store/constants";
 import { selectIsMapLoaded } from "Store/selectors";
 import { combineObjects } from "Utils";
@@ -15,7 +15,7 @@ function PlaceAutocomplete(props) {
     const isLoaded = useSelector(selectIsMapLoaded);
     const [inputValue, setInputValue] = useState('');
     const [options, setOptions] = useState([""]);
-    const { value, onChange, ...rest } = props;
+    const { value, onChange, noValidate, ...rest } = props;
 
     const fetch = useMemo(
         () =>
@@ -47,7 +47,9 @@ function PlaceAutocomplete(props) {
             componentRestrictions: {
                 country: MAP_SEARCH_COUNTRY_RESTRICTION,
             },
-            types: ["establishment"],
+        }
+        if (!noValidate) {
+            reqParams.types = ["establishment"];
         }
 
         if (inputValue.length < 2) return;
@@ -72,6 +74,7 @@ function PlaceAutocomplete(props) {
         return () => {
             active = false;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value, inputValue, fetch]);
 
     return (<>

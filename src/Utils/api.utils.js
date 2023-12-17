@@ -37,3 +37,11 @@ export const getValidLocation = (placeObj) => {
         });
     })
 }
+
+export const formatPlaceObj = (placeObj) => ({
+    placeId: placeObj.place_id,
+    fullName: placeObj.description,
+    primaryText: placeObj.structured_formatting.main_text,
+    secondaryText: placeObj.structured_formatting.secondary_text,
+    geometry: null,
+})
