@@ -45,3 +45,32 @@ export const formatPlaceObj = (placeObj) => ({
     secondaryText: placeObj.structured_formatting.secondary_text,
     geometry: null,
 })
+
+// export const getPlaceFromCoords = ([lng, lat]) => {
+//     if (!lng || !lat) return;
+//     return new Promise((res, rej) => {
+//         const geocoder = new window.google.maps.Geocoder();
+
+//         // Create a LatLng object
+//         const latLng = new window.google.maps.LatLng(lat, lng);
+
+//         // Make the Geocode request
+//         geocoder.geocode({
+//             location: latLng,
+//             componentRestrictions: {
+//                 country: MAP_SEARCH_COUNTRY_RESTRICTION,
+//             },
+
+//         }, (results, status) => {
+//             if (status === 'OK') {
+//                 if (results[0]) {
+//                     res(results)
+//                 } else {
+//                     rej('No results found');
+//                 }
+//             } else {
+//                 rej('Geocode failed due to:' + status);
+//             }
+//         });
+//     })
+// }

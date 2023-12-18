@@ -230,6 +230,7 @@ function SearchBar({
                                         <LocationSearching fontSize="small" />
                                     </InputAdornment>,
                                 }}
+                                noValidate
                             />
                         </BoxV2>
                         <DividerV2 orientation={isSmallScreen ? "horizontal" : "vertical"} flexItem variant="middle" />
@@ -250,6 +251,7 @@ function SearchBar({
                                         <MyLocation fontSize="small" />
                                     </InputAdornment>,
                                 }}
+                                noValidate
                             />
                         </BoxV2>
                         <DividerV2 orientation={isSmallScreen ? "horizontal" : "vertical"} flexItem variant="middle" />

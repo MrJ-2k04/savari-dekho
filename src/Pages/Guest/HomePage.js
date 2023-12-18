@@ -146,10 +146,9 @@ function HomePage() {
                         //         : `url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiNmZmZmZmYiPjxwYXRoIGQ9Ik03MjUuMjkgMTAxLjJDMzI1LjIyIDEyMi40OCAwIDAgMCAwdjE0MGgxMjgwVjBzLTE1NC42NCA3OS45Mi01NTQuNzEgMTAxLjJ6IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PHBhdGggZD0iTTU1Ni40NSAxMTkuNzRDOTUzLjQxIDE0MCAxMjgwIDE0IDEyODAgMTR2MTI2SDBWMHMxNTkuNSA5OS40OCA1NTYuNDUgMTE5Ljc0eiIgZmlsbC1vcGFjaXR5PSIuNSIvPjxwYXRoIGQ9Ik02NDAgMTQwYzM1My40NiAwIDY0MC0xNDAgNjQwLTEzOXYxNDBIMFYwczI4Ni41NCAxNDAgNjQwIDE0MHoiLz48L2c+PC9zdmc+)`,
                     }}
                 >
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100px" viewBox="0 0 1280 140" preserveAspectRatio="none">
                         <g fill={theme.palette.background.default}>
-                            <path d="M725.29 101.2C325.22 122.48 0 0 0 0v140h1280V0s-154.64 79.92-554.71 101.2z" fill-opacity=".3" /><path d="M556.45 119.74C953.41 140 1280 14 1280 14v126H0V0s159.5 99.48 556.45 119.74z" fill-opacity=".5" /><path d="M640 140c353.46 0 640-140 640-139v140H0V0s286.54 140 640 140z" />
+                            <path d="M725.29 101.2C325.22 122.48 0 0 0 0v140h1280V0s-154.64 79.92-554.71 101.2z" fillOpacity=".3" /><path d="M556.45 119.74C953.41 140 1280 14 1280 14v126H0V0s159.5 99.48 556.45 119.74z" fillOpacity=".5" /><path d="M640 140c353.46 0 640-140 640-139v140H0V0s286.54 140 640 140z" />
                         </g>
                     </svg>
                 </Box>
@@ -298,9 +297,9 @@ function HomePage() {
                         <Grid item xs={12} md={6}>
                             <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
                                 <Typography color={'white'} variant="h3">Your safety is our priority</Typography>
-                                <Typography color={'rgba(255,255,255,0.9)'}> At Savari Dekho, we are dedicated to ensuring the utmost security on our platform. We work diligently to make our services as secure as possible. In the unfortunate event of scams, we want you to feel empowered to avoid and report them promptly.Travel with confidence, knowing that your safety is our top priority.
-
-</Typography>
+                                <Typography color={'rgba(255,255,255,0.9)'}>
+                                    At Savari Dekho, we are dedicated to ensuring the utmost security on our platform. We work diligently to make our services as secure as possible. In the unfortunate event of scams, we want you to feel empowered to avoid and report them promptly.Travel with confidence, knowing that your safety is our top priority.
+                                </Typography>
                                 <Box />
                                 <Button
                                     LinkComponent={Link}

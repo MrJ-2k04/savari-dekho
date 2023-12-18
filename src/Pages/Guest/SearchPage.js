@@ -41,6 +41,10 @@ function SearchPage() {
                             fromPlaceId: item.fromPlaceId,
                             toPlaceId: item.toPlaceId,
                             seats: item.seats,
+                            fLng: item.fromCoords[0],
+                            fLat: item.fromCoords[1],
+                            tLng: item.toCoords[0],
+                            tLat: item.toCoords[1],
                         }
                         if (item.date) {
                             params["date"] = format(new Date(item.date), "dd-MM-yyyy");

@@ -131,10 +131,12 @@ function SearchResultsForm() {
         }
 
         // Retrieve Search Results from Backend
-        searchRide(params).then(rides => {
+        searchRide(params).then(async (rides) => {
             if (rides.length === 0) {
                 // handle no search result found
             } else {
+                // const x = rides.map(ride => ({ departureName: getPlaceFromCoords(ride.departureCoords), destinationName: getPlaceFromCoords(ride.destinationCoords) }))
+                // console.log(x);
                 setSearchResults(rides);
             }
         }).catch(err => {
@@ -302,16 +304,19 @@ function SearchResultsForm() {
                                                         <RouteList waypoints={[
                                                             {
                                                                 location: {
-                                                                    ...result.from,
+                                                                    primaryText: result.departure?.primaryText || result.from.primaryText,
+                                                                    secondaryText: result.departure?.secondaryText || result.from.secondaryText,
+                                                                    // ...result.from,
                                                                     // primaryText: result.from,
                                                                     // time: result.fromTime,
-                                                                    // secondaryText: "Block-J",
                                                                     // fullName: "Block-J, Ahmedabad, Gujarat",
                                                                 }
                                                             },
                                                             {
                                                                 location: {
-                                                                    ...result.to
+                                                                    primaryText: result.destination?.primaryText || result.to.primaryText,
+                                                                    secondaryText: result.destination?.secondaryText || result.to.secondaryText,
+                                                                    // ...result.to
                                                                     // primaryText: result.to,
                                                                     // time: result.toTime,
                                                                     // secondaryText: "Railway Station Cir, Railway Station Area, Varachha",
