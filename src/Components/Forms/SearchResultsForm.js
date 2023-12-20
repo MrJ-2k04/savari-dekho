@@ -327,7 +327,7 @@ function SearchResultsForm() {
                                                     </Box>
 
                                                     <Box display={'flex'} justifyContent={'right'} pr={2} pt={1}>
-                                                        <Typography variant="h4">{`₹${result.price}`}</Typography>
+                                                        <Typography variant="h4">{`₹${result.totalPrice}`}</Typography>
                                                     </Box>
                                                 </Box>
                                             </CardContent>
@@ -340,7 +340,7 @@ function SearchResultsForm() {
                                                     <Tooltip title={`Max ${result.seats} seats available`}>
                                                         <Box ml={'auto !important'} display={'flex'} gap={0.5} alignItems={'center'}>
                                                             <AirlineSeatReclineExtra />
-                                                            <Typography variant="subtitle1">{result.seats}</Typography>
+                                                            <Typography variant="subtitle1">{result.availableSeats}</Typography>
                                                         </Box>
                                                     </Tooltip>
                                                 </Stack>
