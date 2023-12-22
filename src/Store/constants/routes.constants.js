@@ -93,35 +93,55 @@ export const ADMIN_ROUTES = [
 
 // export const API_ENDPOINT = "http://savaridekho.webwizards.in";
 export const API_ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_ENDPOINT : `http://localhost:8080`;
-export const API_REGISTER = `${API_ENDPOINT}/register`;
-export const API_LOGIN = `${API_ENDPOINT}/login`;
-export const API_USER_ME = `${API_ENDPOINT}/me`;  // GET
-export const API_USER_UPDATE = `${API_ENDPOINT}/user`;  // PUT
-export const API_REFRESH_TOKEN = `${API_ENDPOINT}/refresh-token`;
-export const API_RESET_PASSWORD = `${API_ENDPOINT}/reset-password`;
-export const API_FORGOT_PASSWORD = `${API_ENDPOINT}/forgot-password`;
-export const API_TRANSACTION = `${API_ENDPOINT}/transaction`;
-export const API_GENERATE_OTP = `${API_ENDPOINT}/generate-otp`;
-export const API_VALIDATE_OTP = `${API_ENDPOINT}/validate-otp`;
-export const API_SEARCH_HISTORY = `${API_ENDPOINT}/search-history`; // GET
-export const API_SEARCH_RIDE = `${API_ENDPOINT}/search`; // GET
 
-// Payment Stuff
-export const API_PAYMENT_CREATE = `${API_ENDPOINT}/checkout`;
-export const API_PAYMENT_VALIDATE = `${API_ENDPOINT}/verify-payment`;
-export const API_PAYMENT_CANCEL = `${API_ENDPOINT}/cancel-payment`;
-export const API_BANKS = `${API_ENDPOINT}/bank`;
 
-// Driver Stuff
-export const API_VEHICLES = `${API_ENDPOINT}/vehicles`;
-export const API_UPLOAD_RIDER_DOCS = `${API_ENDPOINT}/requests/rider`;
-export const API_UPLOAD_VEHICLE_DOCS = `${API_ENDPOINT}/requests/vehicle`;
-export const API_RIDE = `${API_ENDPOINT}/ride`;
-export const API_RIDES = `${API_ENDPOINT}/rides`;
-export const API_RIDES_BOOKED = `${API_RIDE}/booked`;
-export const API_RIDES_PUBLISHED = `${API_RIDE}/published`;
+// Auth Endpoints
+const API_AUTH = `${API_ENDPOINT}/auth`
+export const API_REGISTER = `${API_AUTH}/register`;
+export const API_LOGIN = `${API_AUTH}/login`;
+export const API_USER_ME = `${API_AUTH}/me`;  // GET
+export const API_USER_UPDATE = `${API_AUTH}/user`;  // PUT
+export const API_REFRESH_TOKEN = `${API_AUTH}/refresh-token`;
+export const API_RESET_PASSWORD = `${API_AUTH}/reset-password`;
+export const API_FORGOT_PASSWORD = `${API_AUTH}/forgot-password`;
+export const API_DRIVER = `${API_AUTH}/driver`; // PATCH, POST
 
-// Admin
-export const API_GET_USERS = `${API_ENDPOINT}/users`;
-export const API_GET_RIDER_REQUESTS = `${API_ENDPOINT}/requests/rider`;
-export const API_GET_VEHICLE_REQUESTS = `${API_ENDPOINT}/requests/vehicle`;
+// Search Endpoints
+export const API_SEARCH = `${API_ENDPOINT}/search`; // GET
+export const API_SEARCH_HISTORY = `${API_SEARCH}/history`; // GET
+
+// Otp Endpoints
+const API_OTP = `${API_ENDPOINT}/otp`;
+export const API_GENERATE_OTP = `${API_OTP}/generate`;
+export const API_VALIDATE_OTP = `${API_OTP}/validate`;
+
+// Payment Endpoints
+const API_PAYMENT = `${API_ENDPOINT}/payment`;
+export const API_PAYMENT_CREATE = `${API_PAYMENT}/checkout`;
+export const API_PAYMENT_VALIDATE = `${API_PAYMENT}/verify`;
+export const API_PAYMENT_CANCEL = `${API_PAYMENT}/cancel`; // PUT
+export const API_TRANSACTION = `${API_PAYMENT}/transaction`;  // GET, POST
+
+// Bank Endpoint
+export const API_BANK = `${API_ENDPOINT}/bank`;  // GET, POST, PUT, DELETE
+
+// Vehicle Endpoints
+export const API_VEHICLES = `${API_ENDPOINT}/vehicle`; // GET, POST, PUT, DELETE
+
+// Ride Endpoints
+export const API_RIDE = `${API_ENDPOINT}/ride`; // GET, POST, PUT, DELETE
+export const API_RIDES_BOOKED = `${API_RIDE}/booked`; // GET
+export const API_RIDES_PUBLISHED = `${API_RIDE}/published`; // GET
+
+// Ride Request Endpoints
+export const API_RIDE_REQUEST = `${API_RIDE}/request`; // GET, POST, PUT
+
+
+
+
+
+// Admin Endpoints
+const API_ADMIN = `${API_ENDPOINT}/admin`;
+export const API_ADMIN_LIST_USERS = `${API_ADMIN}/users`; // GET
+export const API_ADMIN_DRIVER_REQUESTS = `${API_ADMIN}/driver`; // GET, PUT
+export const API_ADMIN_VEHICLE_REQUESTS = `${API_ADMIN}/vehicle`; // GET, PUT

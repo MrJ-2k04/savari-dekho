@@ -20,7 +20,7 @@ function VehicleForm({ viewMode = false }) {
     const nav = useNavigate();
     const { id } = useParams();
     const docsInputBorderColor = useSelector(selectIsDarkMode) ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
-    const { loading, uploadVehicleDocs, getVehicleDetails, updateVehicleById, deleteVehicleById } = useApi();
+    const { loading, createVehicle, getVehicleDetails, updateVehicleById, deleteVehicleById } = useApi();
 
 
 
@@ -201,7 +201,7 @@ function VehicleForm({ viewMode = false }) {
                 }).catch(err => showError({ message: err.message }))
         } else {
             // ADD New Vehicle using API
-            uploadVehicleDocs(payload).then(ack => {
+            createVehicle(payload).then(ack => {
                 if (!state) {
                     nav(ROUTE_PROFILE_DASHBOARD);
                 }

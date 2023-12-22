@@ -1,5 +1,5 @@
 
-import { API_BANKS, API_ENDPOINT, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_GET_RIDER_REQUESTS, API_GET_USERS, API_GET_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_SEARCH_HISTORY, API_SEARCH_RIDE, API_TRANSACTION, API_UPLOAD_RIDER_DOCS, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
+import { API_BANK, API_ENDPOINT, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_RIDE_REQUEST, API_SEARCH_HISTORY, API_SEARCH, API_TRANSACTION, API_DRIVER, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -20,7 +20,7 @@ const useApi = () => {
 
   const searchRide = async (params) => {
     const queryString = new URLSearchParams(params).toString();
-    const ack = await apiRequestWithReauth(`${API_SEARCH_RIDE}?${queryString}`, null, 'GET');
+    const ack = await apiRequestWithReauth(`${API_SEARCH}?${queryString}`, null, 'GET');
     if (ack.type === RES.SUCCESS) {
       return ack.payload;
     }
@@ -184,7 +184,7 @@ const useApi = () => {
   }
 
   const createBank = async (bankDetails) => {
-    const ack = await apiRequestWithReauth(API_BANKS, jsonToFormData(bankDetails), "POST");
+    const ack = await apiRequestWithReauth(API_BANK, jsonToFormData(bankDetails), "POST");
     if (ack.type === 'success') {
       return ack;
     }
@@ -192,7 +192,7 @@ const useApi = () => {
   }
 
   const getBanks = async () => {
-    const ack = await apiRequestWithReauth(API_BANKS, null, 'GET');
+    const ack = await apiRequestWithReauth(API_BANK, null, 'GET');
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -200,7 +200,7 @@ const useApi = () => {
   }
 
   const getBankDetails = async (bankId) => {
-    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, null, 'GET');
+    const ack = await apiRequestWithReauth(`${API_BANK}/${bankId}`, null, 'GET');
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -208,7 +208,7 @@ const useApi = () => {
   }
 
   const updateBankById = async (bankId, bankDetails) => {
-    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, jsonToFormData(bankDetails), 'PUT');
+    const ack = await apiRequestWithReauth(`${API_BANK}/${bankId}`, jsonToFormData(bankDetails), 'PUT');
     if (ack.type === 'success') {
       return ack;
     }
@@ -216,7 +216,7 @@ const useApi = () => {
   }
 
   const deleteBankById = async (bankId) => {
-    const ack = await apiRequestWithReauth(`${API_BANKS}/${bankId}`, null, 'DELETE');
+    const ack = await apiRequestWithReauth(`${API_BANK}/${bankId}`, null, 'DELETE');
     if (ack.type === 'success') {
       return ack;
     }
@@ -227,7 +227,7 @@ const useApi = () => {
   // ######################################################### FOR DRIVERS #########################################################
 
   const uploadRiderDocs = async (docsJson) => {
-    const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(docsJson));
+    const ack = await apiRequestWithReauth(API_DRIVER, jsonToFormData(docsJson));
     if (ack.type === 'success') {
       syncUser();
       return ack;
@@ -236,7 +236,7 @@ const useApi = () => {
   }
 
   const updateDrivingLicense = async (data) => {
-    const ack = await apiRequestWithReauth(API_UPLOAD_RIDER_DOCS, jsonToFormData(data), 'PATCH');
+    const ack = await apiRequestWithReauth(API_DRIVER, jsonToFormData(data), 'PATCH');
     if (ack.type === 'success') {
       syncUser();
       return ack;
@@ -244,8 +244,8 @@ const useApi = () => {
     throw new Error(ack.message || "Couldn't update the driving license");
   }
 
-  const uploadVehicleDocs = async (docsJson) => {
-    const ack = await apiRequestWithReauth(API_UPLOAD_VEHICLE_DOCS, jsonToFormData(docsJson));
+  const createVehicle = async (docsJson) => {
+    const ack = await apiRequestWithReauth(API_VEHICLES, jsonToFormData(docsJson));
     if (ack.type === 'success') {
       syncUser();
       return ack;
@@ -302,10 +302,18 @@ const useApi = () => {
     throw new Error(ack.message || "Internal Server Error");
   }
 
+  const getPassengers = async (rideId) => {
+    const ack = await apiRequestWithReauth(`${API_RIDE_REQUEST}/${rideId}`, null, "GET");
+    if (ack.type === RES.SUCCESS) {
+      return ack.payload;
+    }
+    throw new Error(ack.message || "Cannot fetch passengers");
+  }
+
   // ######################################################### FOR ADMINS #########################################################
 
   const getUsersList = async () => {
-    const ack = await apiRequestWithReauth(API_GET_USERS, null, 'GET')
+    const ack = await apiRequestWithReauth(API_ADMIN_LIST_USERS, null, 'GET')
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -313,7 +321,7 @@ const useApi = () => {
   }
 
   const getRiderRequests = async () => {
-    const ack = await apiRequestWithReauth(API_GET_RIDER_REQUESTS, null, 'GET');
+    const ack = await apiRequestWithReauth(API_ADMIN_DRIVER_REQUESTS, null, 'GET');
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -321,7 +329,7 @@ const useApi = () => {
   }
 
   const getVehicleRequests = async () => {
-    const ack = await apiRequestWithReauth(API_GET_VEHICLE_REQUESTS, null, 'GET');
+    const ack = await apiRequestWithReauth(API_ADMIN_VEHICLE_REQUESTS, null, 'GET');
     if (ack.type === 'success') {
       return ack.payload;
     }
@@ -330,14 +338,14 @@ const useApi = () => {
 
 
   const updateRiderRequest = async (newState) => {
-    const ack = await apiRequestWithReauth(API_GET_RIDER_REQUESTS, jsonToFormData(newState), 'PUT');
+    const ack = await apiRequestWithReauth(API_ADMIN_DRIVER_REQUESTS, jsonToFormData(newState), 'PUT');
     if (ack.type === 'success') {
       return ack;
     }
     throw new Error(ack.message || 'Could not update the status');
   }
   const updateVehicleRequest = async (newState) => {
-    const ack = await apiRequestWithReauth(API_GET_VEHICLE_REQUESTS, jsonToFormData(newState), 'PUT');
+    const ack = await apiRequestWithReauth(API_ADMIN_VEHICLE_REQUESTS, jsonToFormData(newState), 'PUT');
     if (ack.type === 'success') {
       return ack;
     }
@@ -449,7 +457,7 @@ const useApi = () => {
     // Driver
     uploadRiderDocs,
     updateDrivingLicense,
-    uploadVehicleDocs,
+    createVehicle,
     getVehicles,
     getVehicleDetails,
     updateVehicleById,
