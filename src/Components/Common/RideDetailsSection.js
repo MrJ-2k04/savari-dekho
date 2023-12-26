@@ -3,10 +3,13 @@ import { useTheme } from "@emotion/react";
 import { Close, Route } from "@mui/icons-material";
 import { Badge, Box, Card, CardContent, CardHeader, Fab, IconButton, ListItem, ListItemIcon, ListItemText, Modal, Slide, Typography, Zoom, styled, useMediaQuery } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
+import useApi from "Components/Hooks/useApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import MyGoogleMap from "Components/MapItems/MyGoogleMap";
 import { PREFERENCES } from "Store/constants";
-import { useState } from "react";
+import { haversineDistance, showError } from "Utils";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 
 const StyledBadge = styled(Badge)(({ isvisible }) => ({
     '& .MuiBadge-badge': {
@@ -21,9 +24,43 @@ const StyledBadge = styled(Badge)(({ isvisible }) => ({
 }));
 
 function RideDetailsSection() {
+    const [searchParams] = useSearchParams();
+    const { rideId } = useParams();
+    // const nav = useNavigate();
+    const { loading, getRideDetails } = useApi();
+
+    // ############################################# COMPUTED #############################################
+
+    const params = {
+        fromPlaceId: searchParams.get("fromPlaceId"),
+        toPlaceId: searchParams.get("toPlaceId"),
+        requestedSeats: parseInt(searchParams.get("requestedSeats")),
+        fromCoords: null,
+        toCoords: null,
+        departure: null,
+        destination: null,
+    }
+    try {
+        params.departure = JSON.parse(searchParams.get("departure"));
+        params.destination = JSON.parse(searchParams.get("destination"));
+        params.departure.text = params.departure?.text?.split("--");
+        params.destination.text = params.destination?.text?.split("--");
+        params.fromCoords = JSON.parse(searchParams.get("fromCoords"));
+        params.toCoords = JSON.parse(searchParams.get("toCoords"));
+    } catch (error) { }
+    console.log(params);
+    // if (searchParams.get("date")) {
+    //     const dateArray = searchParams.get("date").split("-");
+    //     dateArray[1] = dateArray[1] - 1;
+    //     params["date"] = new Date(...dateArray.reverse());
+    // }
+
+    // ############################################# States #############################################
+
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [isMapVisible, setIsMapVisible] = useState(false);
+    const [ride, setRide] = useState(null);
     const waypoints = [
         {
             location: {
@@ -67,12 +104,81 @@ function RideDetailsSection() {
         },
     ];
 
+    // ############################################# Handlers #############################################
+
     const handleShowMap = () => {
         setIsMapVisible(true);
     }
     const handleHideMap = () => {
         setIsMapVisible(false);
     }
+
+    useEffect(() => {
+        if (!rideId) {
+            showError({ message: "Ride ID not found!" });
+            return;
+        }
+        getRideDetails(rideId)
+            .then(rideDetails => {
+                try {
+                    // Ride: A------X------Y-----B
+                    
+                    // A to B
+                    if (!params.departure && !params.destination) {
+                        console.log("Ride: A======X======Y======B");
+                        setRide(rideDetails);
+                    }
+                    // A to Y
+                    else if (!params.departure) {
+                        console.log("Ride: A======X======Y------B");
+                        // Destination Computer Property
+                        rideDetails.destination = {};
+                        const destiCoords = rideDetails.locations.coordinates[params.destination?.index] || [];
+                        rideDetails.destination.distance = haversineDistance(params.toCoords[1], params.toCoords[0], destiCoords[1], destiCoords[0]);
+                        setRide(rideDetails);
+                    }
+                    // X to B
+                    else if (!params.destination) {
+                        console.log("Ride: A------X======Y======B");
+                        
+                        // Departure Computed Property
+                        const departCoords = rideDetails.locations.coordinates[params.departure?.index] || [];
+                        rideDetails.departure = {
+                            index: params.departure.index,
+                            distance: haversineDistance(params.fromCoords[1], params.fromCoords[0], departCoords[1], departCoords[0]),
+                        };
+                    }
+                    // X to Y
+                    else {
+                        console.log("Ride: A------X======Y------B");
+                        // Departure Computed Property
+                        const departCoords = rideDetails.locations.coordinates[params.departure?.index] || [];
+                        rideDetails.departure = {
+                            index: params.departure.index,
+                            distance: haversineDistance(params.fromCoords[1], params.fromCoords[0], departCoords[1], departCoords[0]),
+                        };
+
+                        // Destination Computer Property
+                        const destiCoords = rideDetails.locations.coordinates[params.destination?.index] || [];
+                        rideDetails.destination = {
+                            index: params.destination.index,
+                            distance: haversineDistance(params.toCoords[1], params.toCoords[0], destiCoords[1], destiCoords[0]),
+                        };
+
+                        setRide(rideDetails);
+                    }
+                } catch (error) {
+                    console.error(error.message);
+                    setRide(rideDetails);
+                }
+            })
+            .catch(err => showError({ message: err.message }));
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        console.log(ride);
+    }, [ride]);
 
     return (<>
         <Box position={'absolute'} height={'100%'} width={'100%'}>

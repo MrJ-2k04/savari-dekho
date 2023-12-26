@@ -2,7 +2,7 @@
 
 import { AccountBalance, AddCircle, ArrowForwardIos, Delete, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from "@mui/material";
-import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_RESET_PASSWORD_PAGE, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 

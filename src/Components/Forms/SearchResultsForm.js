@@ -109,6 +109,25 @@ function SearchResultsForm() {
 
     // ############################################# Handlers #############################################
 
+    const getRedirectUrl = (ride) => {
+        const options = new URLSearchParams({
+            fromPlaceId: params.fromPlaceId,
+            toPlaceId: params.toPlaceId,
+            fromCoords: params.fromCoords,
+            toCoords: params.toCoords,
+            departure: JSON.stringify({
+                index: ride.departure.coordsIndex,
+                text: [ride.departure.primaryText, ride.departure.secondaryText].join("--"),
+            }),
+            destination: JSON.stringify({
+                index: ride.destination.coordsIndex,
+                text: [ride.destination.primaryText, ride.destination.secondaryText].join("--"),
+            }),
+            requestedSeats: params.seats,
+        });
+        return `${ROUTE_RIDES}/${ride._id}?${options.toString()}`;
+    }
+
     const handleRideAlertCreation = () => {
         setCreatingRideAlert(true);
         setTimeout(() => {
@@ -286,18 +305,8 @@ function SearchResultsForm() {
                                     <Typography variant="h4" color={'text.secondary'}>{searchResults.length} rides available</Typography>
                                 </MHidden>
                                 {searchResults.map((result, index) => {
-                                    const options = new URLSearchParams({
-                                        startLegIndex: result.startLegIndex,
-                                        endLegIndex: result.endLegIndex,
-                                        startStepIndex: result.startStepIndex,
-                                        endStepIndex: result.endStepIndex,
-                                        from: params.from,
-                                        to: params.to,
-                                        fromPlaceId: params.fromPlaceId,
-                                        toPlaceId: params.toPlaceId,
-                                    });
                                     return <Card key={index} sx={{ borderRadius: '16px', my: 1, cursor: 'pointer' }}>
-                                        <CardActionArea LinkComponent={Link} to={`${ROUTE_RIDES}/${result.id}?${options.toString()}`}>
+                                        <CardActionArea LinkComponent={Link} to={getRedirectUrl(result)}>
                                             <CardContent sx={{ p: 1 }}>
                                                 <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                                                     <Box>

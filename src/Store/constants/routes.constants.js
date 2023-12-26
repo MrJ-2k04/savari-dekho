@@ -71,7 +71,7 @@ export const USER_ROUTES = [
     ROUTE_BANK_ADD,
     ROUTE_BANK_DETAILS,
 ];
-export const RIDER_ROUTES = [
+export const DRIVER_ROUTES = [
     ROUTE_RIDE_PUBLISH,
     ROUTE_RIDE_EDIT,
     ROUTE_VERIFY_RIDER,

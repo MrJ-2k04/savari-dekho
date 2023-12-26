@@ -1,5 +1,5 @@
 
-import { API_BANK, API_ENDPOINT, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_RIDE_REQUEST, API_SEARCH_HISTORY, API_SEARCH, API_TRANSACTION, API_DRIVER, API_UPLOAD_VEHICLE_DOCS, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
+import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_RIDE_REQUEST, API_SEARCH, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -27,12 +27,12 @@ const useApi = () => {
     throw new Error(ack.message || "Server Error");
   }
 
-  const getSearchHistory = async () => {
-    const ack = await apiRequestWithReauth(API_SEARCH_HISTORY, null, 'GET');
+  const getRideDetails = async (rideId) => {
+    const ack = await apiRequestWithReauth(`${API_RIDE}/${rideId}`, null, "GET");
     if (ack.type === RES.SUCCESS) {
       return ack.payload;
     }
-    return [];
+    throw new Error(ack.message || "Can't fetch the ride details");
   }
 
   const generateOtp = async (mobileNumber) => {
@@ -223,6 +223,13 @@ const useApi = () => {
     throw new Error(ack.message || "Couldn't delete bank");
   }
 
+  const getSearchHistory = async () => {
+    const ack = await apiRequestWithReauth(API_SEARCH_HISTORY, null, 'GET');
+    if (ack.type === RES.SUCCESS) {
+      return ack.payload;
+    }
+    return [];
+  }
 
   // ######################################################### FOR DRIVERS #########################################################
 
@@ -453,6 +460,7 @@ const useApi = () => {
     getBankDetails,
     updateBankById,
     deleteBankById,
+    getRideDetails,
 
     // Driver
     uploadRiderDocs,
@@ -463,6 +471,7 @@ const useApi = () => {
     updateVehicleById,
     deleteVehicleById,
     publishRide,
+    getPassengers,
 
     // Admin
     getUsersList,
