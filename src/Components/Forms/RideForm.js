@@ -5,7 +5,7 @@ import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
-import MyGoogleMap from "Components/MapItems/MyGoogleMap";
+import RidePublishMapView from "Components/MapItems/RidePublishMapView";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
 import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { formatPlaceObj, isEmptyString, isFalsy, isNumeric, showError, showSuccess } from "Utils";
@@ -569,7 +569,7 @@ function RideForm({ isNew = false }) {
                     </Stack>
                 </Box>
                 {!isMobile ? <Box width={'100%'}>
-                    <MyGoogleMap
+                    <RidePublishMapView
                         from={locations[ID_RIDE_FROM]}
                         to={locations[ID_RIDE_TO]}
                         waypoints={waypoints}
@@ -598,7 +598,7 @@ function RideForm({ isNew = false }) {
                                         </IconButton>}
                                     />
                                     <CardContent sx={{ flexGrow: 1, px: 0, py: "0 !important" }}>
-                                        <MyGoogleMap
+                                        <RidePublishMapView
                                             from={locations[ID_RIDE_FROM]}
                                             to={locations[ID_RIDE_TO]}
                                             waypoints={waypoints}

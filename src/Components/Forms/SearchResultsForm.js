@@ -312,25 +312,23 @@ function SearchResultsForm() {
                                                     <Box>
                                                         <RouteList waypoints={[
                                                             {
-                                                                location: {
-                                                                    primaryText: result.departure?.primaryText || result.from.primaryText,
-                                                                    secondaryText: result.departure?.secondaryText || result.from.secondaryText,
-                                                                    // ...result.from,
-                                                                    // primaryText: result.from,
-                                                                    // time: result.fromTime,
-                                                                    // fullName: "Block-J, Ahmedabad, Gujarat",
-                                                                }
+                                                                primaryText: result.departure?.primaryText || result.from.primaryText,
+                                                                secondaryText: result.departure?.secondaryText || result.from.secondaryText,
+                                                                distance: result.departure?.distance,
+                                                                // ...result.from,
+                                                                // primaryText: result.from,
+                                                                // time: result.fromTime,
+                                                                // fullName: "Block-J, Ahmedabad, Gujarat",
                                                             },
                                                             {
-                                                                location: {
-                                                                    primaryText: result.destination?.primaryText || result.to.primaryText,
-                                                                    secondaryText: result.destination?.secondaryText || result.to.secondaryText,
-                                                                    // ...result.to
-                                                                    // primaryText: result.to,
-                                                                    // time: result.toTime,
-                                                                    // secondaryText: "Railway Station Cir, Railway Station Area, Varachha",
-                                                                    // fullName: "Railway Station Cir, Surat, Gujarat",
-                                                                }
+                                                                primaryText: result.destination?.primaryText || result.to.primaryText,
+                                                                secondaryText: result.destination?.secondaryText || result.to.secondaryText,
+                                                                distance: result.destination?.distance,
+                                                                // ...result.to
+                                                                // primaryText: result.to,
+                                                                // time: result.toTime,
+                                                                // secondaryText: "Railway Station Cir, Railway Station Area, Varachha",
+                                                                // fullName: "Railway Station Cir, Surat, Gujarat",
                                                             },
                                                         ]} />
                                                     </Box>
@@ -346,7 +344,7 @@ function SearchResultsForm() {
                                                         <img src={result.publisher.profilePicture} alt="Publisher Profile" />
                                                     </Avatar>
                                                     <Typography variant="subtitle1">{result.publisher.name}</Typography>
-                                                    <Tooltip title={`Max ${result.seats} seats available`}>
+                                                    <Tooltip title={`Max ${result.availableSeats} seats available`}>
                                                         <Box ml={'auto !important'} display={'flex'} gap={0.5} alignItems={'center'}>
                                                             <AirlineSeatReclineExtra />
                                                             <Typography variant="subtitle1">{result.availableSeats}</Typography>

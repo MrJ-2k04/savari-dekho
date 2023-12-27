@@ -13,7 +13,7 @@ const DROPOFF_MARKER_URL = window.location.origin + "/assets/dropoff.svg";
 // const WAYPOINT_MARKER_URL = window.location.origin + "/assets/marker.svg";
 
 
-function MyGoogleMap({ from, to, waypoints, onChange: updateParentState }) {
+function RidePublishMapView({ from, to, waypoints, onChange: updateParentState }) {
 
     const isLoaded = useSelector(selectIsMapLoaded);
     const theme = useTheme();
@@ -278,7 +278,7 @@ function MyGoogleMap({ from, to, waypoints, onChange: updateParentState }) {
 
                             return <DirectionsRenderer
                                 key={routeIndex}
-                                panel={document.body}
+                                // panel={document.body}
                                 routeIndex={routeIndex}
                                 directions={directionsResponse}
                                 // onDirectionsChanged={e => console.log(e)}
@@ -306,4 +306,4 @@ function MyGoogleMap({ from, to, waypoints, onChange: updateParentState }) {
     );
 }
 
-export default MyGoogleMap;
+export default RidePublishMapView;
