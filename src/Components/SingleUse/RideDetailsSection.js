@@ -1,13 +1,15 @@
 
 import { useTheme } from "@emotion/react";
-import { KeyboardArrowRight } from "@mui/icons-material";
-import { Avatar, Box, Container, Divider, LinearProgress, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
+import { Add, ArrowRightAlt, KeyboardArrowRight, Luggage, Remove } from "@mui/icons-material";
+import { Avatar, Box, Button, Container, Divider, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
 import useApi from "Components/Hooks/useApi";
 import { PREFERENCES, ROUTE_USER_DETAILS } from "Store/constants";
 import { haversineDistance, showError } from "Utils";
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+
+
 
 
 
@@ -202,41 +204,61 @@ function RideDetailsSection() {
         </Box> :
             <>
                 {(!error && ride) ?
-                    <Box display={'flex'} width={'100%'} height={'100%'} flexDirection={'column'}>
+                    <Box display={'flex'} width={'100%'} height={'100%'} flexDirection={'column'} gap={1}>
                         <Box width={'100%'} sx={{ overflowX: 'hidden' }}>
                             <RouteList waypoints={waypoints} price={540} startIndex={waypointIndex.startIndex} endIndex={waypointIndex.endIndex} />
                         </Box>
-                        <ListItemButton
-                            LinkComponent={Link}
-                            to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
-                            sx={{ borderRadius: '16px', my: 1 }}>
-                            <ListItemIcon>
-                                <Avatar>
-                                    <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={ride.publisher.profilePicture} alt="Driver avatar" />
-                                </Avatar>
-                                {/* <History  /> */}
-                            </ListItemIcon>
-                            <ListItemText
-                            // secondary={`${item.seats} ${item.seats > 1 ? "Passengers" : "Passenger"}`}
-                            >
-                                <Box display={'flex'} alignItems={'center'} gap={1}>
-                                    <Typography sx={{
-                                        display: '-webkit-box',
-                                        overflow: 'hidden',
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: 'vertical',
-                                        textOverflow: 'ellipsis',
-                                        width: '100%',
-                                        maxWidth: 'max-content'
-                                    }}>
-                                        {`${ride.publisher.firstName} ${ride.publisher.lastName}`}
-                                    </Typography>
-                                </Box>
-                            </ListItemText>
-                            <ListItemIcon sx={{ justifyContent: 'right' }}>
-                                <KeyboardArrowRight />
-                            </ListItemIcon>
-                        </ListItemButton>
+                        <Divider variant="middle" flexItem />
+                        <Box aria-label="price & booking section" display={'flex'} width={'100%'} justifyContent={'space-between'} py={2} px={4}>
+                            <Box display={'flex'} alignItems={'center'} gap={2}>
+                                <Typography>Seats</Typography>
+                                <IconButton size="small">
+                                    <Remove />
+                                </IconButton>
+                                2
+                                <IconButton size="small">
+                                    <Add />
+                                </IconButton>
+                            </Box>
+                            <Stack direction={'row'} spacing={2} alignItems={'center'}>
+                                <Typography color={'primary'} variant="h3">₹{ride.totalPrice}</Typography>
+                                <Button variant="contained" endIcon={<Luggage />}>Request to Book Ride</Button>
+                            </Stack>
+                        </Box>
+                        <Divider variant="middle" flexItem />
+                        <Box aria-label="publisher section">
+                            <ListItemButton
+                                LinkComponent={Link}
+                                to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
+                                sx={{ borderRadius: '16px', my: 1 }}>
+                                <ListItemIcon>
+                                    <Avatar>
+                                        <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={ride.publisher.profilePicture} alt="Driver avatar" />
+                                    </Avatar>
+                                    {/* <History  /> */}
+                                </ListItemIcon>
+                                <ListItemText
+                                // secondary={`${item.seats} ${item.seats > 1 ? "Passengers" : "Passenger"}`}
+                                >
+                                    <Box display={'flex'} alignItems={'center'} gap={1}>
+                                        <Typography sx={{
+                                            display: '-webkit-box',
+                                            overflow: 'hidden',
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: 'vertical',
+                                            textOverflow: 'ellipsis',
+                                            width: '100%',
+                                            maxWidth: 'max-content'
+                                        }}>
+                                            {`${ride.publisher.firstName} ${ride.publisher.lastName}`}
+                                        </Typography>
+                                    </Box>
+                                </ListItemText>
+                                <ListItemIcon sx={{ justifyContent: 'right' }}>
+                                    <KeyboardArrowRight />
+                                </ListItemIcon>
+                            </ListItemButton>
+                        </Box>
                         <Divider variant="middle" flexItem />
                         <Box aria-label="preferences section">
                             <Typography gutterBottom variant="h4" color={'primary'}>Preferences</Typography>
@@ -249,7 +271,69 @@ function RideDetailsSection() {
                                 </ListItem>
                             })}
                         </Box>
-
+                        <Divider variant="middle" flexItem />
+                        {ride.passengers.length > 0 && <Box aria-label="co-travellers section">
+                            <Typography gutterBottom variant="h4" color={'primary'}>Co-travellers</Typography>
+                            <List>
+                                {ride.passengers.map(passenger =>
+                                    <ListItemButton
+                                        key={passenger.passengerId}
+                                        LinkComponent={Link}
+                                        to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
+                                        sx={{ borderRadius: '16px', my: 1 }}>
+                                        <ListItemIcon>
+                                            <Avatar>
+                                                <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
+                                            </Avatar>
+                                            {/* <History  /> */}
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            secondary={<Box display={'flex'} alignItems={'center'} gap={1}>
+                                                <Typography sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    textOverflow: 'ellipsis',
+                                                    width: '100%',
+                                                    maxWidth: 'max-content'
+                                                }}>
+                                                    {passenger.departure.secondaryText}
+                                                </Typography>
+                                                <ArrowRightAlt sx={{ color: 'text.disabled' }} />
+                                                <Typography sx={{
+                                                    width: '100%',
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    textOverflow: 'ellipsis',
+                                                }}>
+                                                    {passenger.destination.secondaryText}
+                                                </Typography>
+                                            </Box>}
+                                        >
+                                            <Box display={'flex'} alignItems={'center'} gap={1}>
+                                                <Typography sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    textOverflow: 'ellipsis',
+                                                    width: '100%',
+                                                    maxWidth: 'max-content'
+                                                }}>
+                                                    {`${passenger.firstName} ${passenger.lastName}`}
+                                                </Typography>
+                                            </Box>
+                                        </ListItemText>
+                                        <ListItemIcon sx={{ justifyContent: 'right' }}>
+                                            <KeyboardArrowRight />
+                                        </ListItemIcon>
+                                    </ListItemButton>
+                                )}
+                            </List>
+                        </Box>}
                     </Box>
                     :
                     <Container>

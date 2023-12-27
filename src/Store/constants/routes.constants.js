@@ -5,6 +5,7 @@
 export const ROUTE_HOME = "/";
 export const ROUTE_RESET_PASSWORD = "/reset-password";
 export const ROUTE_RESET_PASSWORD_PAGE = "/reset-password/:userId";
+export const ROUTE_USER = "/users";
 export const ROUTE_USER_DETAILS = "/users/:userId";
 export const ROUTE_SEARCH = "/search-rides";
 export const ROUTE_SEARCH_RESULT = "/search";
