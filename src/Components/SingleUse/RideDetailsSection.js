@@ -1,11 +1,12 @@
 
 import { useTheme } from "@emotion/react";
 import { Add, ArrowRightAlt, KeyboardArrowRight, Luggage, Remove } from "@mui/icons-material";
-import { Avatar, Box, Button, Container, Divider, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
 import useApi from "Components/Hooks/useApi";
 import { PREFERENCES, ROUTE_USER_DETAILS } from "Store/constants";
-import { haversineDistance, showError } from "Utils";
+import { formatDateForRide, haversineDistance, showError } from "Utils";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 
@@ -205,27 +206,35 @@ function RideDetailsSection() {
             <>
                 {(!error && ride) ?
                     <Box display={'flex'} width={'100%'} height={'100%'} flexDirection={'column'} gap={1}>
+                        <Box>
+                            <Typography color={'primary'} variant="h3" textAlign={'center'}>{formatDateForRide(ride.departureDatetime)}</Typography>
+                        </Box>
                         <Box width={'100%'} sx={{ overflowX: 'hidden' }}>
                             <RouteList waypoints={waypoints} price={540} startIndex={waypointIndex.startIndex} endIndex={waypointIndex.endIndex} />
                         </Box>
-                        <Divider variant="middle" flexItem />
-                        <Box aria-label="price & booking section" display={'flex'} width={'100%'} justifyContent={'space-between'} py={2} px={4}>
-                            <Box display={'flex'} alignItems={'center'} gap={2}>
-                                <Typography>Seats</Typography>
-                                <IconButton size="small">
-                                    <Remove />
-                                </IconButton>
-                                2
-                                <IconButton size="small">
-                                    <Add />
-                                </IconButton>
-                            </Box>
-                            <Stack direction={'row'} spacing={2} alignItems={'center'}>
-                                <Typography color={'primary'} variant="h3">₹{ride.totalPrice}</Typography>
-                                <Button variant="contained" endIcon={<Luggage />}>Request to Book Ride</Button>
-                            </Stack>
+                        <Divider variant="fullWidth" flexItem sx={{ borderWidth: 4, borderRadius: '16px' }} />
+                        <Box aria-label="price section" width={'100%'} p={2}>
+                            <Grid container rowSpacing={2}>
+                                <Grid item xs={6} sm={6}>
+                                    <Box display={'flex'} alignItems={'center'} sx={{ justifyContent: { xs: 'center', sm: "start" } }} gap={2} height={'100%'}>
+                                        <Typography>Seats</Typography>
+                                        <IconButton size="small">
+                                            <Remove />
+                                        </IconButton>
+                                        2
+                                        <IconButton size="small">
+                                            <Add />
+                                        </IconButton>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6} sm={6}>
+                                    <Stack direction={'row'} spacing={2} alignItems={'center'} sx={{ justifyContent: "end" }}>
+                                        <Typography color={'primary'} variant="h3">₹{ride.totalPrice}</Typography>
+                                    </Stack>
+                                </Grid>
+                            </Grid>
                         </Box>
-                        <Divider variant="middle" flexItem />
+                        <Divider variant="fullWidth" flexItem sx={{ borderWidth: 4, borderRadius: '16px' }} />
                         <Box aria-label="publisher section">
                             <ListItemButton
                                 LinkComponent={Link}
@@ -259,19 +268,23 @@ function RideDetailsSection() {
                                 </ListItemIcon>
                             </ListItemButton>
                         </Box>
-                        <Divider variant="middle" flexItem />
-                        <Box aria-label="preferences section">
-                            <Typography gutterBottom variant="h4" color={'primary'}>Preferences</Typography>
-                            {PREFERENCES.filter(pref => (ride.preferences || []).includes(pref.id)).map((pref, index) => {
-                                return <ListItem key={index}>
-                                    <ListItemIcon sx={{ color: "text.secondary" }}><pref.Icon /></ListItemIcon>
-                                    <ListItemText><Typography color={'text.secondary'}>
-                                        {pref.title}
-                                    </Typography></ListItemText>
-                                </ListItem>
-                            })}
-                        </Box>
-                        <Divider variant="middle" flexItem />
+                        <Divider variant="fullWidth" flexItem />
+
+                        {ride.preferences && ride.preferences.length > 0 && <>
+                            <Box aria-label="preferences section" py={1}>
+                                <Typography gutterBottom variant="h4" color={'primary'}>Preferences</Typography>
+                                {PREFERENCES.filter(pref => (ride.preferences || []).includes(pref.id)).map((pref, index) => {
+                                    return <ListItem key={index}>
+                                        <ListItemIcon sx={{ color: "text.secondary" }}><pref.Icon /></ListItemIcon>
+                                        <ListItemText color={'text.secondary'}>
+                                            {pref.title}
+                                        </ListItemText>
+                                    </ListItem>
+                                })}
+                            </Box>
+                            <Divider variant="fullWidth" flexItem />
+                        </>}
+                        <Box />
                         {ride.passengers.length > 0 && <Box aria-label="co-travellers section">
                             <Typography gutterBottom variant="h4" color={'primary'}>Co-travellers</Typography>
                             <List>
@@ -287,8 +300,8 @@ function RideDetailsSection() {
                                             </Avatar>
                                             {/* <History  /> */}
                                         </ListItemIcon>
-                                        <ListItemText
-                                            secondary={<Box display={'flex'} alignItems={'center'} gap={1}>
+                                        <ListItemText>
+                                            <Box display={'flex'} alignItems={'center'} gap={1}>
                                                 <Typography sx={{
                                                     display: '-webkit-box',
                                                     overflow: 'hidden',
@@ -297,6 +310,19 @@ function RideDetailsSection() {
                                                     textOverflow: 'ellipsis',
                                                     width: '100%',
                                                     maxWidth: 'max-content'
+                                                }}>
+                                                    {`${passenger.firstName} ${passenger.lastName}`}
+                                                </Typography>
+                                            </Box>
+                                            <Box display={'flex'} alignItems={'center'} gap={1} color={'text.secondary'}>
+                                                <Typography sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    textOverflow: 'ellipsis',
+                                                    width: '100%',
+                                                    maxWidth: 'max-content',
                                                 }}>
                                                     {passenger.departure.secondaryText}
                                                 </Typography>
@@ -311,20 +337,6 @@ function RideDetailsSection() {
                                                 }}>
                                                     {passenger.destination.secondaryText}
                                                 </Typography>
-                                            </Box>}
-                                        >
-                                            <Box display={'flex'} alignItems={'center'} gap={1}>
-                                                <Typography sx={{
-                                                    display: '-webkit-box',
-                                                    overflow: 'hidden',
-                                                    WebkitLineClamp: 3,
-                                                    WebkitBoxOrient: 'vertical',
-                                                    textOverflow: 'ellipsis',
-                                                    width: '100%',
-                                                    maxWidth: 'max-content'
-                                                }}>
-                                                    {`${passenger.firstName} ${passenger.lastName}`}
-                                                </Typography>
                                             </Box>
                                         </ListItemText>
                                         <ListItemIcon sx={{ justifyContent: 'right' }}>
@@ -334,6 +346,10 @@ function RideDetailsSection() {
                                 )}
                             </List>
                         </Box>}
+                        <Divider variant="fullWidth" flexItem />
+                        <Box mx={'auto'} py={2}>
+                            <Button size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</Button>
+                        </Box>
                     </Box>
                     :
                     <Container>
