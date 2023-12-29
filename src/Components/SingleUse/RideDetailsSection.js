@@ -1,14 +1,16 @@
 
 import { useTheme } from "@emotion/react";
 import { Add, ArrowRightAlt, KeyboardArrowRight, Luggage, Remove } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
 import useApi from "Components/Hooks/useApi";
-import { PREFERENCES, ROUTE_USER_DETAILS } from "Store/constants";
-import { formatDateForRide, haversineDistance, showError } from "Utils";
+import useRideApi from "Components/Hooks/useRideApi";
+import { PREFERENCES, ROUTE_RIDES, ROUTE_USER_DETAILS } from "Store/constants";
+import { formatDateForRide, haversineDistance, showError, showSuccess } from "Utils";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 
 
@@ -17,8 +19,9 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 function RideDetailsSection() {
     const [searchParams] = useSearchParams();
     const { rideId } = useParams();
-    // const nav = useNavigate();
+    const nav = useNavigate();
     const { loading, getRideDetails } = useApi();
+    const { loading: requesting, requestRide } = useRideApi();
 
     // ############################################# COMPUTED #############################################
 
@@ -98,7 +101,15 @@ function RideDetailsSection() {
 
     // ############################################# Handlers #############################################
 
-
+    const handleRequestRide = () => {
+        requestRide(ride._id, {}).then((msg) => {
+            showSuccess({ message: msg || "Ride Requested successfully, please wait until the driver confirms your ride." }).then(() => {
+                nav(ROUTE_RIDES)
+            })
+        }).catch(err => {
+            showError({ message: err.message });
+        })
+    }
 
     useEffect(() => {
         if (!rideId) {
@@ -348,7 +359,7 @@ function RideDetailsSection() {
                         </Box>}
                         <Divider variant="fullWidth" flexItem />
                         <Box mx={'auto'} py={2}>
-                            <Button size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</Button>
+                            <LoadingButton loading={requesting} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
                         </Box>
                     </Box>
                     :

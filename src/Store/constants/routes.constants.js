@@ -133,6 +133,26 @@ export const API_VEHICLES = `${API_ENDPOINT}/vehicle`; // GET, POST, PUT, DELETE
 export const API_RIDE = `${API_ENDPOINT}/ride`; // GET, POST, PUT, DELETE
 export const API_RIDES_BOOKED = `${API_RIDE}/booked`; // GET
 export const API_RIDES_PUBLISHED = `${API_RIDE}/published`; // GET
+// Ride Level Endpoints
+export const API_RIDE_START = `${API_RIDE}/:rideId/start`; // PUT
+export const API_RIDE_END = `${API_RIDE}/:rideId/end`; // PUT
+export const API_RIDE_CANCEL = `${API_RIDE}/:rideId/cancel`; // PUT
+// Passenger Level Endpoints
+export const API_PASSENGER = `${API_RIDE}/:rideId/passenger`; // PUT
+export const API_PASSENGER_REQUEST_RIDE = API_PASSENGER; // POST
+export const API_PASSENGER_CONFIRM_RIDE = `${API_PASSENGER}/confirm`; // PUT
+export const API_PASSENGER_CANCEL_RIDE = `${API_PASSENGER}/cancel`; // PUT
+// Driver Side
+export const API_GET_PASSENGERS = `${API_RIDE}/:rideId/passenger`; // GET
+export const API_PASSENGER_UPDATE_STATUS = `${API_PASSENGER}/update`; // PUT
+export const API_PASSENGER_SEND_OTP = `${API_PASSENGER}/otp`; // PUT
+export const API_PASSENGER_START_RIDE = `${API_PASSENGER}/start`; // PUT
+export const API_PASSENGER_END_RIDE = `${API_PASSENGER}/end`; // PUT
+
+
+
+
+
 
 // Ride Request Endpoints
 export const API_RIDE_REQUEST = `${API_RIDE}/request`; // GET, POST, PUT
