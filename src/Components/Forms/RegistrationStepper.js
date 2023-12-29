@@ -17,7 +17,7 @@ import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_LOGIN, STATE_OPTIONS } from 'Store/
 import { is18Plus, isEmptyString, isValidDateObject, isValidEmail } from 'Utils';
 import inLocale from "date-fns/locale/en-IN";
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AvatarSection from './AvatarSection';
 import MobileNumberOTP from './MobileNumberOTP';
 
@@ -26,6 +26,7 @@ const steps = ['Mobile Verfication', 'Basic Details', 'Location Details', 'Creat
 export default function RegistrationStepper() {
     const theme = useTheme();
     const { registerUser, loading: submitting } = useApi();
+    const location = useLocation();
 
     // --------------------------- Form Fields ---------------------------
 
@@ -504,7 +505,7 @@ export default function RegistrationStepper() {
                     {activeStep === 0 &&
                         <Stack direction={'row'} spacing={1} justifyContent={'center'}>
                             <Typography>Already have an account?</Typography>
-                            <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_LOGIN}>Sign in</Typography>
+                            <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_LOGIN} state={location.state}>Sign in</Typography>
                         </Stack>
                     }
 

@@ -224,7 +224,7 @@ function RidePublishMapView({ from, to, waypoints, onChange: updateParentState }
     }, [from, to, waypoints])
 
     useEffect(() => {
-        console.log(distance, duration);
+        // console.log(distance, duration);
     }, [distance, duration]);
 
     useEffect(() => {

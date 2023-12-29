@@ -46,6 +46,15 @@ export const formatPlaceObj = (placeObj) => ({
     geometry: null,
 })
 
+export const unformatPlaceObj = (placeObj) => ({
+    place_id: placeObj.placeId,
+    description: placeObj.fullName,
+    structured_formatting: {
+        main_text: placeObj.primaryText,
+        secondary_text: placeObj.secondaryText,
+    }
+})
+
 export function haversineDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -55,6 +64,35 @@ export function haversineDistance(lat1, lon1, lat2, lon2) {
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
+}
+
+export function getPriceFromDistance(distanceInKm) {
+    // Define the range of distances and corresponding prices
+    const minDistance = 100;
+    const maxDistance = 4000;
+    const minPrice = 2;
+    const maxPrice = 1.7;
+
+    // Ensure the distance is within the specified range
+    const clampedDistance = Math.min(Math.max(distanceInKm, minDistance), maxDistance);
+
+    // Calculate the interpolation factor (a value between 0 and 1)
+    const t = (clampedDistance - minDistance) / (maxDistance - minDistance);
+
+    // Use linear interpolation formula to calculate the price
+    const interpolatedPrice = minPrice + t * (maxPrice - minPrice);
+
+    // Round the result to a desired precision
+    const roundedPrice = parseFloat(interpolatedPrice.toFixed(3));
+
+    return roundedPrice;
+}
+
+export function calculateTotalDistance(lineStringCoords = []) {
+    return lineStringCoords.reduce((distance, [lng, lat], index) => {
+        if (index === 0) return distance;
+        return distance + haversineDistance(lineStringCoords[index - 1][1], lineStringCoords[index - 1][0], lat, lng);
+    }, 0);
 }
 
 // export const getPlaceFromCoords = ([lng, lat]) => {

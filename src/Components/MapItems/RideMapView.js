@@ -13,13 +13,14 @@ const DROPOFF_MARKER_URL = window.location.origin + "/assets/dropoff.svg";
 // const WAYPOINT_MARKER_URL = window.location.origin + "/assets/marker.svg";
 
 
-function RideMapView({ from, to, waypoints, onChange: updateParentState }) {
-
-    const isLoaded = useSelector(selectIsMapLoaded);
+function RideMapView({ coordinates: origCoords = [], bounds }) {
+    const coordinates = origCoords.map(([lng, lat]) => ({ lat, lng }));
+    const isApiLoaded = useSelector(selectIsMapLoaded);
     const theme = useTheme();
 
     // ################################################## STATES ##################################################
 
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [distance, setDistance] = useState('');
     const [duration, setDuration] = useState('');
@@ -31,72 +32,72 @@ function RideMapView({ from, to, waypoints, onChange: updateParentState }) {
 
     // ################################################## MAP Manupilators ##################################################
 
-    const calculateRoute = async (origin, destination, waypoints) => {
-        if (!isLoaded) return;
+    // const calculateRoute = async (origin, destination, waypoints) => {
+    //     if (!isLoaded) return;
 
-        // Trim Waypoints Array
-        var finalWaypoints = [...waypoints];
-        finalWaypoints = finalWaypoints.map(wp => {
-            if (!wp.location) return undefined;
+    //     // Trim Waypoints Array
+    //     var finalWaypoints = [...waypoints];
+    //     finalWaypoints = finalWaypoints.map(wp => {
+    //         if (!wp.location) return undefined;
 
-            return { location: wp.location.description, stopover: true };
-        }).filter(wp => wp);
+    //         return { location: wp.location.description, stopover: true };
+    //     }).filter(wp => wp);
 
-        // eslint-disable-next-line no-undef
-        const directionService = new window.google.maps.DirectionsService();
-        try {
-            const routeParams = {
-                origin,
-                destination,
-                // eslint-disable-next-line no-undef
-                travelMode: google.maps.TravelMode.DRIVING,
-                avoidFerries: true,
-                provideRouteAlternatives: true,
-                // optimizeWaypoints: true
-            }
-            if (finalWaypoints.length > 0) {
-                routeParams.waypoints = finalWaypoints;
-            }
-            directionService.route(routeParams, (results, status) => {
-                if (status !== 'OK') throw new Error("Can't find a proper route");
+    //     // eslint-disable-next-line no-undef
+    //     const directionService = new window.google.maps.DirectionsService();
+    //     try {
+    //         const routeParams = {
+    //             origin,
+    //             destination,
+    //             // eslint-disable-next-line no-undef
+    //             travelMode: google.maps.TravelMode.DRIVING,
+    //             avoidFerries: true,
+    //             provideRouteAlternatives: true,
+    //             // optimizeWaypoints: true
+    //         }
+    //         if (finalWaypoints.length > 0) {
+    //             routeParams.waypoints = finalWaypoints;
+    //         }
+    //         directionService.route(routeParams, (results, status) => {
+    //             if (status !== 'OK') throw new Error("Can't find a proper route");
 
-                setDirectionsResponse(results);
+    //             setDirectionsResponse(results);
 
 
-                // Place Markers
-                const legs = results.routes[0].legs
-                const startMarkerPosition = results.routes[0].overview_path[0].toJSON();
-                const endMarkerPosition = results.routes[0].overview_path[results.routes[0].overview_path.length - 1].toJSON();
-                const startTitle = results.routes[0].legs[0].start_address;
-                const endTitle = results.routes[0].legs[results.routes[0].legs.length - 1].start_address;
-                placeMarkerWithPosition(startMarkerPosition, startTitle, ID_RIDE_FROM, PICKUP_MARKER_URL);
-                placeMarkerWithPosition(endMarkerPosition, endTitle, ID_RIDE_TO, DROPOFF_MARKER_URL);
+    //             // Place Markers
+    //             const legs = results.routes[0].legs
+    //             const startMarkerPosition = results.routes[0].overview_path[0].toJSON();
+    //             const endMarkerPosition = results.routes[0].overview_path[results.routes[0].overview_path.length - 1].toJSON();
+    //             const startTitle = results.routes[0].legs[0].start_address;
+    //             const endTitle = results.routes[0].legs[results.routes[0].legs.length - 1].start_address;
+    //             placeMarkerWithPosition(startMarkerPosition, startTitle, ID_RIDE_FROM, PICKUP_MARKER_URL);
+    //             placeMarkerWithPosition(endMarkerPosition, endTitle, ID_RIDE_TO, DROPOFF_MARKER_URL);
 
-                if (legs.length > 1) {
-                    legs.forEach((leg, legIndex) => {
-                        if (legIndex === 0) return;
-                        placeMarkerWithPosition(leg.start_location, leg.start_address, legIndex);
-                    })
-                }
+    //             if (legs.length > 1) {
+    //                 legs.forEach((leg, legIndex) => {
+    //                     if (legIndex === 0) return;
+    //                     placeMarkerWithPosition(leg.start_location, leg.start_address, legIndex);
+    //                 })
+    //             }
 
-                // Calculate Distance
-                const newDistance = results.routes[0].legs[0].distance.text;
-                const newDuration = results.routes[0].legs[0].duration.text;
-                setDistance(newDistance);
-                setDuration(newDuration);
-            });
-        } catch (error) {
-            console.log(error);
-            showError({ message: error.message })
-        }
-    };
+    //             // Calculate Distance
+    //             const newDistance = results.routes[0].legs[0].distance.text;
+    //             const newDuration = results.routes[0].legs[0].duration.text;
+    //             setDistance(newDistance);
+    //             setDuration(newDuration);
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //         showError({ message: error.message })
+    //     }
+    // };
 
-    const clearRoute = () => {
-        removeAllMarkers();
-        setDirectionsResponse(null)
-        setDistance('')
-        setDuration('')
-    };
+    // const clearRoute = () => {
+    //     removeAllMarkers();
+    //     setDirectionsResponse(null)
+    //     setDistance('')
+    //     setDuration('')
+    // };
 
     const removeMarker = (field) => {
         if (!markers.current[field]) return;
@@ -109,35 +110,35 @@ function RideMapView({ from, to, waypoints, onChange: updateParentState }) {
         markers.current = {};
     }
 
-    const placeMarker = (locationString, field, icon = {}) => {
-        removeMarker(field);
-        const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ address: locationString }, (results, status) => {
-            if (status === 'OK' && results[0]) {
-                const markerPosition = results[0].geometry.location;
+    // const placeMarker = (locationString, field, icon = {}) => {
+    //     removeMarker(field);
+    //     const geocoder = new window.google.maps.Geocoder();
+    //     geocoder.geocode({ address: locationString }, (results, status) => {
+    //         if (status === 'OK' && results[0]) {
+    //             const markerPosition = results[0].geometry.location;
 
-                // Create a marker and set its position
-                const marker = new window.google.maps.Marker({
-                    position: markerPosition,
-                    map: map.current,
-                    title: locationString, // Optional: Add the location string as the title
-                    icon,
-                    // icon: {
-                    //     url: window.location.origin + "/assets/pickup.svg",
-                    //     scaledSize: new window.google.maps.Size(70, 70),
-                    // }
-                });
-                if (markers.current[field]) {
-                    markers.current[field]?.setMap(null);
-                    delete markers.current[field]
-                }
-                markers.current[field] = marker;
-                map.current.setCenter(markerPosition);
-            } else {
-                console.error('Geocoding failed: ' + status);
-            }
-        });
-    }
+    //             // Create a marker and set its position
+    //             const marker = new window.google.maps.Marker({
+    //                 position: markerPosition,
+    //                 map: map.current,
+    //                 title: locationString, // Optional: Add the location string as the title
+    //                 icon,
+    //                 // icon: {
+    //                 //     url: window.location.origin + "/assets/pickup.svg",
+    //                 //     scaledSize: new window.google.maps.Size(70, 70),
+    //                 // }
+    //             });
+    //             if (markers.current[field]) {
+    //                 markers.current[field]?.setMap(null);
+    //                 delete markers.current[field]
+    //             }
+    //             markers.current[field] = marker;
+    //             map.current.setCenter(markerPosition);
+    //         } else {
+    //             console.error('Geocoding failed: ' + status);
+    //         }
+    //     });
+    // }
 
     const placeMarkerWithPosition = (markerPosition, markerTitle, field, iconUrl) => {
         removeMarker(field);
@@ -156,86 +157,97 @@ function RideMapView({ from, to, waypoints, onChange: updateParentState }) {
             delete markers.current[field]
         }
         markers.current[field] = marker;
-        map.current.setCenter(markerPosition);
+        // map.current.setCenter(markerPosition);
     }
 
-    // ################################################## USE-EFFECTS ##################################################
+    // // ################################################## USE-EFFECTS ##################################################
 
-    // Pickup Marker Management
+    // // Pickup Marker Management
+    // // useEffect(() => {
+    // //     if (!isLoaded) return;
+
+    // //     if (pickup) {
+    // //         placeMarker(pickup.description, ID_RIDE_PICKUP, {
+    // //             url: window.location.origin + "/assets/pickup.svg",
+    // //             scaledSize: new window.google.maps.Size(70, 70),
+    // //         });
+    // //     } else {
+    // //         removeMarker(ID_RIDE_PICKUP)
+    // //     }
+    // //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // // }, [pickup]);
+
+    // // Dropoff Marker Management
+    // // useEffect(() => {
+    // //     if (!isLoaded) return;
+
+    // //     if (dropoff) {
+    // //         placeMarker(dropoff.description, ID_RIDE_DROPOFF, {
+    // //             url: window.location.origin + "/assets/dropoff.svg",
+    // //             scaledSize: new window.google.maps.Size(70, 70),
+    // //         });
+    // //     } else {
+    // //         removeMarker(ID_RIDE_DROPOFF)
+    // //     }
+    // //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // // }, [dropoff]);
+
+    // // Route Management
     // useEffect(() => {
-    //     if (!isLoaded) return;
 
-    //     if (pickup) {
-    //         placeMarker(pickup.description, ID_RIDE_PICKUP, {
-    //             url: window.location.origin + "/assets/pickup.svg",
-    //             scaledSize: new window.google.maps.Size(70, 70),
+    //     if (from && to) {
+    //         removeMarker(ID_RIDE_FROM);
+    //         removeMarker(ID_RIDE_TO);
+    //         calculateRoute(from.description, to.description, waypoints);
+    //         // placeMarker(from.description, ID_RIDE_FROM, {
+    //         //     url: window.location.origin + "/assets/pickup.svg",
+    //         //     scaledSize: new window.google.maps.Size(55, 55),
+    //         // });
+    //         // placeMarker(to.description, ID_RIDE_TO, {
+    //         //     url: window.location.origin + "/assets/dropoff.svg",
+    //         //     scaledSize: new window.google.maps.Size(55, 55),
+    //         // });
+    //         return;
+    //     } else if (from) {
+    //         placeMarker(from.description, ID_RIDE_FROM, {
+    //             url: PICKUP_MARKER_URL,
+    //             scaledSize: new window.google.maps.Size(55, 55),
     //         });
-    //     } else {
-    //         removeMarker(ID_RIDE_PICKUP)
+    //     } else if (to) {
+    //         placeMarker(to.description, ID_RIDE_TO, {
+    //             url: DROPOFF_MARKER_URL,
+    //             scaledSize: new window.google.maps.Size(55, 55),
+    //         });
     //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [pickup]);
 
-    // Dropoff Marker Management
+    //     clearRoute();
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [from, to, waypoints])
+
     // useEffect(() => {
-    //     if (!isLoaded) return;
-
-    //     if (dropoff) {
-    //         placeMarker(dropoff.description, ID_RIDE_DROPOFF, {
-    //             url: window.location.origin + "/assets/dropoff.svg",
-    //             scaledSize: new window.google.maps.Size(70, 70),
-    //         });
-    //     } else {
-    //         removeMarker(ID_RIDE_DROPOFF)
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [dropoff]);
-
-    // Route Management
-    useEffect(() => {
-
-        if (from && to) {
-            removeMarker(ID_RIDE_FROM);
-            removeMarker(ID_RIDE_TO);
-            calculateRoute(from.description, to.description, waypoints);
-            // placeMarker(from.description, ID_RIDE_FROM, {
-            //     url: window.location.origin + "/assets/pickup.svg",
-            //     scaledSize: new window.google.maps.Size(55, 55),
-            // });
-            // placeMarker(to.description, ID_RIDE_TO, {
-            //     url: window.location.origin + "/assets/dropoff.svg",
-            //     scaledSize: new window.google.maps.Size(55, 55),
-            // });
-            return;
-        } else if (from) {
-            placeMarker(from.description, ID_RIDE_FROM, {
-                url: PICKUP_MARKER_URL,
-                scaledSize: new window.google.maps.Size(55, 55),
-            });
-        } else if (to) {
-            placeMarker(to.description, ID_RIDE_TO, {
-                url: DROPOFF_MARKER_URL,
-                scaledSize: new window.google.maps.Size(55, 55),
-            });
-        }
-
-        clearRoute();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to, waypoints])
-
-    useEffect(() => {
-        console.log(distance, duration);
-    }, [distance, duration]);
+    //     console.log(distance, duration);
+    // }, [distance, duration]);
 
     useEffect(() => {
         return removeAllMarkers;
     }, []);
+
+    // useEffect(() => {
+    //     if (!directionsResponse) return;
+    //     const route = directionsResponse.routes[activeRouteIndex]
+    //     updateParentState(route);
+    // }, [directionsResponse]);
+
     useEffect(() => {
-        if (!directionsResponse) return;
-        const route = directionsResponse.routes[activeRouteIndex]
-        updateParentState(route);
-    }, [directionsResponse]);
-    if (!isLoaded) {
+        if (coordinates.length < 3 || !isApiLoaded || !isMapLoaded) return;
+
+        placeMarkerWithPosition(coordinates[0], "Departure", "Departure", PICKUP_MARKER_URL);
+        placeMarkerWithPosition(coordinates[coordinates.length - 1], "Destination", "Destination", DROPOFF_MARKER_URL);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [coordinates, isApiLoaded, isMapLoaded]);
+
+    if (!isApiLoaded) {
         return <Box position="relative"
             display="flex"
             flexDirection="column"
@@ -271,9 +283,12 @@ function RideMapView({ from, to, waypoints, onChange: updateParentState }) {
                             fullscreenControl: false,
                             mapId: GOOGLE_MAP_ID,
                         }}
-                        onLoad={(gmap) => map.current = gmap}
+                        onLoad={(gmap) => {
+                            map.current = gmap;
+                            setIsMapLoaded(true);
+                        }}
                     >
-                        {directionsResponse && directionsResponse.routes.map((route, routeIndex) => {
+                        {/* {directionsResponse && directionsResponse.routes.map((route, routeIndex) => {
                             const isActive = activeRouteIndex === routeIndex;
 
                             return <DirectionsRenderer
@@ -297,8 +312,17 @@ function RideMapView({ from, to, waypoints, onChange: updateParentState }) {
                                 }}
                             />
                         }
+                        )} */}
+                        {coordinates.length > 1 && (
+                            <Polyline
+                                path={coordinates}
+                                options={{
+                                    strokeColor: theme.palette.secondary.main,
+                                    strokeOpacity: 1,
+                                    strokeWeight: 3,
+                                }}
+                            />
                         )}
-
                     </GoogleMap>
                 </Box>
             </Box>

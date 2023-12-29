@@ -10,10 +10,13 @@ import { useState } from "react";
 function RideDetailsPage() {
 
     const [activeTab, setActiveTab] = useState("1");
+    const [rideState, setRideState] = useState(null);
+
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
     };
+
 
     return (<UserLayout>
         <MapsApiLoader>
@@ -27,16 +30,16 @@ function RideDetailsPage() {
                     </Box>
                 </Container>
                 <Box>
-                    <TabPanel value={"1"} sx={{ px: 0, py: { xs: 2, md: 3 } }}>
+                    <Box display={activeTab !== "1" && "none"} sx={{ px: 0, py: { xs: 2, md: 3 } }}>
                         <Container maxWidth={'md'}>
-                            <RideDetailsSection />
+                            <RideDetailsSection ride={rideState} onChange={setRideState} />
                         </Container>
-                    </TabPanel>
-                    <TabPanel value={"2"} sx={{ px: 0, py: { xs: 2, md: 3 } }}>
+                    </Box>
+                    <Box display={activeTab !== "2" && "none"} sx={{ px: 0, py: { xs: 2, md: 3 } }}>
                         <Container maxWidth={'md'}>
-                            <RideRouteSection />
+                            <RideRouteSection ride={rideState} />
                         </Container>
-                    </TabPanel>
+                    </Box>
                 </Box>
             </TabContext>
         </MapsApiLoader>

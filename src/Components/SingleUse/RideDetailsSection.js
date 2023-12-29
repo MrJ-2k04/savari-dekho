@@ -1,27 +1,30 @@
 
 import { useTheme } from "@emotion/react";
-import { Add, ArrowRightAlt, KeyboardArrowRight, Luggage, Remove } from "@mui/icons-material";
+import { Add, ArrowRightAlt, Edit, KeyboardArrowRight, Luggage, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
 import useApi from "Components/Hooks/useApi";
 import useRideApi from "Components/Hooks/useRideApi";
-import { PREFERENCES, ROUTE_RIDES, ROUTE_USER_DETAILS } from "Store/constants";
-import { formatDateForRide, haversineDistance, showError, showSuccess } from "Utils";
+import { PREFERENCES, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS } from "Store/constants";
+import { selectUser } from "Store/selectors";
+import { calculateTotalDistance, formatDateForRide, haversineDistance, showError, showInfo, showSuccess } from "Utils";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 
 
 
 
-function RideDetailsSection() {
+function RideDetailsSection({ ride: parentRideState, onChange: setParentRideState }) {
     const [searchParams] = useSearchParams();
     const { rideId } = useParams();
     const nav = useNavigate();
     const { loading, getRideDetails } = useApi();
     const { loading: requesting, requestRide } = useRideApi();
+    const user = useSelector(selectUser);
 
     // ############################################# COMPUTED #############################################
 
@@ -42,7 +45,7 @@ function RideDetailsSection() {
         params.fromCoords = JSON.parse(searchParams.get("fromCoords"));
         params.toCoords = JSON.parse(searchParams.get("toCoords"));
     } catch (error) { }
-    console.log("Params: ", params);
+    // console.log("Params: ", params);
     // if (searchParams.get("date")) {
     //     const dateArray = searchParams.get("date").split("-");
     //     dateArray[1] = dateArray[1] - 1;
@@ -53,9 +56,12 @@ function RideDetailsSection() {
 
     const theme = useTheme();
     const [ride, setRide] = useState(null);
+    const isOwner = ride?.publisherId === user?._id;
     const [error, setError] = useState(null);
     const [waypoints, setWaypoints] = useState([]);
     const [waypointIndex, setWaypointIndex] = useState({ startIndex: undefined, endIndex: undefined });
+    const [requestedSeats, setRequestedSeats] = useState(params.requestedSeats || 1);
+
     // const waypoints = [
     //     {
     //         location: {
@@ -101,14 +107,30 @@ function RideDetailsSection() {
 
     // ############################################# Handlers #############################################
 
+    const handleSeatsAdd = () => {
+        if (requestedSeats === ride.totalEmptySeats) {
+            return showInfo({ title: "Note", message: `A maximum of only ${ride.totalEmptySeats} seats can be requested` });
+        }
+        setRequestedSeats(requestedSeats + 1);
+    }
+    const handleSeatsRemove = () => {
+        if (requestedSeats === 1) return;
+        setRequestedSeats(requestedSeats - 1);
+    }
+
     const handleRequestRide = () => {
-        requestRide(ride._id, {}).then((msg) => {
-            showSuccess({ message: msg || "Ride Requested successfully, please wait until the driver confirms your ride." }).then(() => {
-                nav(ROUTE_RIDES)
-            })
-        }).catch(err => {
-            showError({ message: err.message });
-        })
+        if (!user) {
+            nav(ROUTE_LOGIN, { state: { redirectUrl: `${window.location.pathname}${window.location.search}` } });
+        }
+
+
+        // requestRide(ride._id, {}).then((msg) => {
+        //     showSuccess({ message: msg || "Ride Requested successfully, please wait until the driver confirms your ride." }).then(() => {
+        //         nav(ROUTE_RIDES)
+        //     })
+        // }).catch(err => {
+        //     showError({ message: err.message });
+        // })
     }
 
     useEffect(() => {
@@ -123,7 +145,7 @@ function RideDetailsSection() {
 
                     // A to B
                     if (!params.departure && !params.destination) {
-                        console.log("Ride: A======X======Y======B");
+                        // console.log("Ride: A======X======Y======B");
 
                         setRide(rideDetails);
                         setWaypoints([
@@ -134,7 +156,7 @@ function RideDetailsSection() {
                     }
                     // A to Y
                     else if (!params.departure) {
-                        console.log("Ride: A======X======Y------B");
+                        // console.log("Ride: A======X======Y------B");
                         // Destination Computer Property
                         rideDetails.destination = {};
                         const destiCoords = rideDetails.locations.coordinates[params.destination?.index] || [];
@@ -143,7 +165,7 @@ function RideDetailsSection() {
                     }
                     // X to B
                     else if (!params.destination) {
-                        console.log("Ride: A------X======Y======B");
+                        // console.log("Ride: A------X======Y======B");
 
                         // Departure Computed Property
                         const departCoords = rideDetails.locations.coordinates[params.departure?.index] || [];
@@ -154,7 +176,7 @@ function RideDetailsSection() {
                     }
                     // X to Y
                     else {
-                        console.log("Ride: A------X======Y------B");
+                        // console.log("Ride: A------X======Y------B");
                         // Departure Computed Property
                         const departCoords = rideDetails.locations.coordinates[params.departure?.index] || [];
                         rideDetails.departure = {
@@ -207,8 +229,17 @@ function RideDetailsSection() {
     }, []);
 
     useEffect(() => {
-        console.log(ride);
+        if (!ride) return;
+        setParentRideState(ride);
+        // console.log(ride);
     }, [ride]);
+
+    if (ride) {
+        var startIndex = ride.departure?.index || 0;
+        var endIndex = ride.destination?.index || ride.locations.coordinates.length - 1;
+        var coordinates = ride.locations.coordinates.slice(startIndex, endIndex + 1);
+        console.log("ride:", Math.ceil(calculateTotalDistance(coordinates)));
+    }
 
     return (<>
         {loading ? <Box mt={4}>
@@ -229,11 +260,11 @@ function RideDetailsSection() {
                                 <Grid item xs={6} sm={6}>
                                     <Box display={'flex'} alignItems={'center'} sx={{ justifyContent: { xs: 'center', sm: "start" } }} gap={2} height={'100%'}>
                                         <Typography>Seats</Typography>
-                                        <IconButton size="small">
+                                        <IconButton size="small" onClick={handleSeatsRemove}>
                                             <Remove />
                                         </IconButton>
-                                        2
-                                        <IconButton size="small">
+                                        {requestedSeats}
+                                        <IconButton size="small" onClick={handleSeatsAdd}>
                                             <Add />
                                         </IconButton>
                                     </Box>
@@ -359,7 +390,11 @@ function RideDetailsSection() {
                         </Box>}
                         <Divider variant="fullWidth" flexItem />
                         <Box mx={'auto'} py={2}>
-                            <LoadingButton loading={requesting} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
+                            {isOwner ?
+                                <Button LinkComponent={Link} to={ROUTE_RIDE_EDIT.replace(":rideId", ride._id)} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Edit />}>Edit Ride</Button>
+                                :
+                                <LoadingButton loading={requesting} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
+                            }
                         </Box>
                     </Box>
                     :

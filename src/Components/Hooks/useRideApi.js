@@ -75,6 +75,14 @@ const useRideApi = () => {
         }
         throw new Error(ack.message || 'Failed to publish ride');
     }
+    const updateRide = async (rideId, rideDetails) => {
+        const ack = await apiRequestWithReauth(`${API_RIDE}/${rideId}`, jsonToFormData(rideDetails), 'PUT');
+        // const ack = await apiRequestWithReauth(`${API_ENDPOINT}/test`, jsonToFormData(rideDetails), 'POST');
+        if (ack.type === RES.SUCCESS) {
+            return ack;
+        }
+        throw new Error(ack.message || 'Failed to update ride');
+    }
 
     const getRidesHistory = async (url) => {
         const ack = await apiRequestWithReauth(url, null, 'GET');
@@ -237,6 +245,7 @@ const useRideApi = () => {
         requestRide,
         // Driver
         publishRide,
+        updateRide,
         getPassengers,
         // Admin
     };

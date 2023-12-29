@@ -1,10 +1,10 @@
 import RideForm from "Components/Forms/RideForm";
-import UserLayout from "Layout/User";
+import MapPageLayout from "Layout/Other/MapPageLayout";
 
 function EditRidePage() {
-    return (<UserLayout>
+    return (<MapPageLayout>
         <RideForm />
-    </UserLayout>);
+    </MapPageLayout>);
 }
 
 export default EditRidePage;

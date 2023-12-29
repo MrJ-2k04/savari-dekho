@@ -21,3 +21,25 @@ export function showError({ title = "Error", message = "" }) {
         }
     });
 }
+
+export function showInfo({ title = "Info", message = "" }) {
+    return window.Swal.fire({
+        title,
+        text: message,
+        icon: 'info',
+        customClass: {
+            container: 'swal-container',
+        }
+    });
+}
+
+export function showWarning({ title = "Warning", message = "" }) {
+    return window.Swal.fire({
+        title,
+        text: message,
+        icon: 'warning',
+        customClass: {
+            container: 'swal-container',
+        }
+    });
+}

@@ -6,11 +6,12 @@ import useApi from "Components/Hooks/useApi";
 import { ROUTE_REGISTER } from "Store/constants";
 import { isEmptyString } from "Utils";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function LoginForm() {
     const theme = useTheme();
-    const { loginUser, forgotPassword,loading } = useApi();
+    const { state } = useLocation();
+    const { loginUser, forgotPassword, loading } = useApi();
 
     const [credential, setCredential] = useState('');
     const [password, setPassword] = useState('');
@@ -64,7 +65,7 @@ function LoginForm() {
         loginUser(payload);
     };
 
-    const handleForgotPassword = ()=>{
+    const handleForgotPassword = () => {
         var isValid = true;
         const inputType = getInputType(credential);
 
@@ -74,7 +75,7 @@ function LoginForm() {
             isValid = false;
         }
 
-        if(!isValid) return;
+        if (!isValid) return;
 
         const payload = {
             type: inputType,
@@ -152,7 +153,7 @@ function LoginForm() {
                 <CardActions sx={{ p: 2, justifyContent: 'center' }}>
                     <Stack direction={'row'} spacing={1} justifyContent={'center'}>
                         <Typography>Don't have an account?</Typography>
-                        <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_REGISTER}>Sign up</Typography>
+                        <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_REGISTER} state={state}>Sign up</Typography>
                     </Stack>
                 </CardActions>
             </Box>

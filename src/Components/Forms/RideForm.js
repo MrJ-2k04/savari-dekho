@@ -1,4 +1,4 @@
-import { Add, AirlineSeatReclineExtra, Close, CloudUpload, Delete, Route } from "@mui/icons-material";
+import { Add, AirlineSeatReclineExtra, Close, CloudSync, CloudUpload, Delete, Route } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Badge, Box, Button, Card, CardContent, CardHeader, Fab, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, Slide, Stack, TextField, Typography, Zoom, styled, useMediaQuery, useTheme } from "@mui/material";
 import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
@@ -7,11 +7,14 @@ import useApi from "Components/Hooks/useApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import RidePublishMapView from "Components/MapItems/RidePublishMapView";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
-import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, ROUTE_VEHICLE_ADD } from "Store/constants";
-import { formatPlaceObj, isEmptyString, isFalsy, isNumeric, showError, showSuccess } from "Utils";
+import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, ROUTE_HOME, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { formatPlaceObj, isEmptyString, isFalsy, isNumeric, showError, showSuccess, unformatPlaceObj } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import useRideApi from "Components/Hooks/useRideApi";
+import { useSelector } from "react-redux";
+import { selectUser } from "Store/selectors";
 
 
 
@@ -36,7 +39,10 @@ function RideForm({ isNew = false }) {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { rideId } = useParams();
+    const user = useSelector(selectUser);
     const { loading, getVehicles, publishRide } = useApi();
+    const { loading: updating, updateRide, getRideDetails } = useRideApi();
     const nav = useNavigate();
     const [isMapVisible, setIsMapVisible] = useState(false);
     const [showNoti, setShowNoti] = useState(false);
@@ -50,6 +56,7 @@ function RideForm({ isNew = false }) {
     const [vehicleOptions, setVehicleOptions] = useState([]);
     const [totalEmptySeats, setTotalEmptySeats] = useState('');
     const [mapState, setMapState] = useState(null);
+    const [preferences, setPreferences] = useState([]);
 
     // Error States
     const [locationErrors, setLocationErrors] = useState({});
@@ -70,11 +77,118 @@ function RideForm({ isNew = false }) {
         setIsMapVisible(false);
     }
 
-    // #################################################### MAP HANDLERS ####################################################
+    // #################################################### RIDE EDIT HANDLERS ####################################################
 
     const syncRide = () => {
-
+        getRideDetails(rideId).then(rideDetails => {
+            if (rideDetails.publisherId !== user._id) {
+                showError({ message: "You do not have access to modify this ride" }).then(() => nav(ROUTE_HOME));
+                return;
+            }
+            setTotalPrice(rideDetails.totalPrice);
+            setWaypoints(rideDetails.waypoints);
+            setDepartureDatetime(new Date(rideDetails.departureDatetime));
+            setTotalEmptySeats(rideDetails.totalEmptySeats);
+            setVehicleId(rideDetails.vehicleId);
+            setLocations({
+                [ID_RIDE_FROM]: unformatPlaceObj(rideDetails.from),
+                [ID_RIDE_TO]: unformatPlaceObj(rideDetails.to),
+            })
+        }).catch(err => showError({ message: err.message }));
     }
+    const handleUpdate = () => {
+        let isValid = true;
+
+        // Validations
+        {
+            // Locations
+            const newLocationErrors = { ...locationErrors };
+            if (isFalsy(locations[ID_RIDE_FROM])) {
+                newLocationErrors[ID_RIDE_FROM] = 'Please enter a valid departure location';
+                isValid = false;
+            }
+            if (isFalsy(locations[ID_RIDE_TO])) {
+                newLocationErrors[ID_RIDE_TO] = 'Please enter a valid destination location';
+                isValid = false;
+            }
+            setLocationErrors(newLocationErrors);
+
+            // Waypoints
+            const newWaypointErrors = { ...waypointErrors };
+            waypoints.forEach((waypoint, index) => {
+                if (isFalsy(waypoint[ID_WAYP_LOCATION])) {
+                    newWaypointErrors[index][ID_WAYP_LOCATION] = 'Please enter a valid stopover point';
+                    isValid = false;
+                }
+                if (isFalsy(waypoint[ID_WAYP_PRICE])) {
+                    newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
+                    isValid = false;
+                }
+            })
+            setWaypointErrors(newWaypointErrors);
+
+
+            // Other Validations
+            if (!mapState) {
+                isValid = false;
+            } else {
+                // Extra Imp info like distance and duration from state
+            }
+            if (isFalsy(totalPrice)) {
+                setJourneyPriceError('Please enter a valid journey price');
+                isValid = false;
+            }
+            if (!departureDatetime || new Date(departureDatetime).getTime() < minDateTime.getTime()) {
+                setDatetimeError('Please enter a valid departure datetime');
+                isValid = false;
+            }
+            if (isEmptyString(vehicleId)) {
+                setVehicleError('Please select a vehicle');
+                isValid = false;
+            }
+            if (isEmptyString(totalEmptySeats)) {
+                setEmptySeatsError('You must carry atleast 1 passenger');
+                isValid = false;
+            }
+        }
+
+
+        if (!isValid) return;
+        const from = formatPlaceObj(locations[ID_RIDE_FROM]);
+        from.geometry = mapState.legs[0].start_location.toJSON();
+        const to = formatPlaceObj(locations[ID_RIDE_TO]);
+        to.geometry = mapState.legs[mapState.legs.length - 1].end_location.toJSON();
+
+        const payload = {
+            from: JSON.stringify(from),
+            to: JSON.stringify(to),
+            departureDatetime,
+            totalPrice,
+            vehicleId,
+            totalEmptySeats,
+            polyline: mapState.overview_polyline,
+            preferences: JSON.stringify(["NO_SMK", "AC_RID"]),
+        }
+        if (waypoints.length > 0) {
+            const formattedWaypoints = waypoints.map(waypoint => ({ ...formatPlaceObj(waypoint.location), price: waypoint.price }));
+            mapState.legs.forEach((leg, legIndex) => {
+                if (legIndex === 0) return;
+                formattedWaypoints[legIndex - 1].geometry = leg.start_location.toJSON();
+            })
+            payload['waypoints'] = JSON.stringify(formattedWaypoints);
+        }
+
+        // Submit the Form
+        updateRide(rideId, payload).then(ack => {
+            showSuccess({ message: ack.message }).then(() => { }
+                // nav(`${ROUTE_RIDES}/${ack.payload}`)
+            )
+        }).catch(err => {
+            showError({ message: err.message })
+        })
+    }
+
+    // #################################################### HANDLERS ####################################################
 
     const handleLocationChange = (newLocation, field) => {
         if (!isEmptyString(newLocation)) {
@@ -361,9 +475,9 @@ function RideForm({ isNew = false }) {
     }, [])
 
 
-    useEffect(() => {
-        console.log(mapState);
-    }, [mapState]);
+    // useEffect(() => {
+    //     console.log(mapState);
+    // }, [mapState]);
 
     return (<Box position={'absolute'} height={'100%'} width={'100%'}>
         <MapsApiLoader>
@@ -553,17 +667,31 @@ function RideForm({ isNew = false }) {
                         />
 
                         <Box flexGrow={1} width={'100%'} display={'flex'}>
-                            <LoadingButton
-                                variant="contained"
-                                endIcon={<CloudUpload />}
-                                sx={{ mt: 'auto' }}
-                                fullWidth
-                                onClick={handleSubmit}
-                                loading={loading}
-                                size="large"
-                            >
-                                Publish Ride
-                            </LoadingButton>
+                            {isNew ?
+                                <LoadingButton
+                                    variant="contained"
+                                    endIcon={<CloudUpload />}
+                                    sx={{ mt: 'auto' }}
+                                    fullWidth
+                                    onClick={handleSubmit}
+                                    loading={loading}
+                                    size="large"
+                                >
+                                    Publish Ride
+                                </LoadingButton>
+                                :
+                                <LoadingButton
+                                    variant="contained"
+                                    endIcon={<CloudSync />}
+                                    sx={{ mt: 'auto' }}
+                                    fullWidth
+                                    onClick={handleUpdate}
+                                    loading={updating}
+                                    size="large"
+                                >
+                                    Update Ride
+                                </LoadingButton>
+                            }
                         </Box>
 
                     </Stack>
@@ -614,7 +742,7 @@ function RideForm({ isNew = false }) {
                 }
             </Box>
         </MapsApiLoader>
-    </Box >);
+    </Box>);
 }
 
 export default RideForm;

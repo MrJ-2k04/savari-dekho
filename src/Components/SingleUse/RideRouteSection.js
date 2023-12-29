@@ -17,23 +17,20 @@ const StyledBadge = styled(Badge)(({ isvisible }) => ({
     },
 }));
 
-function RideRouteSection() {
+function RideRouteSection({ ride }) {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const [isMapVisible, setIsMapVisible] = useState(false);
-
-    const handleShowMap = () => {
-        setIsMapVisible(true);
-    }
-    const handleHideMap = () => {
-        setIsMapVisible(false);
+    if (ride) {
+        var startIndex = ride.departure?.index || 0;
+        var endIndex = ride.destination?.index || ride.locations.coordinates.length - 1;
+        var coordinates = ride.locations.coordinates.slice(startIndex, endIndex + 1);
     }
 
     return (<>
-        {/* {!isMobile ? */}
         <Box width={'100%'} position={'relative'}>
             <RideMapView
+                coordinates={coordinates}
             // from={locations[ID_RIDE_FROM]}
             // to={locations[ID_RIDE_TO]}
             // waypoints={waypoints}
@@ -41,40 +38,7 @@ function RideRouteSection() {
             // dropoff={locations[ID_RIDE_DROPOFF]}
             />
         </Box>
-        
-        {/* : <>
-                <Zoom in={isMobile} sx={{ position: 'absolute', right: theme.spacing(2), bottom: theme.spacing(2) }}>
-                    <StyledBadge color="error" variant="dot">
-                        <Fab onClick={handleShowMap} color="secondary">
-                            <Route fontSize="large" />
-                        </Fab>
-                    </StyledBadge>
-                </Zoom>
 
-                <Modal open={isMapVisible} onClose={handleHideMap} keepMounted>
-                    <Slide direction="up" in={isMapVisible} mountOnEnter unmountOnExit={false}>
-                        <Box component={Card} position={'absolute'} height={'100%'} width={'100%'} borderRadius={'0'} display={'flex'} flexDirection={'column'}>
-                            <CardHeader
-                                sx={{ py: 2, px: 3 }}
-                                title={<Typography variant="h4" color={'primary'}>Route</Typography>}
-                                action={<IconButton onClick={handleHideMap}>
-                                    <Close />
-                                </IconButton>}
-                            />
-                            <CardContent sx={{ flexGrow: 1, px: 0, py: "0 !important" }}>
-                                <RideMapView
-                                // from={locations[ID_RIDE_FROM]}
-                                // to={locations[ID_RIDE_TO]}
-                                // waypoints={waypoints}
-                                // pickup={locations[ID_RIDE_PICKUP]}
-                                // dropoff={locations[ID_RIDE_DROPOFF]}
-                                />
-                            </CardContent>
-                        </Box>
-                    </Slide>
-                </Modal>
-            </>
-        } */}
     </>);
 }
 
