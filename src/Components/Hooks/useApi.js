@@ -1,5 +1,5 @@
 
-import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_RIDE, API_SEARCH, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
+import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -16,24 +16,6 @@ const useApi = () => {
 
 
   // ######################################################### FOR EVERYONE #########################################################
-
-
-  const searchRide = async (params) => {
-    const queryString = new URLSearchParams(params).toString();
-    const ack = await apiRequestWithReauth(`${API_SEARCH}?${queryString}`, null, 'GET');
-    if (ack.type === RES.SUCCESS) {
-      return ack.payload;
-    }
-    throw new Error(ack.message || "Server Error");
-  }
-
-  const getRideDetails = async (rideId) => {
-    const ack = await apiRequestWithReauth(`${API_RIDE}/${rideId}`, null, "GET");
-    if (ack.type === RES.SUCCESS) {
-      return ack.payload;
-    }
-    throw new Error(ack.message || "Can't fetch the ride details");
-  }
 
   const generateOtp = async (mobileNumber) => {
     const formData = new FormData();
@@ -292,23 +274,6 @@ const useApi = () => {
     throw new Error(ack.message || 'Could not fetch vehicle details');
   }
 
-  const publishRide = async (rideDetails) => {
-    const ack = await apiRequestWithReauth(API_RIDE, jsonToFormData(rideDetails), 'POST');
-    // const ack = await apiRequestWithReauth(`${API_ENDPOINT}/test`, jsonToFormData(rideDetails), 'POST');
-    if (ack.type === RES.SUCCESS) {
-      return ack;
-    }
-    throw new Error(ack.message || 'Failed to publish ride');
-  }
-
-  const getRidesHistory = async (url) => {
-    const ack = await apiRequestWithReauth(url, null, 'GET');
-    if (ack.type === RES.SUCCESS) {
-      return ack.payload;
-    }
-    throw new Error(ack.message || "Internal Server Error");
-  }
-
   // ######################################################### FOR ADMINS #########################################################
 
   const getUsersList = async () => {
@@ -439,8 +404,8 @@ const useApi = () => {
     forgotPassword,
     resetPassword,
 
-    getRidesHistory,
-    searchRide,
+    // getRidesHistory,
+    // searchRide,
     getSearchHistory,
     fetchWalletTransactions,
     requestPayment,
@@ -453,7 +418,7 @@ const useApi = () => {
     updateBankById,
     deleteBankById,
     // Passenger Side Ride controls
-    getRideDetails,
+    // getRideDetails,
     // requestRide,
 
 
@@ -465,7 +430,7 @@ const useApi = () => {
     getVehicleDetails,
     updateVehicleById,
     deleteVehicleById,
-    publishRide,
+    // publishRide,
     // getPassengers,
 
     // Admin

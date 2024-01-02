@@ -17,7 +17,6 @@ const useRideApi = () => {
 
     // ######################################################### FOR EVERYONE #########################################################
 
-
     const searchRide = async (params) => {
         const queryString = new URLSearchParams(params).toString();
         const ack = await apiRequestWithReauth(`${API_SEARCH}?${queryString}`, null, 'GET');
@@ -35,10 +34,20 @@ const useRideApi = () => {
         throw new Error(ack.message || "Can't fetch the ride details");
     }
 
+    // ######################################################### FOR AUTHENTICATED USERS #########################################################
+
+    const getRidesHistory = async (url) => {
+        const ack = await apiRequestWithReauth(url, null, 'GET');
+        if (ack.type === RES.SUCCESS) {
+            return ack.payload;
+        }
+        throw new Error(ack.message || "Internal Server Error");
+    }
 
     // ######################################################### FOR PASSENGERS #########################################################
 
     // Passenger Side
+    
     const requestRide = async (rideId, rideData) => {
         const ENDPOINT = API_PASSENGER_REQUEST_RIDE.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData(rideData));
@@ -64,7 +73,6 @@ const useRideApi = () => {
         throw new Error(ack.message || "Failed to cancel ride");
     }
 
-
     // ######################################################### FOR DRIVERS #########################################################
 
     const publishRide = async (rideDetails) => {
@@ -84,13 +92,7 @@ const useRideApi = () => {
         throw new Error(ack.message || 'Failed to update ride');
     }
 
-    const getRidesHistory = async (url) => {
-        const ack = await apiRequestWithReauth(url, null, 'GET');
-        if (ack.type === RES.SUCCESS) {
-            return ack.payload;
-        }
-        throw new Error(ack.message || "Internal Server Error");
-    }
+
 
     // Driver Side Ride Controls
     const getPassengers = async (rideId) => {
@@ -107,7 +109,7 @@ const useRideApi = () => {
         const ENDPOINT = API_PASSENGER_UPDATE_STATUS.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData(data), "PUT");
         if (ack.type === RES.SUCCESS) {
-            return ack.payload;
+            return ack.message;
         }
         throw new Error(ack.message || "Cannot update passenger status");
     }
@@ -238,6 +240,8 @@ const useRideApi = () => {
     };
 
     return {
+        loading,
+        
         getRidesHistory,
         searchRide,
         // Passenger Side Ride controls
@@ -247,6 +251,7 @@ const useRideApi = () => {
         publishRide,
         updateRide,
         getPassengers,
+        updatePassengerStatus,
         // Admin
     };
 };

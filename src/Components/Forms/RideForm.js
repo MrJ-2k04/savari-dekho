@@ -1,13 +1,13 @@
 import { Add, AirlineSeatReclineExtra, Close, CloudSync, CloudUpload, Delete, Route } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Badge, Box, Button, Card, CardContent, CardHeader, Fab, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, Slide, Stack, TextField, Typography, Zoom, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Badge, Box, Button, Card, CardContent, CardHeader, Checkbox, Fab, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, Slide, Stack, TextField, Typography, Zoom, styled, useMediaQuery, useTheme } from "@mui/material";
 import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import RidePublishMapView from "Components/MapItems/RidePublishMapView";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
-import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, ROUTE_HOME, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, PREFERENCES, ROUTE_HOME, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { formatPlaceObj, isEmptyString, isFalsy, isNumeric, showError, showSuccess, unformatPlaceObj } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { useEffect, useState } from "react";
@@ -41,8 +41,8 @@ function RideForm({ isNew = false }) {
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const { rideId } = useParams();
     const user = useSelector(selectUser);
-    const { loading, getVehicles, publishRide } = useApi();
-    const { loading: updating, updateRide, getRideDetails } = useRideApi();
+    const { loading, getVehicles } = useApi();
+    const { loading: updating, updateRide, getRideDetails, publishRide } = useRideApi();
     const nav = useNavigate();
     const [isMapVisible, setIsMapVisible] = useState(false);
     const [showNoti, setShowNoti] = useState(false);
@@ -308,7 +308,7 @@ function RideForm({ isNew = false }) {
             totalEmptySeats,
             polyline: mapState.overview_polyline,
             // mapState: JSON.stringify(mapState.legs),
-            preferences: JSON.stringify(["NO_SMK", "AC_RID"]),
+            preferences: JSON.stringify(preferences),
         }
         if (waypoints.length > 0) {
             const formattedWaypoints = waypoints.map(waypoint => ({ ...formatPlaceObj(waypoint.location), price: waypoint.price }));
@@ -455,6 +455,7 @@ function RideForm({ isNew = false }) {
         if (isNew) return;
 
         syncRide();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isNew])
 
     useEffect(() => {
@@ -665,6 +666,37 @@ function RideForm({ isNew = false }) {
                                 startAdornment: <InputAdornment position="start"><AirlineSeatReclineExtra /></InputAdornment>
                             }}
                         />
+
+                        <Box>
+                            <FormControl fullWidth required>
+                                <InputLabel id="preferences">Preferences</InputLabel>
+                                <Select
+                                    labelId="preferences"
+                                    label="Preferences"
+                                    value={preferences}
+                                    multiple
+                                    multiline
+                                    onChange={(e) => {
+                                        setPreferences(e.target.value);
+                                    }}
+                                    renderValue={(selected) => selected.map((p, pIdx) => {
+                                        const title = PREFERENCES.find(pf => pf.id === p).title;
+                                        return <Box key={pIdx}>•	{title}</Box>
+                                    })}
+                                >
+                                    {PREFERENCES.map((pref, index) => (
+                                        <MenuItem key={index} value={pref.id}>
+                                            <Checkbox checked={preferences.indexOf(pref.id) > -1} />
+                                            <Box display={'flex'} alignItems={'center'} columnGap={2}>
+                                                <pref.Icon />
+                                                {/* <Box borderRadius={'50%'} bgcolor={pref.color?.value} height={'19px'} width={'19px'}></Box> */}
+                                                {pref.title}
+                                            </Box>
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
 
                         <Box flexGrow={1} width={'100%'} display={'flex'}>
                             {isNew ?

@@ -1,12 +1,12 @@
 import { Box, Card, CardActionArea, CardContent, LinearProgress, Stack, Typography } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
-import useApi from "Components/Hooks/useApi";
+import useRideApi from "Components/Hooks/useRideApi";
 import { API_RIDES_BOOKED, ROUTE_RIDES } from "Store/constants";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function BookedRidesHistorySection() {
-    const { loading, getRidesHistory } = useApi();
+    const { loading, getRidesHistory } = useRideApi();
     const [bookedRides, setBookedRides] = useState([]);
 
     useEffect(() => {

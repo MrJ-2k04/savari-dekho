@@ -1,5 +1,5 @@
-import { DirectionsWalk, DirectionsWalkOutlined, DirectionsWalkRounded } from "@mui/icons-material";
-import { Box, IconButton, List, ListItem, Stack, Typography } from "@mui/material";
+import { DirectionsWalk } from "@mui/icons-material";
+import { Box, List, ListItem, Typography } from "@mui/material";
 
 function RouteList({
     waypoints = [],
@@ -9,7 +9,6 @@ function RouteList({
 }) {
 
     const color = "secondary.main"
-
     return (<>
         <List
         // sx={{ bgcolor: 'background.paper' }}
@@ -20,8 +19,11 @@ function RouteList({
                 return <ListItem key={index} sx={{ py: 0, alignItems: "stretch" }} >
 
                     {/* Time Text */}
-                    <Box py={1} sx={{ width: "48px", minWidth: '48px' }}>
+                    <Box py={1} sx={{ width: "48px", minWidth: '60px' }}>
                         <Typography textAlign={'center'} fontWeight={500} color={!isActive && 'text.disabled'}>
+                            {waypoint.date}
+                        </Typography>
+                        <Typography textAlign={'center'} fontWeight={500} variant="body2" color="text.secondary">
                             {waypoint.time}
                         </Typography>
                     </Box>

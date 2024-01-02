@@ -6,9 +6,10 @@ import searchSvg from "Assets/SVGs/Search.svg";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import SearchBar from "Components/Common/SearchBar";
-import useApi from "Components/Hooks/useApi";
+import useRideApi from "Components/Hooks/useRideApi";
 import { ROUTE_RIDES, ROUTE_SEARCH, VEHICLE_FUEL_TYPES, VEHICLE_TYPE_OPTIONS } from "Store/constants";
-import { showError, showSuccess } from "Utils";
+import { calculateTotalDistance, getPriceFromDistance, showError, showSuccess } from "Utils";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -16,7 +17,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 function SearchResultsForm() {
     const [searchParams] = useSearchParams();
     const nav = useNavigate();
-    const { loading, searchRide } = useApi();
+    const { loading, searchRide } = useRideApi();
 
     // ############################################# COMPUTED #############################################
 
@@ -156,7 +157,15 @@ function SearchResultsForm() {
             } else {
                 // const x = rides.map(ride => ({ departureName: getPlaceFromCoords(ride.departureCoords), destinationName: getPlaceFromCoords(ride.destinationCoords) }))
                 // console.log(x);
-                setSearchResults(rides);
+                const ridesWithPrice = rides.map(ride => {
+                    const coords = ride.locations.coordinates.slice(ride.departure.coordsIndex, ride.destination.coordsIndex + 1);
+                    const totalDistance = calculateTotalDistance(coords);
+                    const pricePerKm = getPriceFromDistance(totalDistance);
+                    ride.distance = totalDistance;
+                    ride.pricePerSeat = Math.ceil(totalDistance * pricePerKm / 10) * 10;
+                    return ride;
+                });
+                setSearchResults(ridesWithPrice);
             }
         }).catch(err => {
             showError({ message: err.message });
@@ -315,6 +324,8 @@ function SearchResultsForm() {
                                                                 primaryText: result.departure?.primaryText || result.from.primaryText,
                                                                 secondaryText: result.departure?.secondaryText || result.from.secondaryText,
                                                                 distance: result.departure?.distance,
+                                                                date: format(new Date(result.departureDatetime),"MMM dd"),
+                                                                time: format(new Date(result.departureDatetime),"hh:mm a"),
                                                                 // ...result.from,
                                                                 // primaryText: result.from,
                                                                 // time: result.fromTime,
@@ -334,7 +345,7 @@ function SearchResultsForm() {
                                                     </Box>
 
                                                     <Box display={'flex'} justifyContent={'right'} pr={2} pt={1}>
-                                                        <Typography variant="h4">{`₹${result.totalPrice}`}</Typography>
+                                                        <Typography variant="h4">{`₹${result.pricePerSeat * params.seats}`}</Typography>
                                                     </Box>
                                                 </Box>
                                             </CardContent>

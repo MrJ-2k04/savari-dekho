@@ -2,6 +2,8 @@
 
 // ############################################## SITE SETTINGS ##############################################
 
+import { Cancel, DoNotDisturb, MinorCrash, NoCrash, Pending, PendingActions, Verified } from "@mui/icons-material";
+
 export const SITE_TITLE = "Savari Dekho";
 export const SITE_CAPTION = "Unlock Affordable Adventures Across Cities and States";
 
@@ -116,3 +118,32 @@ export const WALLET_FAQS = [
   },
   // Add more relevant FAQs as needed
 ];
+
+export const PASSENGER_FILTER_STATUS = ["requested", "booked", "confirmed", "started", "completed"];
+export const PASSENGER_STATUS = {
+  REQUESTED: 'requested',
+  BOOKED: 'booked',
+  REJECTED: 'rejected',
+  CONFIRMED: 'confirmed',
+  STARTED: 'started',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled'
+}
+export const PASSENGER_STATUS_DESCRIPTION = {
+  [PASSENGER_STATUS.REQUESTED]: "",
+  [PASSENGER_STATUS.BOOKED]: "- Awaiting payment confirmation from passenger",
+  [PASSENGER_STATUS.REJECTED]: "",
+  [PASSENGER_STATUS.CONFIRMED]: "- Passenger has completed the payment",
+  [PASSENGER_STATUS.STARTED]: "- Passenger's ride has started",
+  [PASSENGER_STATUS.COMPLETED]: "- Passenger's ride is completed",
+  [PASSENGER_STATUS.CANCELLED]: "- Passenger's ride is cancelled",
+};
+export const PASSENGER_STATUS_ICONS = {
+  [PASSENGER_STATUS.REQUESTED]: <Pending color="warning" />,
+  [PASSENGER_STATUS.BOOKED]: <PendingActions color="warning" />,
+  [PASSENGER_STATUS.REJECTED]: <DoNotDisturb color="error" />,
+  [PASSENGER_STATUS.CONFIRMED]: <Verified color="success" />,
+  [PASSENGER_STATUS.STARTED]: <MinorCrash color="info" />,
+  [PASSENGER_STATUS.COMPLETED]: <NoCrash color="green" />,
+  [PASSENGER_STATUS.CANCELLED]: <Cancel color="error" />,
+};
