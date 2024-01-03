@@ -23,7 +23,7 @@ function RouteList({
                         <Typography textAlign={'center'} fontWeight={500} color={!isActive && 'text.disabled'}>
                             {waypoint.date}
                         </Typography>
-                        <Typography textAlign={'center'} fontWeight={500} variant="body2" color="text.secondary">
+                        <Typography textAlign={'center'} fontWeight={500} variant="body2" color={!isActive ? 'text.disabled' : 'text.secondary'}>
                             {waypoint.time}
                         </Typography>
                     </Box>

@@ -129,7 +129,16 @@ export const PASSENGER_STATUS = {
   COMPLETED: 'completed',
   CANCELLED: 'cancelled'
 }
-export const PASSENGER_STATUS_DESCRIPTION = {
+export const STATUS_DESCRIPTION_FOR_PASSENGER = {
+  [PASSENGER_STATUS.REQUESTED]: "- Awaiting ride request approval from driver",
+  [PASSENGER_STATUS.BOOKED]: "- Driver has approved your ride, please confirm by making payment",
+  [PASSENGER_STATUS.REJECTED]: "- Your ride request has been rejected by driver",
+  [PASSENGER_STATUS.CONFIRMED]: "- Ride is successfully booked",
+  [PASSENGER_STATUS.STARTED]: "- Ride is started",
+  [PASSENGER_STATUS.COMPLETED]: "- Ride is completed",
+  [PASSENGER_STATUS.CANCELLED]: "- Ride is cancelled",
+};
+export const STATUS_DESCRIPTION_FOR_DRIVER = {
   [PASSENGER_STATUS.REQUESTED]: "",
   [PASSENGER_STATUS.BOOKED]: "- Awaiting payment confirmation from passenger",
   [PASSENGER_STATUS.REJECTED]: "",
@@ -144,6 +153,6 @@ export const PASSENGER_STATUS_ICONS = {
   [PASSENGER_STATUS.REJECTED]: <DoNotDisturb color="error" />,
   [PASSENGER_STATUS.CONFIRMED]: <Verified color="success" />,
   [PASSENGER_STATUS.STARTED]: <MinorCrash color="info" />,
-  [PASSENGER_STATUS.COMPLETED]: <NoCrash color="green" />,
+  [PASSENGER_STATUS.COMPLETED]: <NoCrash color="success" />,
   [PASSENGER_STATUS.CANCELLED]: <Cancel color="error" />,
 };

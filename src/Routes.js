@@ -48,7 +48,7 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
     if (!isAuthenticated) {
         if (route.includes(ROUTE_RESET_PASSWORD)) {
             return targetRoute;
-        } else if (route.includes(ROUTE_RIDES)) {
+        } else if (route.includes(ROUTE_RIDES) && !route === ROUTE_RIDES) {
             if (route !== ROUTE_RIDE_PUBLISH && !route.match(new RegExp(ROUTE_RIDE_EDIT.replace(/:[a-zA-Z]+/g, '([\\w-]+)')))) {
                 return targetRoute;
             }
@@ -131,7 +131,7 @@ const Routes = () => {
     const refreshToken = useSelector(selectRefreshToken);
 
     const { path, state } = getTargetRoute(isAuthenticated, user, location.pathname, location.state);
-    
+
     useEffect(() => {
         if (isAuthenticated) {
             if (Cookies.get('accessToken') !== accessToken || Cookies.get('refreshToken') !== refreshToken) {

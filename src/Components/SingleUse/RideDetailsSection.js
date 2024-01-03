@@ -1,11 +1,11 @@
 
-import { Add, ArrowCircleDown, ArrowRightAlt, Cancel, Done, Edit, KeyboardArrowRight, Luggage, QuestionMark, Remove } from "@mui/icons-material";
+import { Add, AirlineSeatReclineExtra, ArrowCircleDown, ArrowRightAlt, Cancel, CurrencyRupee, Done, Edit, KeyboardArrowRight, Luggage, QuestionMark, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip, Typography, styled } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";
-import { PASSENGER_STATUS, PASSENGER_STATUS_DESCRIPTION, PASSENGER_STATUS_ICONS, PREFERENCES, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS } from "Store/constants";
+import { PASSENGER_STATUS, STATUS_DESCRIPTION_FOR_DRIVER, PASSENGER_STATUS_ICONS, PREFERENCES, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showError, showInfo, showSuccess } from "Utils";
 import { useEffect, useState } from "react";
@@ -14,13 +14,21 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 
 
-
+const SmartTypography = styled(Typography)(({
+    display: '-webkit-box',
+    overflow: 'hidden',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    textOverflow: 'ellipsis',
+    width: '100%',
+    maxWidth: 'max-content',
+}));
 
 function RideDetailsSection({ ride: parentRideState, onChange: setParentRideState }) {
     const [searchParams] = useSearchParams();
     const { rideId } = useParams();
     const nav = useNavigate();
-    const { loading: rideLoading, requestRide, getRideDetails, updatePassengerStatus } = useRideApi();
+    const { loading: rideLoading, requestRide, cancelRideBooking, getRideDetails, updatePassengerStatus } = useRideApi();
     const user = useSelector(selectUser);
 
     // ############################################# COMPUTED #############################################
@@ -46,7 +54,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     // ############################################# States #############################################
 
     const [ride, setRide] = useState(null);
-    const isOwner = ride?.publisherId === user?._id;
+    const isOwner = ride?.publisher._id === user?._id;
     const [error, setError] = useState(null);
     const [waypoints, setWaypoints] = useState([]);
     const [waypointIndex, setWaypointIndex] = useState({ startIndex: undefined, endIndex: undefined });
@@ -55,7 +63,9 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
 
     // ############################################# COMPUTED #############################################
 
-    const coTravellers = ride?.passengers.filter(p => [PASSENGER_STATUS.COMPLETED, PASSENGER_STATUS.STARTED, PASSENGER_STATUS.CONFIRMED].includes(p.status)) || [];
+    // const coTravellers = ride?.passengers.filter(p => [PASSENGER_STATUS.COMPLETED, PASSENGER_STATUS.STARTED, PASSENGER_STATUS.CONFIRMED].includes(p.status)) || [];
+    const coTravellers = ride?.passengers.filter(p => Object.values(PASSENGER_STATUS).includes(p.status)) || [];
+    const currentPassenger = ride?.passengers.find(p => p.passengerId === user?._id);
 
     // ############################################# RIDE HANDLERS #############################################
 
@@ -72,6 +82,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
 
     // ############################################# RIDE API CONNECTIVITY HANDLERS #############################################
 
+    // Passenger Side
     const handleRequestRide = () => {
         if (!user) {
             nav(ROUTE_LOGIN, { state: { redirectUrl: `${window.location.pathname}${window.location.search}` } });
@@ -79,24 +90,41 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
 
         const payload = {
             occupiedSeats: requestedSeats,
-            departure: JSON.stringify({
+        }
+
+        if (!params.departure) {
+            payload.departure = JSON.stringify({
+                primaryText: ride.from.primaryText,
+                secondaryText: ride.from.secondaryText,
+                index: 0,
+            });
+        } else {
+            payload.departure = JSON.stringify({
                 primaryText: ride.departure.primaryText,
                 secondaryText: ride.departure.secondaryText,
                 index: ride.departure.index,
-            }),
-            destination: JSON.stringify({
+            });
+            if (params.fromCoords && params.fromPlaceId) {
+                payload.from = JSON.stringify({ placeId: params.fromPlaceId, coords: params.fromCoords });
+            }
+        }
+
+        if (!params.destination) {
+            payload.destination = JSON.stringify({
+                primaryText: ride.to.primaryText,
+                secondaryText: ride.to.secondaryText,
+                index: ride.locations.coordinates.length - 1,
+            });
+        } else {
+            payload.destination = JSON.stringify({
                 primaryText: ride.destination.primaryText,
                 secondaryText: ride.destination.secondaryText,
                 index: ride.destination.index,
-            })
+            });
+            if (params.toCoords && params.toPlaceId) {
+                payload.to = JSON.stringify({ placeId: params.toPlaceId, coords: params.toCoords });
+            }
         }
-        if (params.fromCoords && params.fromPlaceId) {
-            payload.from = JSON.stringify({ placeId: params.fromPlaceId, coords: params.fromCoords });
-        }
-        if (params.toCoords && params.toPlaceId) {
-            payload.to = JSON.stringify({ placeId: params.toPlaceId, coords: params.toCoords });
-        }
-
 
         requestRide(ride._id, payload).then((msg) => {
             showSuccess({ message: msg || "Ride Requested successfully, please wait until the driver confirms your ride." }).then(() => {
@@ -106,6 +134,21 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showError({ message: err.message });
         })
     }
+    const handleRideConfirm = () => {
+
+    }
+    const handleRideBookingCancel = () => {
+        cancelRideBooking(ride._id).then((msg) => {
+            showSuccess({ message: msg });
+            setRide(oldRide => {
+                const passenger = oldRide.passengers.find(p => p.passengerId.toString() === user._id);
+                if (!passenger) return oldRide;
+                passenger.status = PASSENGER_STATUS.CANCELLED;
+                return oldRide;
+            })
+        }).catch(err => showError({ message: err.message }));
+    }
+    // Driver Side
     const handleRideApprove = (passengerId) => {
         const payload = {
             passengerId,
@@ -114,8 +157,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         updatePassengerStatus(ride._id, payload).then((msg) => {
             setRide(oldRide => {
                 const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
-                console.log(passenger);
-                if (!passenger) return;
+                if (!passenger) return oldRide;
                 passenger.status = PASSENGER_STATUS.BOOKED;
                 return oldRide;
             })
@@ -130,13 +172,14 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         updatePassengerStatus(ride._id, payload).then((msg) => {
             setRide(oldRide => {
                 const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
-                if (!passenger) return;
+                if (!passenger) return oldRide;
                 passenger.status = PASSENGER_STATUS.REJECTED;
                 return oldRide;
             })
             showSuccess({ message: "Passenger rejected successfully." });
         }).catch(err => showError({ message: err.message }));
     }
+
 
     // ############################################# USE-EFFECTS #############################################
 
@@ -348,70 +391,138 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                         </>}
                         <Box />
                         {!isOwner
-                            ? coTravellers.length > 0 &&
+                            ?
                             <>
-                                <Divider variant="fullWidth" flexItem />
-                                <Box aria-label="co-travellers section">
-                                    <Typography gutterBottom variant="h4" color={'primary'}>Co-travellers</Typography>
-                                    <List>
-                                        {coTravellers.map(passenger =>
-                                            <ListItemButton
-                                                key={passenger.passengerId}
-                                                LinkComponent={Link}
-                                                to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
-                                                sx={{ borderRadius: '16px', my: 1 }}>
+                                {Boolean(currentPassenger) && <>
+                                    <Divider variant="fullWidth" flexItem />
+                                    <Box>
+                                        <Typography gutterBottom variant="h4" color={'primary'}>Your Ride</Typography>
+                                        <List>
+                                            <ListItem
+                                                // LinkComponent={Link}
+                                                // to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
+                                                sx={{ borderRadius: '16px', my: 1, flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
                                                 <ListItemIcon>
-                                                    <Avatar>
-                                                        <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
-                                                    </Avatar>
+                                                    <IconButton LinkComponent={Link} to={`${ROUTE_USER_DETAILS.replace(":userId", currentPassenger.passengerId)}`} target="_blank">
+                                                        <Avatar sx={{ height: '72px', width: '72px' }}>
+                                                            <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={currentPassenger.profilePicture} alt="My avatar" />
+                                                        </Avatar>
+                                                    </IconButton>
                                                     {/* <History  /> */}
                                                 </ListItemIcon>
                                                 <ListItemText>
-                                                    <Box display={'flex'} alignItems={'center'} gap={1}>
-                                                        <Typography sx={{
-                                                            display: '-webkit-box',
-                                                            overflow: 'hidden',
-                                                            WebkitLineClamp: 3,
-                                                            WebkitBoxOrient: 'vertical',
-                                                            textOverflow: 'ellipsis',
-                                                            width: '100%',
-                                                            maxWidth: 'max-content'
-                                                        }}>
-                                                            {`${passenger.firstName} ${passenger.lastName}`}
-                                                        </Typography>
-                                                    </Box>
-                                                    <Box display={'flex'} alignItems={'center'} gap={1} color={'text.secondary'}>
-                                                        <Typography sx={{
-                                                            display: '-webkit-box',
-                                                            overflow: 'hidden',
-                                                            WebkitLineClamp: 3,
-                                                            WebkitBoxOrient: 'vertical',
-                                                            textOverflow: 'ellipsis',
-                                                            width: '100%',
-                                                            maxWidth: 'max-content',
-                                                        }}>
-                                                            {passenger.departure?.secondaryText}
-                                                        </Typography>
-                                                        <ArrowRightAlt sx={{ color: 'text.disabled' }} />
-                                                        <Typography sx={{
-                                                            width: '100%',
-                                                            display: '-webkit-box',
-                                                            overflow: 'hidden',
-                                                            WebkitLineClamp: 3,
-                                                            WebkitBoxOrient: 'vertical',
-                                                            textOverflow: 'ellipsis',
-                                                        }}>
-                                                            {passenger.destination?.secondaryText}
-                                                        </Typography>
+                                                    <Box display={'flex'} flexDirection={'column'} gap={2}>
+                                                        <Stack spacing={2}>
+                                                            <Box aria-label="Name, Amount & Seats" display={'flex'} justifyContent={'space-between'} alignItems={'center'} gap={1}>
+                                                                <SmartTypography variant="h4">
+                                                                    {`${currentPassenger.firstName} ${currentPassenger.lastName}`}
+                                                                </SmartTypography>
+                                                                <Stack direction={'row'} spacing={2}>
+                                                                    <Tooltip title={`${currentPassenger.occupiedSeats} ${currentPassenger.occupiedSeats > 1 ? "seats" : "seat"} occupied`}>
+                                                                        <Box display={'flex'} gap={0.5} alignItems={'center'}>
+                                                                            <AirlineSeatReclineExtra />
+                                                                            <Typography fontWeight={600}>
+                                                                                {currentPassenger.occupiedSeats}
+                                                                            </Typography>
+                                                                        </Box>
+                                                                    </Tooltip>
+                                                                    <SmartTypography variant="h3" color={'success.main'}>
+                                                                        ₹{currentPassenger.amount}
+                                                                    </SmartTypography>
+                                                                </Stack>
+                                                            </Box>
+                                                            <Box aria-label="Departure & Destination Info" display={'flex'} flexDirection={{ xs: "column", md: 'row' }} alignItems={'center'} gap={1} color={'text.secondary'}>
+                                                                <SmartTypography gutterBottom>
+                                                                    {currentPassenger.departure?.secondaryText}
+                                                                </SmartTypography>
+                                                                <MHidden width="mdDown">
+                                                                    <ArrowRightAlt sx={{ color: 'text.disabled' }} />
+                                                                </MHidden>
+                                                                <MHidden width="mdUp">
+                                                                    <ArrowCircleDown sx={{ color: 'text.disabled' }} />
+                                                                </MHidden>
+                                                                <SmartTypography gutterBottom>
+                                                                    {currentPassenger.destination?.secondaryText}
+                                                                </SmartTypography>
+                                                            </Box>
+                                                            {currentPassenger.status === PASSENGER_STATUS.BOOKED ?
+                                                                <Stack spacing={3} direction={'column'}>
+                                                                    <Box display={'flex'} alignItems={'center'} gap={2} flexDirection={{ xs: 'column', md: 'row' }}>
+                                                                        <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={{ xs: 'center', md: 'start' }}>
+                                                                            {PASSENGER_STATUS_ICONS[currentPassenger.status]}
+                                                                            <Typography fontWeight={500}>{capitalizeWords(currentPassenger.status)}</Typography>
+                                                                        </Box>
+                                                                        <SmartTypography textAlign={'center'} color={'text.secondary'}>{STATUS_DESCRIPTION_FOR_PASSENGER[currentPassenger.status]}</SmartTypography>
+                                                                    </Box>
+                                                                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+                                                                        <Button onClick={handleRideConfirm} variant="contained" color="success" startIcon={<CurrencyRupee />}>Confirm Ride</Button>
+                                                                        <Button onClick={handleRideBookingCancel} variant="outlined" color="error" startIcon={<Cancel />}>Cancel</Button>
+                                                                    </Stack>
+                                                                </Stack>
+                                                                :
+                                                                <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
+                                                                    <>
+                                                                        <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={{ xs: 'center', md: 'start' }}>
+                                                                            {PASSENGER_STATUS_ICONS[currentPassenger.status]}
+                                                                            <Typography fontWeight={500}>{capitalizeWords(currentPassenger.status)}</Typography>
+
+                                                                        </Box>
+                                                                        <Typography textAlign={'center'} color={'text.secondary'}>{STATUS_DESCRIPTION_FOR_PASSENGER[currentPassenger.status]}</Typography>
+                                                                    </>
+
+                                                                </Stack>
+                                                            }
+                                                        </Stack>
                                                     </Box>
                                                 </ListItemText>
-                                                <ListItemIcon sx={{ justifyContent: 'right' }}>
-                                                    <KeyboardArrowRight />
-                                                </ListItemIcon>
-                                            </ListItemButton>
-                                        )}
-                                    </List>
-                                </Box>
+                                            </ListItem>
+                                        </List>
+                                    </Box>
+                                </>}
+                                {coTravellers.length > 0 &&
+                                    <>
+                                        <Divider variant="fullWidth" flexItem />
+                                        <Box aria-label="co-travellers section">
+                                            <Typography gutterBottom variant="h4" color={'primary'}>Co-travellers</Typography>
+                                            <List>
+                                                {coTravellers.map(passenger => {
+                                                    if (passenger.passengerId === user._id) return null;
+                                                    return <ListItemButton
+                                                        key={passenger.passengerId}
+                                                        LinkComponent={Link}
+                                                        to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
+                                                        sx={{ borderRadius: '16px', my: 1 }}>
+                                                        <ListItemIcon>
+                                                            <Avatar>
+                                                                <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
+                                                            </Avatar>
+                                                            {/* <History  /> */}
+                                                        </ListItemIcon>
+                                                        <ListItemText>
+                                                            <Box display={'flex'} alignItems={'center'} gap={1}>
+                                                                <SmartTypography>
+                                                                    {`${passenger.firstName} ${passenger.lastName}`}
+                                                                </SmartTypography>
+                                                            </Box>
+                                                            <Box display={'flex'} alignItems={'center'} gap={1} color={'text.secondary'}>
+                                                                <SmartTypography>
+                                                                    {passenger.departure?.secondaryText}
+                                                                </SmartTypography>
+                                                                <ArrowRightAlt sx={{ color: 'text.disabled' }} />
+                                                                <SmartTypography>
+                                                                    {passenger.destination?.secondaryText}
+                                                                </SmartTypography>
+                                                            </Box>
+                                                        </ListItemText>
+                                                        <ListItemIcon sx={{ justifyContent: 'right' }}>
+                                                            <KeyboardArrowRight />
+                                                        </ListItemIcon>
+                                                    </ListItemButton>
+                                                })}
+                                            </List>
+                                        </Box>
+                                    </>
+                                }
                             </>
                             :
                             ride.passengers.length > 0 &&
@@ -439,57 +550,26 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                     <Box display={'flex'} flexDirection={'column'} gap={2}>
                                                         <Stack spacing={2}>
                                                             <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} gap={1}>
-                                                                <Typography variant="h4" sx={{
-                                                                    display: '-webkit-box',
-                                                                    overflow: 'hidden',
-                                                                    WebkitLineClamp: 3,
-                                                                    WebkitBoxOrient: 'vertical',
-                                                                    textOverflow: 'ellipsis',
-                                                                    width: '100%',
-                                                                    maxWidth: 'max-content'
-                                                                }}>
+                                                                <SmartTypography variant="h4">
                                                                     {`${passenger.firstName} ${passenger.lastName}`}
-                                                                </Typography>
-                                                                <Typography variant="h3" color={'success.main'} sx={{
-                                                                    display: '-webkit-box',
-                                                                    overflow: 'hidden',
-                                                                    WebkitLineClamp: 3,
-                                                                    WebkitBoxOrient: 'vertical',
-                                                                    textOverflow: 'ellipsis',
-                                                                    width: '100%',
-                                                                    maxWidth: 'max-content'
-                                                                }}>
+                                                                </SmartTypography>
+                                                                <SmartTypography variant="h3" color={'success.main'}>
                                                                     ₹{passenger.amount}
-                                                                </Typography>
+                                                                </SmartTypography>
                                                             </Box>
                                                             <Box display={'flex'} flexDirection={{ xs: "column", md: 'row' }} alignItems={'center'} gap={1} color={'text.secondary'}>
-                                                                <Typography gutterBottom sx={{
-                                                                    display: '-webkit-box',
-                                                                    overflow: 'hidden',
-                                                                    WebkitLineClamp: 3,
-                                                                    WebkitBoxOrient: 'vertical',
-                                                                    textOverflow: 'ellipsis',
-                                                                    width: '100%',
-                                                                    maxWidth: 'max-content',
-                                                                }}>
+                                                                <SmartTypography gutterBottom>
                                                                     {passenger.departure?.secondaryText}
-                                                                </Typography>
+                                                                </SmartTypography>
                                                                 <MHidden width="mdDown">
                                                                     <ArrowRightAlt sx={{ color: 'text.disabled' }} />
                                                                 </MHidden>
                                                                 <MHidden width="mdUp">
                                                                     <ArrowCircleDown sx={{ color: 'text.disabled' }} />
                                                                 </MHidden>
-                                                                <Typography gutterBottom sx={{
-                                                                    width: '100%',
-                                                                    display: '-webkit-box',
-                                                                    overflow: 'hidden',
-                                                                    WebkitLineClamp: 3,
-                                                                    WebkitBoxOrient: 'vertical',
-                                                                    textOverflow: 'ellipsis',
-                                                                }}>
+                                                                <SmartTypography gutterBottom>
                                                                     {passenger.destination?.secondaryText}
-                                                                </Typography>
+                                                                </SmartTypography>
                                                             </Box>
                                                             <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
                                                                 {passenger.status === PASSENGER_STATUS.REQUESTED ?
@@ -503,7 +583,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                                             {StatusIcon}
                                                                             <Typography fontWeight={500}>{capitalizeWords(passenger.status)}</Typography>
                                                                         </Box>
-                                                                        <Typography textAlign={'center'} color={'text.secondary'}>{PASSENGER_STATUS_DESCRIPTION[passenger.status]}</Typography>
+                                                                        <Typography textAlign={'center'} color={'text.secondary'}>{STATUS_DESCRIPTION_FOR_DRIVER[passenger.status]}</Typography>
                                                                     </>}
                                                             </Stack>
                                                         </Stack>

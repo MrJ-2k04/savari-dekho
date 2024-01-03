@@ -47,7 +47,7 @@ const useRideApi = () => {
     // ######################################################### FOR PASSENGERS #########################################################
 
     // Passenger Side
-    
+
     const requestRide = async (rideId, rideData) => {
         const ENDPOINT = API_PASSENGER_REQUEST_RIDE.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData(rideData));
@@ -64,9 +64,9 @@ const useRideApi = () => {
         }
         throw new Error(ack.message || "Failed to confirm ride");
     }
-    const cancelRide = async (rideId, data) => {
+    const cancelRideBooking = async (rideId) => {
         const ENDPOINT = API_PASSENGER_CANCEL_RIDE.replace(":rideId", rideId);
-        const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData(data), "PUT");
+        const ack = await apiRequestWithReauth(ENDPOINT, null, "PUT");
         if (ack.type === RES.SUCCESS) {
             return ack.message;
         }
@@ -241,12 +241,13 @@ const useRideApi = () => {
 
     return {
         loading,
-        
+
         getRidesHistory,
         searchRide,
         // Passenger Side Ride controls
         getRideDetails,
         requestRide,
+        cancelRideBooking,
         // Driver
         publishRide,
         updateRide,
