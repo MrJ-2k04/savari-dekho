@@ -20,7 +20,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const [searchParams] = useSearchParams();
     const { rideId } = useParams();
     const nav = useNavigate();
-    const { loading, requestRide, getRideDetails, updatePassengerStatus } = useRideApi();
+    const { loading: rideLoading, requestRide, getRideDetails, updatePassengerStatus } = useRideApi();
     const user = useSelector(selectUser);
 
     // ############################################# COMPUTED #############################################
@@ -51,7 +51,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const [waypoints, setWaypoints] = useState([]);
     const [waypointIndex, setWaypointIndex] = useState({ startIndex: undefined, endIndex: undefined });
     const [requestedSeats, setRequestedSeats] = useState(params.requestedSeats || 1);
-    const [requestingRide, setRequestingRide] = useState(false);
+    const [fetching, setFetching] = useState(true);
 
     // ############################################# COMPUTED #############################################
 
@@ -77,7 +77,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             nav(ROUTE_LOGIN, { state: { redirectUrl: `${window.location.pathname}${window.location.search}` } });
         }
 
-        setRequestingRide(true);
         const payload = {
             occupiedSeats: requestedSeats,
             departure: JSON.stringify({
@@ -105,8 +104,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             })
         }).catch(err => {
             showError({ message: err.message });
-        }).finally(() => {
-            setRequestingRide(false);
         })
     }
     const handleRideApprove = (passengerId) => {
@@ -144,6 +141,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     // ############################################# USE-EFFECTS #############################################
 
     const syncRide = () => {
+        setFetching(true);
         getRideDetails(rideId)
             .then(rideDetails => {
                 try {
@@ -244,7 +242,8 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             .catch(err => {
                 showError({ message: err.message })
                 setError(err.message);
-            });
+            })
+            .finally(() => setFetching(false));
     }
 
     useEffect(() => {
@@ -264,7 +263,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     }, [ride]);
 
     return (<>
-        {loading ? <Box mt={4}>
+        {fetching ? <Box mt={4}>
             <LinearProgress />
         </Box> :
             <>
@@ -419,7 +418,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                             <>
                                 <Divider variant="fullWidth" flexItem />
                                 <Box aria-label="co-travellers section">
-                                    <Typography gutterBottom variant="h4" color={'primary'}>Co-travellers</Typography>
+                                    <Typography gutterBottom variant="h4" color={'primary'}>Passengers</Typography>
                                     <List>
                                         {ride.passengers.map(passenger => {
                                             const StatusIcon = PASSENGER_STATUS_ICONS[passenger.status] || <QuestionMark color="secondary" />;
@@ -522,7 +521,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                             {isOwner ?
                                 <Button LinkComponent={Link} to={ROUTE_RIDE_EDIT.replace(":rideId", ride._id)} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Edit />}>Edit Ride</Button>
                                 :
-                                <LoadingButton loading={requestingRide} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
+                                <LoadingButton loading={rideLoading} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
                             }
                         </Box>
                     </Box>
