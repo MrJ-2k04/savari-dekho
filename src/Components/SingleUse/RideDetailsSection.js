@@ -1,14 +1,14 @@
 
-import { Add, AirlineSeatReclineExtra, ArrowCircleDown, ArrowRightAlt, Cancel, CurrencyRupee, Done, Edit, KeyboardArrowRight, Luggage, NoCrash, PlayCircleOutline, QuestionMark, Remove } from "@mui/icons-material";
+import { Add, AirlineSeatReclineExtra, ArrowCircleDown, ArrowRightAlt, Cancel, CurrencyRupee, Done, Edit, KeyboardArrowRight, LocalTaxi, Luggage, NoCrash, PlayCircleOutline, QuestionMark, Remove, WhereToVote } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip, Typography, styled } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";
-import { PASSENGER_STATUS, STATUS_DESCRIPTION_FOR_DRIVER, PASSENGER_STATUS_ICONS, PREFERENCES, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_PASSENGER, RIDE_STATUS } from "Store/constants";
+import { PASSENGER_STATUS, PASSENGER_STATUS_ICONS, PREFERENCES, RIDE_STATUS, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_DRIVER, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showConfirmationDialog, showError, showInfo, showSuccess } from "Utils";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -28,7 +28,21 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const [searchParams] = useSearchParams();
     const { rideId } = useParams();
     const nav = useNavigate();
-    const { loading: rideLoading, requestRide, cancelRideBooking, getRideDetails, updatePassengerStatus } = useRideApi();
+    const { loading: rideLoading,
+        getRideDetails,
+        // Passenger Level
+        requestRide,
+        confirmRide,
+        cancelRideBooking,
+        // Driver Level
+        updatePassengerStatus,
+        startPassengerRide,
+        endPassengerRide,
+        sendOtpToPassenger,
+        startWholeRide,
+        endWholeRide,
+        cancelWholeRide,
+    } = useRideApi();
     const user = useSelector(selectUser);
 
     // ############################################# COMPUTED #############################################
@@ -47,8 +61,12 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         params.destination = JSON.parse(searchParams.get("destination"));
         params.departure.text = params.departure?.text?.split("--");
         params.destination.text = params.destination?.text?.split("--");
-        params.fromCoords = JSON.parse(searchParams.get("fromCoords"));
-        params.toCoords = JSON.parse(searchParams.get("toCoords"));
+        if (searchParams.has("fromCoords")) {
+            params.fromCoords = JSON.parse(searchParams.get("fromCoords"));
+        }
+        if (searchParams.has("toCoords")) {
+            params.toCoords = JSON.parse(searchParams.get("toCoords"));
+        }
     } catch (error) { }
 
     // ############################################# States #############################################
@@ -66,7 +84,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     // const coTravellers = ride?.passengers.filter(p => [PASSENGER_STATUS.COMPLETED, PASSENGER_STATUS.STARTED, PASSENGER_STATUS.CONFIRMED].includes(p.status)) || [];
     const coTravellers = ride?.passengers.filter(p => p.passengerId !== user?._id);
     const currentPassenger = ride?.passengers.find(p => p.passengerId === user?._id);
-    const canEditRide = isOwner && ride.passengers.every(p => [PASSENGER_STATUS.REQUESTED, PASSENGER_STATUS.REJECTED, PASSENGER_STATUS.CANCELLED].includes(p.status))
+    const canEditRide = isOwner && ride.passengers.every(p => [PASSENGER_STATUS.REQUESTED, PASSENGER_STATUS.REJECTED, PASSENGER_STATUS.CANCELLED].includes(p.status)) && ride.status === RIDE_STATUS.PUBLISHED;
 
     // ############################################# RIDE HANDLERS #############################################
 
@@ -88,9 +106,10 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         if (!user) {
             nav(ROUTE_LOGIN, { state: { redirectUrl: `${window.location.pathname}${window.location.search}` } });
         }
-
+        console.log(ride);
         const payload = {
             occupiedSeats: requestedSeats,
+            amount: Math.round(requestedSeats * ride.pricePerSeat),
         }
 
         if (!params.departure) {
@@ -135,8 +154,24 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showError({ message: err.message });
         })
     }
-    const handleRideConfirm = () => {
+    const handleRideConfirm = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            title: "Confirm Ride?",
+            message: `Agreeing will deduct ₹X from your wallet to confirm the ride booking`,
+            confirmBtnText: "Make Payment",
+            cancelBtnText: "Go Back",
+        });
+        if (!isConfirmed) return;
 
+        confirmRide(ride?._id).then((msg) => {
+            setRide(oldRide => {
+                const passenger = oldRide.passengers.find(p => p.passengerId === user?._id);
+                if (!passenger) return oldRide;
+                passenger.status = PASSENGER_STATUS.CONFIRMED;
+                return oldRide;
+            })
+            showSuccess({ message: msg });
+        }).catch(err => showError({ message: err.message }));
     }
     const handleRideBookingCancel = async () => {
         const { isConfirmed } = await showConfirmationDialog({
@@ -155,7 +190,60 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             })
         }).catch(err => showError({ message: err.message }));
     }
-    // Driver Side
+
+    // Driver Side -> Ride Level Handlers
+    const handleStartWholeRide = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will start your ride and notify all the passengers",
+            confirmBtnText: "Confirm",
+            cancelBtnText: "Cancel",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
+        startWholeRide(ride?._id).then((msg) => {
+            setRide(oldRide => {
+                oldRide.status = RIDE_STATUS.STARTED;
+                oldRide.passengers = oldRide.passengers.map(p => {
+                    if ([PASSENGER_STATUS.BOOKED, PASSENGER_STATUS.REQUESTED].includes(p.status)) {
+                        p.status = PASSENGER_STATUS.REJECTED;
+                    }
+                    return p;
+                });
+                return oldRide;
+            });
+            showSuccess({ message: msg });
+        }).catch(err => showError({ message: err.message }));
+    }
+    const handleEndWholeRide = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will end your ride and you will be able to withdraw your funds after 24 hours",
+            confirmBtnText: "Confirm",
+            cancelBtnText: "Cancel",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
+
+        endWholeRide(ride?._id).then((msg) => {
+            setRide(ride => ({ ...ride, status: RIDE_STATUS.COMPLETED }));
+            showSuccess({ message: msg });
+        }).catch(err => showError({ message: err.message }));
+    }
+    const handleCancelWholeRide = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will end your ride and you will be able to withdraw your funds after 24 hours",
+            confirmBtnText: "Confirm",
+            cancelBtnText: "Cancel",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
+
+        cancelWholeRide(ride?._id).then((msg) => {
+            setRide(ride => ({ ...ride, status: RIDE_STATUS.CANCELLED }));
+            showSuccess({ message: msg });
+        }).catch(err => showError({ message: err.message }));
+    }
+
+    // Driver Side -> Passenger Level Handlers
     const handleRideApprove = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
             message: "This will prompt the passenger to confirm your ride by making payment. You won't be able to edit the ride later.",
@@ -197,71 +285,44 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showSuccess({ message: "Passenger rejected successfully." });
         }).catch(err => showError({ message: err.message }));
     }
-    const handleStartWholeRide = async () => {
-        const { isConfirmed } = await showConfirmationDialog({
-            message: "This will start your ride and notify all the passengers",
-            confirmBtnText: "Confirm",
-            cancelBtnText: "Cancel",
-            icon: "question",
-        });
-        if (!isConfirmed) return;
-        setRide(ride => ({ ...ride, status: RIDE_STATUS.STARTED }))
-        const payload = {
-
-        }
-        // updatePassengerStatus(ride._id, payload).then((msg) => {
-        //     setRide(oldRide => {
-        //         const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
-        //         if (!passenger) return oldRide;
-        //         passenger.status = PASSENGER_STATUS.BOOKED;
-        //         return oldRide;
-        //     })
-        //     showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
-        // }).catch(err => showError({ message: err.message }));
+    const handleSendOtpToPassenger = async (passengerId) => {
+        // const { isConfirmed } = await showConfirmationDialog({
+        //     message: "",
+        //     confirmBtnText: "Start Passenger Ride",
+        //     cancelBtnText: "Cancel"
+        // });
+        // if (!isConfirmed) return;
+        // sendOtpToPassenger(ride?._id, passengerId)
     }
-    const handleEndWholeRide = async () => {
+    const handleStartPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
-            message: "This will end your ride and you will be able to withdraw your funds after 24 hours",
-            confirmBtnText: "Confirm",
-            cancelBtnText: "Cancel",
-            icon: "question",
+            message: "You will have to enter the OTP that is sent to the passenger",
+            confirmBtnText: "Start Passenger Ride",
+            cancelBtnText: "Cancel"
         });
         if (!isConfirmed) return;
-        setRide(ride => ({ ...ride, status: RIDE_STATUS.COMPLETED }));
-        const payload = {
-
-        }
-        // updatePassengerStatus(ride._id, payload).then((msg) => {
-        //     setRide(oldRide => {
-        //         const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
-        //         if (!passenger) return oldRide;
-        //         passenger.status = PASSENGER_STATUS.BOOKED;
-        //         return oldRide;
-        //     })
-        //     showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
-        // }).catch(err => showError({ message: err.message }));
+        setRide(oldRide => {
+            const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
+            if (pIndex > -1) {
+                oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.STARTED };
+            }
+            return { ...oldRide };
+        })
     }
-    const handleCancelWholeRide = async () => {
+    const handleEndPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
-            message: "This will end your ride and you will be able to withdraw your funds after 24 hours",
-            confirmBtnText: "Confirm",
-            cancelBtnText: "Cancel",
-            icon: "question",
+            message: "This is mark the passenger's ride as completed",
+            confirmBtnText: "End Passenger Ride",
+            cancelBtnText: "Cancel"
         });
         if (!isConfirmed) return;
-        setRide(ride => ({ ...ride, status: RIDE_STATUS.COMPLETED }));
-        const payload = {
-
-        }
-        // updatePassengerStatus(ride._id, payload).then((msg) => {
-        //     setRide(oldRide => {
-        //         const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
-        //         if (!passenger) return oldRide;
-        //         passenger.status = PASSENGER_STATUS.BOOKED;
-        //         return oldRide;
-        //     })
-        //     showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
-        // }).catch(err => showError({ message: err.message }));
+        setRide(oldRide => {
+            const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
+            if (pIndex > -1) {
+                oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.COMPLETED };
+            }
+            return { ...oldRide };
+        })
     }
 
     // ############################################# USE-EFFECTS #############################################
@@ -291,42 +352,55 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                     else if (!params.departure) {
                         // console.log("Ride: A======X======Y------B");
                         // Destination Computer Property
-                        finalRide.destination = {};
-                        const destiCoords = finalRide.locations.coordinates[params.destination?.index] || [];
-                        finalRide.destination.distance = haversineDistance(params.toCoords[1], params.toCoords[0], destiCoords[1], destiCoords[0]);
-                        // setRide(rideDetails);
+                        finalRide.destination = {
+                            index: params.destination.index,
+                            primaryText: params.destination.text[0],
+                            secondaryText: params.destination.text[1],
+                        };
+                        if (params.toCoords) {
+                            const destiCoords = finalRide.locations.coordinates[params.destination?.index] || [];
+                            finalRide.destination.distance = haversineDistance(params.toCoords[1], params.toCoords[0], destiCoords[1], destiCoords[0]);
+                        }
                     }
                     // X to B
                     else if (!params.destination) {
                         // console.log("Ride: A------X======Y======B");
 
                         // Departure Computed Property
-                        const departCoords = finalRide.locations.coordinates[params.departure?.index] || [];
                         finalRide.departure = {
                             index: params.departure.index,
-                            distance: haversineDistance(params.fromCoords[1], params.fromCoords[0], departCoords[1], departCoords[0]),
+                            primaryText: params.departure.text[0],
+                            secondaryText: params.departure.text[1],
                         };
+                        if (params.fromCoords) {
+                            const departCoords = finalRide.locations.coordinates[params.departure?.index] || [];
+                            finalRide.departure.distance = haversineDistance(params.fromCoords[1], params.fromCoords[0], departCoords[1], departCoords[0]);
+                        }
                     }
                     // X to Y
                     else {
                         // console.log("Ride: A------X======Y------B");
                         // Departure Computed Property
-                        const departCoords = finalRide.locations.coordinates[params.departure?.index] || [];
                         finalRide.departure = {
                             index: params.departure.index,
-                            distance: haversineDistance(params.fromCoords[1], params.fromCoords[0], departCoords[1], departCoords[0]),
                             primaryText: params.departure.text[0],
                             secondaryText: params.departure.text[1],
                         };
+                        if (params.fromCoords) {
+                            const departCoords = finalRide.locations.coordinates[params.departure?.index] || [];
+                            finalRide.departure.distance = haversineDistance(params.fromCoords[1], params.fromCoords[0], departCoords[1], departCoords[0]);
+                        }
 
                         // Destination Computer Property
-                        const destiCoords = finalRide.locations.coordinates[params.destination?.index] || [];
                         finalRide.destination = {
                             index: params.destination.index,
-                            distance: haversineDistance(params.toCoords[1], params.toCoords[0], destiCoords[1], destiCoords[0]),
                             primaryText: params.destination.text[0],
                             secondaryText: params.destination.text[1],
                         };
+                        if (params.toCoords) {
+                            const destiCoords = finalRide.locations.coordinates[params.destination?.index] || [];
+                            finalRide.destination.distance = haversineDistance(params.toCoords[1], params.toCoords[0], destiCoords[1], destiCoords[0]);
+                        }
 
                         // setRide(rideDetails);
                         newWaypointIndex = { startIndex: 1, endIndex: 2 };
@@ -384,6 +458,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
 
     useEffect(() => {
         if (!ride) return;
+
         setParentRideState(ride);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ride]);
@@ -616,65 +691,97 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                 <Box aria-label="co-travellers section">
                                     <Typography gutterBottom variant="h4" color={'primary'}>Passengers</Typography>
                                     <List>
-                                        {ride.passengers.map(passenger => {
+                                        {ride.passengers.map((passenger, passIdx) => {
                                             const StatusIcon = PASSENGER_STATUS_ICONS[passenger.status] || <QuestionMark color="secondary" />;
-                                            return <ListItem
-                                                key={passenger.passengerId}
-                                                LinkComponent={Link}
-                                                to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
-                                                sx={{ borderRadius: '16px', my: 1, flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
-                                                <ListItemIcon>
-                                                    <IconButton LinkComponent={Link} to={`${ROUTE_USER_DETAILS.replace(":userId", passenger.passengerId)}`} target="_blank">
-                                                        <Avatar sx={{ height: '72px', width: '72px' }}>
-                                                            <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
-                                                        </Avatar>
-                                                    </IconButton>
-                                                    {/* <History  /> */}
-                                                </ListItemIcon>
-                                                <ListItemText>
-                                                    <Box display={'flex'} flexDirection={'column'} gap={2}>
-                                                        <Stack spacing={2}>
-                                                            <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} gap={1}>
-                                                                <SmartTypography variant="h4">
-                                                                    {`${passenger.firstName} ${passenger.lastName}`}
-                                                                </SmartTypography>
-                                                                <SmartTypography variant="h3" color={'success.main'}>
-                                                                    ₹{passenger.amount}
-                                                                </SmartTypography>
-                                                            </Box>
-                                                            <Box display={'flex'} flexDirection={{ xs: "column", md: 'row' }} alignItems={'center'} gap={1} color={'text.secondary'}>
-                                                                <SmartTypography gutterBottom>
-                                                                    {passenger.departure?.secondaryText}
-                                                                </SmartTypography>
-                                                                <MHidden width="mdDown">
-                                                                    <ArrowRightAlt sx={{ color: 'text.disabled' }} />
-                                                                </MHidden>
-                                                                <MHidden width="mdUp">
-                                                                    <ArrowCircleDown sx={{ color: 'text.disabled' }} />
-                                                                </MHidden>
-                                                                <SmartTypography gutterBottom>
-                                                                    {passenger.destination?.secondaryText}
-                                                                </SmartTypography>
-                                                            </Box>
-                                                            <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
-                                                                {passenger.status === PASSENGER_STATUS.REQUESTED ?
-                                                                    <>
-                                                                        <Button onClick={() => handleRideApprove(passenger.passengerId)} variant="contained" color="success" startIcon={<Done />}>Approve</Button>
-                                                                        <Button onClick={() => handleRideReject(passenger.passengerId)} variant="outlined" color="error" startIcon={<Cancel />}>Reject</Button>
-                                                                    </>
-                                                                    :
-                                                                    <>
-                                                                        <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={{ xs: 'center', md: 'start' }}>
-                                                                            {StatusIcon}
-                                                                            <Typography fontWeight={500}>{capitalizeWords(passenger.status)}</Typography>
-                                                                        </Box>
-                                                                        <Typography textAlign={'center'} color={'text.secondary'}>{STATUS_DESCRIPTION_FOR_DRIVER[passenger.status]}</Typography>
-                                                                    </>}
+                                            return <React.Fragment key={passenger.passengerId}>
+                                                <ListItem
+                                                    // key={passenger.passengerId}
+                                                    sx={{ borderRadius: '16px', my: 1, flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2 }}>
+                                                    <ListItemIcon>
+                                                        <IconButton LinkComponent={Link} to={`${ROUTE_USER_DETAILS.replace(":userId", passenger.passengerId)}`} target="_blank">
+                                                            <Avatar sx={{ height: '72px', width: '72px' }}>
+                                                                <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
+                                                            </Avatar>
+                                                        </IconButton>
+                                                        {/* <History  /> */}
+                                                    </ListItemIcon>
+                                                    <ListItemText sx={{ width: '100%' }}>
+                                                        <Box display={'flex'} flexDirection={'column'} gap={2}>
+                                                            <Stack spacing={2}>
+                                                                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} gap={1}>
+                                                                    <SmartTypography variant="h4">
+                                                                        {`${passenger.firstName} ${passenger.lastName}`}
+                                                                    </SmartTypography>
+                                                                    <Stack direction={'row'} spacing={2}>
+                                                                        <Tooltip title={`${passenger.occupiedSeats} ${passenger.occupiedSeats > 1 ? "seats" : "seat"} occupied`}>
+                                                                            <Box display={'flex'} gap={0.5} alignItems={'center'}>
+                                                                                <AirlineSeatReclineExtra />
+                                                                                <Typography fontWeight={600}>
+                                                                                    {passenger.occupiedSeats}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Tooltip>
+                                                                        <SmartTypography variant="h3" color={'success.main'}>
+                                                                            ₹{passenger.amount}
+                                                                        </SmartTypography>
+                                                                    </Stack>
+                                                                </Box>
+                                                                <Box display={'flex'} flexDirection={{ xs: "column", sm: 'row' }} alignItems={{ xs: 'center', sm: 'start' }} gap={1} color={'text.secondary'}>
+                                                                    <SmartTypography gutterBottom>
+                                                                        {passenger.departure?.secondaryText}
+                                                                    </SmartTypography>
+                                                                    <MHidden width="smDown">
+                                                                        <ArrowRightAlt sx={{ color: 'text.disabled' }} />
+                                                                    </MHidden>
+                                                                    <MHidden width="smUp">
+                                                                        <ArrowCircleDown sx={{ color: 'text.disabled' }} />
+                                                                    </MHidden>
+                                                                    <SmartTypography gutterBottom>
+                                                                        {passenger.destination?.secondaryText}
+                                                                    </SmartTypography>
+                                                                </Box>
+                                                                <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
+                                                                    {passenger.status === PASSENGER_STATUS.REQUESTED ?
+                                                                        <>
+                                                                            <Button onClick={() => handleRideApprove(passenger.passengerId)} variant="contained" color="success" startIcon={<Done />}>Approve</Button>
+                                                                            <Button onClick={() => handleRideReject(passenger.passengerId)} variant="outlined" color="error" startIcon={<Cancel />}>Reject</Button>
+                                                                        </>
+                                                                        :
+                                                                        <>
+                                                                            <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={{ xs: 'center', md: 'start' }}>
+                                                                                {StatusIcon}
+                                                                                <Typography fontWeight={500}>{capitalizeWords(passenger.status)}</Typography>
+                                                                            </Box>
+                                                                            <Typography textAlign={'center'} color={'text.secondary'}>{STATUS_DESCRIPTION_FOR_DRIVER[passenger.status]}</Typography>
+                                                                        </>}
+                                                                </Stack>
+                                                                {ride.status === RIDE_STATUS.STARTED && <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
+                                                                    {passenger.status === PASSENGER_STATUS.CONFIRMED && <Button
+                                                                        onClick={() => handleStartPassengerRide(passenger.passengerId)}
+                                                                        variant="contained"
+                                                                        color="success"
+                                                                        // size="large" 
+                                                                        sx={{ borderRadius: '24px', px: 4, py: 1.2, fontSize: '16px !important' }}
+                                                                        endIcon={<LocalTaxi />}
+                                                                    >
+                                                                        Start Passenger Ride
+                                                                    </Button>}
+
+                                                                    {passenger.status === PASSENGER_STATUS.STARTED && <Button
+                                                                        onClick={() => handleEndPassengerRide(passenger.passengerId)}
+                                                                        variant="contained"
+                                                                        color="secondary"
+                                                                        endIcon={<WhereToVote />}
+                                                                    >
+                                                                        End Passenger Ride
+                                                                    </Button>}
+                                                                </Stack>}
                                                             </Stack>
-                                                        </Stack>
-                                                    </Box>
-                                                </ListItemText>
-                                            </ListItem>
+                                                        </Box>
+                                                    </ListItemText>
+                                                </ListItem>
+                                                {passIdx !== ride.passengers.length - 1 && <Divider variant="middle" />}
+                                            </React.Fragment>
                                         }
                                         )}
                                     </List>
@@ -685,7 +792,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                             <>
                                 <Divider variant="fullWidth" flexItem />
                                 {/* <Typography gutterBottom variant="h4" color={'primary'}>Ride Controls</Typography> */}
-                                <Box py={2} display={'flex'} flexDirection={{xs: 'column', sm: 'row'}} gap={2} justifyContent={'center'} alignItems={'center'}>
+                                <Box py={2} display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={2} justifyContent={'center'} alignItems={'center'}>
                                     {canEditRide && <Button
                                         LinkComponent={Link}
                                         to={ROUTE_RIDE_EDIT.replace(":rideId", ride._id)}
@@ -754,7 +861,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                     <LoadingButton loading={rideLoading} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
                                 </Box>
                             </>
-
                         }
                     </Box>
                     :

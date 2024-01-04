@@ -141,7 +141,7 @@ const useRideApi = () => {
         const ENDPOINT = API_RIDE_START.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, null, "PUT");
         if (ack.type === RES.SUCCESS) {
-            return ack.payload;
+            return ack.message;
         }
         throw new Error(ack.message || "Cannot start the ride");
     }
@@ -149,7 +149,7 @@ const useRideApi = () => {
         const ENDPOINT = API_RIDE_END.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, null, "PUT");
         if (ack.type === RES.SUCCESS) {
-            return ack.payload;
+            return ack.message;
         }
         throw new Error(ack.message || "Cannot end the ride");
     }
@@ -157,7 +157,7 @@ const useRideApi = () => {
         const ENDPOINT = API_RIDE_CANCEL.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, null, "PUT");
         if (ack.type === RES.SUCCESS) {
-            return ack.payload;
+            return ack.message;
         }
         throw new Error(ack.message || "Cannot cancel the ride");
     }
@@ -247,12 +247,19 @@ const useRideApi = () => {
         // Passenger Side Ride controls
         getRideDetails,
         requestRide,
+        confirmRide,
         cancelRideBooking,
+        sendOtpToPassenger,
+        startPassengerRide,
+        endPassengerRide,
         // Driver
         publishRide,
         updateRide,
         getPassengers,
         updatePassengerStatus,
+        startWholeRide,
+        endWholeRide,
+        cancelWholeRide,
         // Admin
     };
 };
