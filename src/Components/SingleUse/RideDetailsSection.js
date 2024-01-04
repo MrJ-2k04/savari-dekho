@@ -1,13 +1,13 @@
 
-import { Add, AirlineSeatReclineExtra, ArrowCircleDown, ArrowRightAlt, Cancel, CurrencyRupee, Done, Edit, KeyboardArrowRight, Luggage, QuestionMark, Remove } from "@mui/icons-material";
+import { Add, AirlineSeatReclineExtra, ArrowCircleDown, ArrowRightAlt, Cancel, CurrencyRupee, Done, Edit, KeyboardArrowRight, Luggage, NoCrash, PlayCircleOutline, QuestionMark, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip, Typography, styled } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";
-import { PASSENGER_STATUS, STATUS_DESCRIPTION_FOR_DRIVER, PASSENGER_STATUS_ICONS, PREFERENCES, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
+import { PASSENGER_STATUS, STATUS_DESCRIPTION_FOR_DRIVER, PASSENGER_STATUS_ICONS, PREFERENCES, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_PASSENGER, RIDE_STATUS } from "Store/constants";
 import { selectUser } from "Store/selectors";
-import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showError, showInfo, showSuccess } from "Utils";
+import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showConfirmationDialog, showError, showInfo, showSuccess } from "Utils";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -64,8 +64,9 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     // ############################################# COMPUTED #############################################
 
     // const coTravellers = ride?.passengers.filter(p => [PASSENGER_STATUS.COMPLETED, PASSENGER_STATUS.STARTED, PASSENGER_STATUS.CONFIRMED].includes(p.status)) || [];
-    const coTravellers = ride?.passengers.filter(p => Object.values(PASSENGER_STATUS).includes(p.status)) || [];
+    const coTravellers = ride?.passengers.filter(p => p.passengerId !== user?._id);
     const currentPassenger = ride?.passengers.find(p => p.passengerId === user?._id);
+    const canEditRide = isOwner && ride.passengers.every(p => [PASSENGER_STATUS.REQUESTED, PASSENGER_STATUS.REJECTED, PASSENGER_STATUS.CANCELLED].includes(p.status))
 
     // ############################################# RIDE HANDLERS #############################################
 
@@ -137,7 +138,13 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const handleRideConfirm = () => {
 
     }
-    const handleRideBookingCancel = () => {
+    const handleRideBookingCancel = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will cancel your ride booking",
+            confirmBtnText: "Cancel Booking",
+        });
+        if (!isConfirmed) return;
+
         cancelRideBooking(ride._id).then((msg) => {
             showSuccess({ message: msg });
             setRide(oldRide => {
@@ -149,7 +156,13 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         }).catch(err => showError({ message: err.message }));
     }
     // Driver Side
-    const handleRideApprove = (passengerId) => {
+    const handleRideApprove = async (passengerId) => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will prompt the passenger to confirm your ride by making payment. You won't be able to edit the ride later.",
+            confirmBtnText: "Approve",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
         const payload = {
             passengerId,
             isApproved: true,
@@ -164,7 +177,12 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
         }).catch(err => showError({ message: err.message }));
     }
-    const handleRideReject = (passengerId) => {
+    const handleRideReject = async (passengerId) => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will notify the passenger about your rejection",
+            confirmBtnText: "Reject Ride",
+        });
+        if (!isConfirmed) return;
         const payload = {
             passengerId,
             isApproved: false,
@@ -179,7 +197,72 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showSuccess({ message: "Passenger rejected successfully." });
         }).catch(err => showError({ message: err.message }));
     }
+    const handleStartWholeRide = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will start your ride and notify all the passengers",
+            confirmBtnText: "Confirm",
+            cancelBtnText: "Cancel",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
+        setRide(ride => ({ ...ride, status: RIDE_STATUS.STARTED }))
+        const payload = {
 
+        }
+        // updatePassengerStatus(ride._id, payload).then((msg) => {
+        //     setRide(oldRide => {
+        //         const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
+        //         if (!passenger) return oldRide;
+        //         passenger.status = PASSENGER_STATUS.BOOKED;
+        //         return oldRide;
+        //     })
+        //     showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
+        // }).catch(err => showError({ message: err.message }));
+    }
+    const handleEndWholeRide = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will end your ride and you will be able to withdraw your funds after 24 hours",
+            confirmBtnText: "Confirm",
+            cancelBtnText: "Cancel",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
+        setRide(ride => ({ ...ride, status: RIDE_STATUS.COMPLETED }));
+        const payload = {
+
+        }
+        // updatePassengerStatus(ride._id, payload).then((msg) => {
+        //     setRide(oldRide => {
+        //         const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
+        //         if (!passenger) return oldRide;
+        //         passenger.status = PASSENGER_STATUS.BOOKED;
+        //         return oldRide;
+        //     })
+        //     showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
+        // }).catch(err => showError({ message: err.message }));
+    }
+    const handleCancelWholeRide = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            message: "This will end your ride and you will be able to withdraw your funds after 24 hours",
+            confirmBtnText: "Confirm",
+            cancelBtnText: "Cancel",
+            icon: "question",
+        });
+        if (!isConfirmed) return;
+        setRide(ride => ({ ...ride, status: RIDE_STATUS.COMPLETED }));
+        const payload = {
+
+        }
+        // updatePassengerStatus(ride._id, payload).then((msg) => {
+        //     setRide(oldRide => {
+        //         const passenger = oldRide.passengers.find(p => p.passengerId === passengerId);
+        //         if (!passenger) return oldRide;
+        //         passenger.status = PASSENGER_STATUS.BOOKED;
+        //         return oldRide;
+        //     })
+        //     showSuccess({ message: "Passenger approved successfully. Please wait for the passenger to make the payment." });
+        // }).catch(err => showError({ message: err.message }));
+    }
 
     // ############################################# USE-EFFECTS #############################################
 
@@ -460,7 +543,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                                     </Stack>
                                                                 </Stack>
                                                                 :
-                                                                <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
+                                                                <Stack spacing={2} direction={{ xs: 'column', md: 'row' }} alignItems={'center'}>
                                                                     <>
                                                                         <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={{ xs: 'center', md: 'start' }}>
                                                                             {PASSENGER_STATUS_ICONS[currentPassenger.status]}
@@ -469,7 +552,9 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                                         </Box>
                                                                         <Typography textAlign={'center'} color={'text.secondary'}>{STATUS_DESCRIPTION_FOR_PASSENGER[currentPassenger.status]}</Typography>
                                                                     </>
-
+                                                                    {[PASSENGER_STATUS.REQUESTED, PASSENGER_STATUS.CONFIRMED].includes(currentPassenger.status) &&
+                                                                        <Button sx={{ ml: { md: 'auto !important' } }} onClick={handleRideBookingCancel} variant="outlined" color="error" startIcon={<Cancel />}>Cancel Booking</Button>
+                                                                    }
                                                                 </Stack>
                                                             }
                                                         </Stack>
@@ -596,14 +681,81 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                 </Box>
                             </>
                         }
-                        <Divider variant="fullWidth" flexItem />
-                        <Box mx={'auto'} py={2}>
-                            {isOwner ?
-                                <Button LinkComponent={Link} to={ROUTE_RIDE_EDIT.replace(":rideId", ride._id)} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Edit />}>Edit Ride</Button>
-                                :
-                                <LoadingButton loading={rideLoading} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
-                            }
-                        </Box>
+                        {isOwner ?
+                            <>
+                                <Divider variant="fullWidth" flexItem />
+                                {/* <Typography gutterBottom variant="h4" color={'primary'}>Ride Controls</Typography> */}
+                                <Box py={2} display={'flex'} flexDirection={{xs: 'column', sm: 'row'}} gap={2} justifyContent={'center'} alignItems={'center'}>
+                                    {canEditRide && <Button
+                                        LinkComponent={Link}
+                                        to={ROUTE_RIDE_EDIT.replace(":rideId", ride._id)}
+                                        size="large"
+                                        sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }}
+                                        color="secondary"
+                                        variant="contained"
+                                        endIcon={<Edit />}
+                                    >
+                                        Edit Ride
+                                    </Button>}
+
+
+                                    {ride?.status === RIDE_STATUS.PUBLISHED && <>
+                                        <Button
+                                            onClick={handleStartWholeRide}
+                                            size="large"
+                                            sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }}
+                                            color="success"
+                                            variant="contained"
+                                            endIcon={<PlayCircleOutline />}>
+                                            Start Ride
+                                        </Button>
+                                        <Button
+                                            onClick={handleCancelWholeRide}
+                                            size="large"
+                                            sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }}
+                                            color="error"
+                                            variant="outlined"
+                                            endIcon={<Cancel />}>
+                                            Cancel Ride
+                                        </Button>
+                                    </>
+                                    }
+                                    {ride?.status === RIDE_STATUS.STARTED && <Button
+                                        onClick={handleEndWholeRide}
+                                        size="large"
+                                        sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }}
+                                        color="info"
+                                        variant="contained"
+                                        endIcon={<NoCrash />}>
+                                        End Ride
+                                    </Button>}
+                                    {ride?.status === RIDE_STATUS.COMPLETED && <Box display={'flex'} gap={1} alignItems={'center'}>
+                                        <Typography
+                                            variant="h4"
+                                            fontWeight={600}
+                                            color={'success.main'}
+                                        >Ride Completed</Typography>
+                                        <NoCrash color="success" />
+                                    </Box>}
+                                    {ride?.status === RIDE_STATUS.CANCELLED && <Box display={'flex'} gap={1} alignItems={'center'}>
+                                        <Typography
+                                            variant="h4"
+                                            fontWeight={600}
+                                            color={'error'}
+                                        >Ride Cancelled</Typography>
+                                        <Cancel color="error" />
+                                    </Box>}
+                                </Box>
+                            </>
+                            :
+                            !currentPassenger && <>
+                                <Divider variant="fullWidth" flexItem />
+                                <Box mx={'auto'} py={2}>
+                                    <LoadingButton loading={rideLoading} onClick={handleRequestRide} size="large" sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }} color="secondary" variant="contained" endIcon={<Luggage />}>Book Ride</LoadingButton>
+                                </Box>
+                            </>
+
+                        }
                     </Box>
                     :
                     <Container>

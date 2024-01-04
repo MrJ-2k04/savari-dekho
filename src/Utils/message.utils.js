@@ -43,3 +43,23 @@ export function showWarning({ title = "Warning", message = "" }) {
         }
     });
 }
+
+export function showConfirmationDialog({
+    title = "Are you sure?",
+    message = "You won't be able to revert this!",
+    icon = "warning",
+    confirmBtnText = "Yes, delete it!",
+    cancelBtnText = "No",
+}) {
+    return window.Swal.fire({
+        title,
+        text: message,
+        icon,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: confirmBtnText,
+        cancelButtonText: cancelBtnText,
+    });
+}
+

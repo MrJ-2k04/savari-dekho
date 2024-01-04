@@ -119,6 +119,12 @@ export const WALLET_FAQS = [
   // Add more relevant FAQs as needed
 ];
 
+export const RIDE_STATUS = {
+  PUBLISHED: "published",
+  STARTED: 'started',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+}
 export const PASSENGER_FILTER_STATUS = ["requested", "booked", "confirmed", "started", "completed"];
 export const PASSENGER_STATUS = {
   REQUESTED: 'requested',
