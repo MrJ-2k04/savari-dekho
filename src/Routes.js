@@ -48,14 +48,14 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
     if (!isAuthenticated) {
         if (route.includes(ROUTE_RESET_PASSWORD)) {
             return targetRoute;
-        } else if (route.includes(ROUTE_RIDES) && !route === ROUTE_RIDES) {
+        } else if (route.includes(ROUTE_RIDES) && route !== ROUTE_RIDES) {
             if (route !== ROUTE_RIDE_PUBLISH && !route.match(new RegExp(ROUTE_RIDE_EDIT.replace(/:[a-zA-Z]+/g, '([\\w-]+)')))) {
                 return targetRoute;
             }
         } else if (route.includes(ROUTE_USER)) {
             return targetRoute;
         }
-
+        
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {
             targetRoute.path = ROUTE_LOGIN;
             targetRoute.state = state || { redirectUrl: route };
@@ -130,7 +130,7 @@ const Routes = () => {
     const accessToken = useSelector(selectAccessToken);
     const refreshToken = useSelector(selectRefreshToken);
 
-    const { path, state } = getTargetRoute(isAuthenticated, user, location.pathname, location.state);
+    const { path, state } = getTargetRoute(isAuthenticated, user, location.pathname + location.search, location.state);
 
     useEffect(() => {
         if (isAuthenticated) {

@@ -8,7 +8,7 @@ import RouteList from "Components/Common/RouteList";
 import SearchBar from "Components/Common/SearchBar";
 import useRideApi from "Components/Hooks/useRideApi";
 import { ROUTE_RIDES, ROUTE_SEARCH, VEHICLE_FUEL_TYPES, VEHICLE_TYPE_OPTIONS } from "Store/constants";
-import { calculateTotalDistance, getPriceFromDistance, showError, showSuccess } from "Utils";
+import { showError, showSuccess } from "Utils";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -125,6 +125,7 @@ function SearchResultsForm() {
                 text: [ride.destination.primaryText, ride.destination.secondaryText].join("--"),
             }),
             requestedSeats: params.seats,
+            pricePerSeat: ride.pricePerSeat,
         });
         return `${ROUTE_RIDES}/${ride._id}?${options.toString()}`;
     }
@@ -155,17 +156,16 @@ function SearchResultsForm() {
             if (rides.length === 0) {
                 // handle no search result found
             } else {
-                // const x = rides.map(ride => ({ departureName: getPlaceFromCoords(ride.departureCoords), destinationName: getPlaceFromCoords(ride.destinationCoords) }))
-                // console.log(x);
-                const ridesWithPrice = rides.map(ride => {
-                    const coords = ride.locations.coordinates.slice(ride.departure.coordsIndex, ride.destination.coordsIndex + 1);
-                    const totalDistance = calculateTotalDistance(coords);
-                    const pricePerKm = getPriceFromDistance(totalDistance);
-                    ride.distance = totalDistance;
-                    ride.pricePerSeat = Math.ceil(totalDistance * pricePerKm / 10) * 10;
-                    return ride;
-                });
-                setSearchResults(ridesWithPrice);
+                // const ridesWithPrice = rides.map(ride => {
+                //     const coords = ride.locations.coordinates.slice(ride.departure.coordsIndex, ride.destination.coordsIndex + 1);
+                //     const totalDistance = calculateTotalDistance(coords);
+                //     // const pricePerKm = getPriceFromDistance(totalDistance);
+                //     const pricePerKm = ride.totalDistance/ride.totalPrice
+                //     ride.distance = totalDistance;
+                //     ride.pricePerSeat = Math.ceil(totalDistance * pricePerKm / 10) * 10;
+                //     return ride;
+                // });
+                setSearchResults(rides);
             }
         }).catch(err => {
             showError({ message: err.message });

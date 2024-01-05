@@ -7,7 +7,7 @@ import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";
 import { PASSENGER_STATUS, PASSENGER_STATUS_ICONS, PREFERENCES, RIDE_STATUS, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_DRIVER, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
 import { selectUser } from "Store/selectors";
-import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showConfirmationDialog, showError, showInfo, showOtpDialog, showSuccess } from "Utils";
+import { calculateTotalDistance, capitalizeWords, formatDateForRide, haversineDistance, showConfirmationDialog, showError, showInfo, showOtpDialog, showSuccess } from "Utils";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -51,6 +51,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         fromPlaceId: searchParams.get("fromPlaceId"),
         toPlaceId: searchParams.get("toPlaceId"),
         requestedSeats: parseInt(searchParams.get("requestedSeats")),
+        pricePerSeat: parseInt(searchParams.get("pricePerSeat")),
         fromCoords: null,
         toCoords: null,
         departure: null,
@@ -85,7 +86,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     // const coTravellers = ride?.passengers.filter(p => [PASSENGER_STATUS.COMPLETED, PASSENGER_STATUS.STARTED, PASSENGER_STATUS.CONFIRMED].includes(p.status)) || [];
     const coTravellers = ride?.passengers.filter(p => p.passengerId !== user?._id);
     const currentPassenger = ride?.passengers.find(p => p.passengerId === user?._id);
-    const canEditRide = isOwner && ride.passengers.every(p => [PASSENGER_STATUS.REQUESTED, PASSENGER_STATUS.REJECTED, PASSENGER_STATUS.CANCELLED].includes(p.status)) && ride.status === RIDE_STATUS.PUBLISHED;
+    const canEditRide = isOwner && ride?.passengers.every(p => [PASSENGER_STATUS.REQUESTED, PASSENGER_STATUS.REJECTED, PASSENGER_STATUS.CANCELLED].includes(p.status)) && ride?.status === RIDE_STATUS.PUBLISHED;
 
     // ############################################# RIDE HANDLERS #############################################
 
@@ -454,12 +455,23 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                     }
 
                     // Price Estimation
-                    const startIndex = finalRide.departure?.index || 0;
-                    const endIndex = finalRide.destination?.index || finalRide.locations.coordinates.length - 1;
-                    const coordinates = finalRide.locations.coordinates.slice(startIndex, endIndex + 1);
-                    finalRide.distance = Math.ceil(calculateTotalDistance(coordinates));
-                    const pricePerKm = getPriceFromDistance(finalRide.distance);
-                    finalRide.pricePerSeat = Math.ceil(finalRide.distance * pricePerKm / 10) * 10;
+                    if (params.pricePerSeat) {
+                        finalRide.pricePerSeat = params.pricePerSeat;
+                    } else {
+                        const startIndex = finalRide.departure?.index || 0;
+                        const endIndex = finalRide.destination?.index || finalRide.locations.coordinates.length - 1;
+                        if (startIndex === 0 && endIndex === finalRide.locations.coordinates.length - 1) {
+                            finalRide.distance = finalRide.totalDistance;
+                            finalRide.pricePerSeat = finalRide.totalPrice;
+                        } else {
+                            const coords = finalRide.locations.coordinates.slice(startIndex, endIndex + 1);
+                            const pricePerKm = finalRide?.totalPrice / finalRide?.totalDistance;
+                            finalRide.distance = Math.ceil(calculateTotalDistance(coords));
+                            finalRide.pricePerSeat = Math.ceil(finalRide.distance * pricePerKm / 10) * 10;
+                            // finalRide.distance = Math.ceil(calculateTotalDistance(coordinates));
+                            // const pricePerKm = getPriceFromDistance(finalRide.distance);
+                        }
+                    }
 
                     setRide(finalRide);
                     setWaypoints(newWaypoints);
@@ -677,7 +689,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                             <Typography gutterBottom variant="h4" color={'primary'}>Co-travellers</Typography>
                                             <List>
                                                 {coTravellers.map(passenger => {
-                                                    if (passenger.passengerId === user._id) return null;
+                                                    if (passenger.passengerId === user?._id) return null;
                                                     return <ListItemButton
                                                         key={passenger.passengerId}
                                                         LinkComponent={Link}
