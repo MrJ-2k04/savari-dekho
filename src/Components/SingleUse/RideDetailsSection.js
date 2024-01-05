@@ -7,7 +7,7 @@ import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";
 import { PASSENGER_STATUS, PASSENGER_STATUS_ICONS, PREFERENCES, RIDE_STATUS, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_DRIVER, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
 import { selectUser } from "Store/selectors";
-import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showConfirmationDialog, showError, showInfo, showSuccess } from "Utils";
+import { calculateTotalDistance, capitalizeWords, formatDateForRide, getPriceFromDistance, haversineDistance, showConfirmationDialog, showError, showInfo, showOtpDialog, showSuccess } from "Utils";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -78,6 +78,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const [waypointIndex, setWaypointIndex] = useState({ startIndex: undefined, endIndex: undefined });
     const [requestedSeats, setRequestedSeats] = useState(params.requestedSeats || 1);
     const [fetching, setFetching] = useState(true);
+    const [otpPassenger, setOtpPassenger] = useState(null);
 
     // ############################################# COMPUTED #############################################
 
@@ -295,49 +296,49 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         // sendOtpToPassenger(ride?._id, passengerId)
     }
     const openOtpInputModal = () => {
-        window.Swal.fire({
-            title: 'Enter OTP',
-            input: "number",
-            inputValidator: (value) => {
-                if (!value) {
-                    return "You need to enter the OTP!";
+
+    };
+    const handleVerifyOTP = (passengerId, otp) => {
+        startPassengerRide(ride?._id, passengerId, otp).then((msg) => {
+            showSuccess({ message: msg });
+            setRide(oldRide => {
+                const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
+                if (pIndex > -1) {
+                    oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.STARTED };
                 }
-                if(value.length!==6){
-                    return "OTP must have 6 digits";
-                }
-            },
-            showConfirmButton: false,
-            // showCloseButton: true,
-            // showCancelButton: false,
-            // focusConfirm: false,
-            // allowOutsideClick: false,
+                return { ...oldRide };
+            })
+        }).catch(err => {
+            window.Swal.showValidationMessage(err.message);
         });
     };
-    const handleVerifyOTP = (otp) => {
-        // Add your OTP verification logic here
-        console.log('Verifying OTP:', otp);
 
-        // For demo purposes, close the modal after verifying
-        window.Swal.close();
-    };
+    const handleResendOtp = () => {
+        console.log("Resending Otp");
+    }
 
     const handleStartPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
             message: "You will have to enter the OTP that is sent to the passenger",
             confirmBtnText: "Start Passenger Ride",
-            cancelBtnText: "Cancel"
+            cancelBtnText: "Cancel",
         });
         if (!isConfirmed) return;
 
         openOtpInputModal();
-
-        // setRide(oldRide => {
-        //     const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
-        //     if (pIndex > -1) {
-        //         oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.STARTED };
-        //     }
-        //     return { ...oldRide };
-        // })
+        try {
+            setOtpPassenger(passengerId);
+            await sendOtpToPassenger(ride?._id, passengerId);
+            showOtpDialog({
+                title: "Enter OTP",
+                message: "Enter the OTP sent to the passenger's registered mobile number",
+                onVerifyOtp: otp => handleVerifyOTP(passengerId, otp),
+                onResendOtp: handleResendOtp
+            });
+        } catch (error) { showError({ message: error.message }); }
+        finally {
+            setOtpPassenger(null);
+        }
     }
     const handleEndPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
@@ -786,7 +787,8 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                                         </>}
                                                                 </Stack>
                                                                 {ride.status === RIDE_STATUS.STARTED && <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
-                                                                    {passenger.status === PASSENGER_STATUS.CONFIRMED && <Button
+                                                                    {passenger.status === PASSENGER_STATUS.CONFIRMED && <LoadingButton
+                                                                        loading={otpPassenger === passenger.passengerId}
                                                                         onClick={() => handleStartPassengerRide(passenger.passengerId)}
                                                                         variant="contained"
                                                                         color="success"
@@ -795,7 +797,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                                         endIcon={<LocalTaxi />}
                                                                     >
                                                                         Start Passenger Ride
-                                                                    </Button>}
+                                                                    </LoadingButton>}
 
                                                                     {passenger.status === PASSENGER_STATUS.STARTED && <Button
                                                                         onClick={() => handleEndPassengerRide(passenger.passengerId)}

@@ -121,11 +121,11 @@ const useRideApi = () => {
         }
         throw new Error(ack.message || "Cannot send otp to passenger");
     }
-    const startPassengerRide = async (rideId, passengerId) => {
+    const startPassengerRide = async (rideId, passengerId, otp) => {
         const ENDPOINT = API_PASSENGER_START_RIDE.replace(":rideId", rideId);
-        const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData({ passengerId }), "PUT");
+        const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData({ passengerId, otp }), "PUT");
         if (ack.type === RES.SUCCESS) {
-            return ack.payload;
+            return ack.message;
         }
         throw new Error(ack.message || "Cannot start passenger's ride");
     }
