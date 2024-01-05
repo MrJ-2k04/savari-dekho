@@ -4,21 +4,22 @@ import { Badge, Box, Button, Card, CardContent, CardHeader, Checkbox, Fab, FormC
 import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
+import useRideApi from "Components/Hooks/useRideApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
-import RidePublishMapView from "Components/MapItems/RidePublishMapView";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
-import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, PREFERENCES, ROUTE_HOME, ROUTE_VEHICLE_ADD } from "Store/constants";
+import RidePublishMapView from "Components/MapItems/RidePublishMapView";
+import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, MIN_DELAY_FOR_BOOKING, PREFERENCES, ROUTE_HOME, ROUTE_RIDES, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { selectUser } from "Store/selectors";
 import { formatPlaceObj, isEmptyString, isFalsy, isNumeric, showError, showSuccess, unformatPlaceObj } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import useRideApi from "Components/Hooks/useRideApi";
 import { useSelector } from "react-redux";
-import { selectUser } from "Store/selectors";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 
 
-const minDateTime = new Date(new Date().getTime() + (MIN_DELAY_FOR_BOOKING * 60 * 1000));
+// const minDateTime = new Date(new Date().getTime() + (MIN_DELAY_FOR_BOOKING * 60 * 1000));
+const minDateTime = new Date();
 
 const StyledBadge = styled(Badge)(({ isvisible }) => ({
     '& .MuiBadge-badge': {
@@ -81,19 +82,27 @@ function RideForm({ isNew = false }) {
 
     const syncRide = () => {
         getRideDetails(rideId).then(rideDetails => {
-            if (rideDetails.publisherId !== user._id) {
+            if (rideDetails.publisher._id !== user._id) {
                 showError({ message: "You do not have access to modify this ride" }).then(() => nav(ROUTE_HOME));
                 return;
             }
             setTotalPrice(rideDetails.totalPrice);
-            setWaypoints(rideDetails.waypoints);
             setDepartureDatetime(new Date(rideDetails.departureDatetime));
             setTotalEmptySeats(rideDetails.totalEmptySeats);
             setVehicleId(rideDetails.vehicleId);
+            setPreferences(rideDetails.preferences || []);
             setLocations({
                 [ID_RIDE_FROM]: unformatPlaceObj(rideDetails.from),
                 [ID_RIDE_TO]: unformatPlaceObj(rideDetails.to),
             })
+            if (rideDetails.waypoints.length > 0) {
+                const oldWaypoints = rideDetails.waypoints.map(wayp => {
+                    wayp = unformatPlaceObj(wayp);
+                    wayp = { location: { ...wayp }, place_id: wayp.place_id };
+                    return wayp;
+                });
+                setWaypoints(oldWaypoints);
+            }
         }).catch(err => showError({ message: err.message }));
     }
     const handleUpdate = () => {
@@ -120,10 +129,10 @@ function RideForm({ isNew = false }) {
                     newWaypointErrors[index][ID_WAYP_LOCATION] = 'Please enter a valid stopover point';
                     isValid = false;
                 }
-                if (isFalsy(waypoint[ID_WAYP_PRICE])) {
-                    newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
-                    isValid = false;
-                }
+                // if (isFalsy(waypoint[ID_WAYP_PRICE])) {
+                //     newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
+                //     isValid = false;
+                // }
             })
             setWaypointErrors(newWaypointErrors);
 
@@ -170,18 +179,22 @@ function RideForm({ isNew = false }) {
             preferences: JSON.stringify(["NO_SMK", "AC_RID"]),
         }
         if (waypoints.length > 0) {
-            const formattedWaypoints = waypoints.map(waypoint => ({ ...formatPlaceObj(waypoint.location), price: waypoint.price }));
+            const formattedWaypoints = waypoints.map(waypoint => (formatPlaceObj(waypoint.location)));
             mapState.legs.forEach((leg, legIndex) => {
                 if (legIndex === 0) return;
                 formattedWaypoints[legIndex - 1].geometry = leg.start_location.toJSON();
             })
             payload['waypoints'] = JSON.stringify(formattedWaypoints);
         }
-
+        const distanceInMeters = mapState.legs.reduce((distance, leg) => distance + leg.distance.value, 0);
+        payload.totalDistance = parseFloat((distanceInMeters / 1000).toFixed(2));
+        payload.totalDuration = mapState.legs.reduce((durationInSec, leg) => durationInSec + leg.duration.value, 0);
+        payload.bounds = JSON.stringify(mapState.bounds);
+        // console.log(payload);
         // Submit the Form
         updateRide(rideId, payload).then(ack => {
-            showSuccess({ message: ack.message }).then(() => { }
-                // nav(`${ROUTE_RIDES}/${ack.payload}`)
+            showSuccess({ message: ack.message }).then(() =>
+                nav(`${ROUTE_RIDES}/${rideId}`)
             )
         }).catch(err => {
             showError({ message: err.message })
@@ -217,7 +230,7 @@ function RideForm({ isNew = false }) {
         setWaypointErrors({ ...waypointErrors, [waypoints.length]: {} });
     }
     const handleDeleteWaypoint = (index) => {
-        console.log(waypoints[index]);
+        // console.log(waypoints[index]);
         if (waypoints[index]["location"]) {
             setShowNoti(true);
         }
@@ -233,7 +246,7 @@ function RideForm({ isNew = false }) {
                 delete newWaypointErrors[i];
             }
         }
-        console.log(waypointErrors, newWaypointErrors);
+        // console.log(waypointErrors, newWaypointErrors);
         setWaypointErrors(newWaypointErrors);
     }
     const handleSubmit = () => {
@@ -260,10 +273,10 @@ function RideForm({ isNew = false }) {
                     newWaypointErrors[index][ID_WAYP_LOCATION] = 'Please enter a valid stopover point';
                     isValid = false;
                 }
-                if (isFalsy(waypoint[ID_WAYP_PRICE])) {
-                    newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
-                    isValid = false;
-                }
+                // if (isFalsy(waypoint[ID_WAYP_PRICE])) {
+                //     newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
+                //     isValid = false;
+                // }
             })
             setWaypointErrors(newWaypointErrors);
 
@@ -311,19 +324,25 @@ function RideForm({ isNew = false }) {
             preferences: JSON.stringify(preferences),
         }
         if (waypoints.length > 0) {
-            const formattedWaypoints = waypoints.map(waypoint => ({ ...formatPlaceObj(waypoint.location), price: waypoint.price }));
+            // const formattedWaypoints = waypoints.map(waypoint => ({ ...formatPlaceObj(waypoint.location), price: waypoint.price }));
+            const formattedWaypoints = waypoints.map(waypoint => formatPlaceObj(waypoint.location));
             mapState.legs.forEach((leg, legIndex) => {
                 if (legIndex === 0) return;
                 formattedWaypoints[legIndex - 1].geometry = leg.start_location.toJSON();
             })
             payload['waypoints'] = JSON.stringify(formattedWaypoints);
         }
+        const distanceInMeters = mapState.legs.reduce((distance, leg) => distance + leg.distance.value, 0);
+        payload.totalDistance = parseFloat((distanceInMeters / 1000).toFixed(2));
+        payload.totalDuration = mapState.legs.reduce((durationInSec, leg) => durationInSec + leg.duration.value, 0);
+        payload.bounds = JSON.stringify(mapState.bounds);
+
 
         // Submit the Form
-        console.log(payload);
+        // console.log(payload);
         publishRide(payload).then(ack => {
-            showSuccess({ message: ack.message }).then(() => { }
-                // nav(`${ROUTE_RIDES}/${ack.payload}`)
+            showSuccess({ message: ack.message }).then(() =>
+                nav(ROUTE_RIDES)
             )
         }).catch(err => {
             showError({ message: err.message })
@@ -475,7 +494,6 @@ function RideForm({ isNew = false }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-
     // useEffect(() => {
     //     console.log(mapState);
     // }, [mapState]);
@@ -524,7 +542,7 @@ function RideForm({ isNew = false }) {
                                     />
                                 </Box>
 
-                                <Stack width={'100%'} direction={'row'} alignItems={'center'} spacing={{ xs: 1, sm: 2 }}>
+                                {/* <Stack width={'100%'} direction={'row'} alignItems={'center'} spacing={{ xs: 1, sm: 2 }}>
                                     <TextField
                                         label='Price'
                                         type="number"
@@ -541,10 +559,10 @@ function RideForm({ isNew = false }) {
                                         error={!isFalsy(waypointErrors[index]?.[ID_WAYP_PRICE])}
                                         helperText={waypointErrors[index]?.[ID_WAYP_PRICE]}
                                     />
-                                    <IconButton onClick={e => handleDeleteWaypoint(index)} size="small">
-                                        <Delete />
-                                    </IconButton>
-                                </Stack>
+                                </Stack> */}
+                                <IconButton onClick={e => handleDeleteWaypoint(index)} size="small">
+                                    <Delete />
+                                </IconButton>
                             </Box>
                         )}
                         <Box width={'100%'} display={'flex'} gap={3} flexWrap={{ xs: 'wrap', sm: 'nowrap' }}>
