@@ -294,6 +294,33 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         // if (!isConfirmed) return;
         // sendOtpToPassenger(ride?._id, passengerId)
     }
+    const openOtpInputModal = () => {
+        window.Swal.fire({
+            title: 'Enter OTP',
+            input: "number",
+            inputValidator: (value) => {
+                if (!value) {
+                    return "You need to enter the OTP!";
+                }
+                if(value.length!==6){
+                    return "OTP must have 6 digits";
+                }
+            },
+            showConfirmButton: false,
+            // showCloseButton: true,
+            // showCancelButton: false,
+            // focusConfirm: false,
+            // allowOutsideClick: false,
+        });
+    };
+    const handleVerifyOTP = (otp) => {
+        // Add your OTP verification logic here
+        console.log('Verifying OTP:', otp);
+
+        // For demo purposes, close the modal after verifying
+        window.Swal.close();
+    };
+
     const handleStartPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
             message: "You will have to enter the OTP that is sent to the passenger",
@@ -301,13 +328,16 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             cancelBtnText: "Cancel"
         });
         if (!isConfirmed) return;
-        setRide(oldRide => {
-            const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
-            if (pIndex > -1) {
-                oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.STARTED };
-            }
-            return { ...oldRide };
-        })
+
+        openOtpInputModal();
+
+        // setRide(oldRide => {
+        //     const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
+        //     if (pIndex > -1) {
+        //         oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.STARTED };
+        //     }
+        //     return { ...oldRide };
+        // })
     }
     const handleEndPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
