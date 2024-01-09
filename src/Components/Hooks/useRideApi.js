@@ -133,7 +133,7 @@ const useRideApi = () => {
         const ENDPOINT = API_PASSENGER_END_RIDE.replace(":rideId", rideId);
         const ack = await apiRequestWithReauth(ENDPOINT, jsonToFormData({ passengerId }), "PUT");
         if (ack.type === RES.SUCCESS) {
-            return ack.payload;
+            return ack.message;
         }
         throw new Error(ack.message || "Cannot end passenger's ride");
     }

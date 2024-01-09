@@ -287,15 +287,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showSuccess({ message: "Passenger rejected successfully." });
         }).catch(err => showError({ message: err.message }));
     }
-    const handleSendOtpToPassenger = async (passengerId) => {
-        // const { isConfirmed } = await showConfirmationDialog({
-        //     message: "",
-        //     confirmBtnText: "Start Passenger Ride",
-        //     cancelBtnText: "Cancel"
-        // });
-        // if (!isConfirmed) return;
-        // sendOtpToPassenger(ride?._id, passengerId)
-    }
     const openOtpInputModal = () => {
 
     };
@@ -314,8 +305,13 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         });
     };
 
-    const handleResendOtp = () => {
-        console.log("Resending Otp");
+    const handleResendOtp = async (passengerId) => {
+        try {
+            await sendOtpToPassenger(ride?._id, passengerId);
+            window.Swal.showValidationMessage("OTP Sent successfully!");
+        } catch (error) {
+            window.Swal.showValidationMessage(error.message);
+        }
     }
 
     const handleStartPassengerRide = async (passengerId) => {
@@ -334,7 +330,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                 title: "Enter OTP",
                 message: "Enter the OTP sent to the passenger's registered mobile number",
                 onVerifyOtp: otp => handleVerifyOTP(passengerId, otp),
-                onResendOtp: handleResendOtp
+                onResendOtp: () => handleResendOtp(passengerId)
             });
         } catch (error) { showError({ message: error.message }); }
         finally {
@@ -348,13 +344,18 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             cancelBtnText: "Cancel"
         });
         if (!isConfirmed) return;
-        setRide(oldRide => {
-            const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
-            if (pIndex > -1) {
-                oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.COMPLETED };
-            }
-            return { ...oldRide };
-        })
+        setOtpPassenger(passengerId);
+        endPassengerRide(ride?._id, passengerId).then(msg => {
+            showSuccess({ message: msg });
+            setRide(oldRide => {
+                const pIndex = oldRide.passengers.findIndex(p => p.passengerId === passengerId);
+                if (pIndex > -1) {
+                    oldRide.passengers[pIndex] = { ...oldRide.passengers[pIndex], status: PASSENGER_STATUS.COMPLETED };
+                }
+                return { ...oldRide };
+            })
+        }).catch(err => showError({ message: err.message }))
+            .finally(() => setOtpPassenger(null));
     }
 
     // ############################################# USE-EFFECTS #############################################
@@ -811,14 +812,15 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                                         Start Passenger Ride
                                                                     </LoadingButton>}
 
-                                                                    {passenger.status === PASSENGER_STATUS.STARTED && <Button
+                                                                    {passenger.status === PASSENGER_STATUS.STARTED && <LoadingButton
+                                                                        loading={otpPassenger === passenger.passengerId}
                                                                         onClick={() => handleEndPassengerRide(passenger.passengerId)}
                                                                         variant="contained"
                                                                         color="secondary"
                                                                         endIcon={<WhereToVote />}
                                                                     >
                                                                         End Passenger Ride
-                                                                    </Button>}
+                                                                    </LoadingButton>}
                                                                 </Stack>}
                                                             </Stack>
                                                         </Box>

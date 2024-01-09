@@ -90,6 +90,7 @@ export function showOtpDialog({
         denyButtonText: "Resend OTP",
         preDeny: () => {
             onResendOtp();
+            window.Swal.showValidationMessage("Resending OTP...");
             return false;
         },
         preConfirm: async (otp) => {
