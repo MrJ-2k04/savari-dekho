@@ -101,6 +101,7 @@ const API_AUTH = `${API_ENDPOINT}/auth`
 export const API_REGISTER = `${API_AUTH}/register`;
 export const API_LOGIN = `${API_AUTH}/login`;
 export const API_USER_ME = `${API_AUTH}/me`;  // GET
+export const API_USER_BY_ID = `${API_AUTH}/:userId`;  // GET
 export const API_USER_UPDATE = `${API_AUTH}/user`;  // PUT
 export const API_REFRESH_TOKEN = `${API_AUTH}/refresh-token`;
 export const API_RESET_PASSWORD = `${API_AUTH}/reset-password`;

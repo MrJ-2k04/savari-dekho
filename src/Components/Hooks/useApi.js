@@ -1,5 +1,5 @@
 
-import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
+import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_BY_ID, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -52,6 +52,14 @@ const useApi = () => {
       return ack.payload;
     }
     throw new Error('Cannot fetch user details');
+  }
+
+  const getUserById = async (userId) => {
+    const ack = await apiRequestWithReauth(API_USER_BY_ID.replace(":userId", userId), null, "GET");
+    if (ack.type === RES.SUCCESS) {
+      return ack.payload;
+    }
+    throw new Error(ack.message || `Cannot fetch user with id ${userId}`);
   }
 
   const syncUser = async () => {
@@ -396,6 +404,7 @@ const useApi = () => {
 
     syncUser,
     getUserDetails,
+    getUserById,
     updateUserDetails,
 
     loginUser,

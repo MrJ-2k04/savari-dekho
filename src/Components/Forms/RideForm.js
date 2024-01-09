@@ -89,7 +89,7 @@ function RideForm({ isNew = false }) {
             setTotalPrice(rideDetails.totalPrice);
             setDepartureDatetime(new Date(rideDetails.departureDatetime));
             setTotalEmptySeats(rideDetails.totalEmptySeats);
-            setVehicleId(rideDetails.vehicleId);
+            setVehicleId(rideDetails.vehicle._id);
             setPreferences(rideDetails.preferences || []);
             setLocations({
                 [ID_RIDE_FROM]: unformatPlaceObj(rideDetails.from),
@@ -176,7 +176,7 @@ function RideForm({ isNew = false }) {
             vehicleId,
             totalEmptySeats,
             polyline: mapState.overview_polyline,
-            preferences: JSON.stringify(["NO_SMK", "AC_RID"]),
+            preferences: JSON.stringify(preferences),
         }
         if (waypoints.length > 0) {
             const formattedWaypoints = waypoints.map(waypoint => (formatPlaceObj(waypoint.location)));
@@ -349,124 +349,124 @@ function RideForm({ isNew = false }) {
         })
     }
 
-    const fillSampleData = () => {
-        setShowNoti(true);
-        setLocations({
-            [ID_RIDE_FROM]: {
-                "description": "Ahmedabad Railway Station, Sakar Bazzar, Kalupur, Ahmedabad, Gujarat, India",
-                "matched_substrings": [
-                    {
-                        "length": 4,
-                        "offset": 0
-                    }
-                ],
-                "place_id": "ChIJE98lnFyFXjkRgd4qrHpon2o",
-                "reference": "ChIJE98lnFyFXjkRgd4qrHpon2o",
-                "structured_formatting": {
-                    "main_text": "Ahmedabad Railway Station",
-                    "main_text_matched_substrings": [
-                        {
-                            "length": 4,
-                            "offset": 0
-                        }
-                    ],
-                    "secondary_text": "Sakar Bazzar, Kalupur, Ahmedabad, Gujarat, India"
-                },
-                "terms": [
-                    {
-                        "offset": 0,
-                        "value": "Ahmedabad Railway Station"
-                    },
-                    {
-                        "offset": 27,
-                        "value": "Sakar Bazzar"
-                    },
-                    {
-                        "offset": 41,
-                        "value": "Kalupur"
-                    },
-                    {
-                        "offset": 50,
-                        "value": "Ahmedabad"
-                    },
-                    {
-                        "offset": 61,
-                        "value": "Gujarat"
-                    },
-                    {
-                        "offset": 70,
-                        "value": "India"
-                    }
-                ],
-                "types": [
-                    "point_of_interest",
-                    "establishment"
-                ]
-            },
-            [ID_RIDE_TO]: {
-                "description": "Surat Railway Station, Railway Station Area, Varachha, Surat, Gujarat, India",
-                "matched_substrings": [
-                    {
-                        "length": 5,
-                        "offset": 0
-                    }
-                ],
-                "place_id": "ChIJ15BXB1xP4DsRbbuh8F31RrE",
-                "reference": "ChIJ15BXB1xP4DsRbbuh8F31RrE",
-                "structured_formatting": {
-                    "main_text": "Surat Railway Station",
-                    "main_text_matched_substrings": [
-                        {
-                            "length": 5,
-                            "offset": 0
-                        }
-                    ],
-                    "secondary_text": "Railway Station Area, Varachha, Surat, Gujarat, India"
-                },
-                "terms": [
-                    {
-                        "offset": 0,
-                        "value": "Surat Railway Station"
-                    },
-                    {
-                        "offset": 23,
-                        "value": "Railway Station Area"
-                    },
-                    {
-                        "offset": 45,
-                        "value": "Varachha"
-                    },
-                    {
-                        "offset": 55,
-                        "value": "Surat"
-                    },
-                    {
-                        "offset": 62,
-                        "value": "Gujarat"
-                    },
-                    {
-                        "offset": 71,
-                        "value": "India"
-                    }
-                ],
-                "types": [
-                    "lodging",
-                    "point_of_interest",
-                    "establishment"
-                ]
-            },
-        })
-        // setWaypoints([
-        //     {
-        //         place_id: crypto.randomUUID(),
-        //         location: { description: "Surat, Gujarat, India" },
-        //         price: 1500
-        //     },
-        // ])
-        setTotalPrice(5000);
-        setDepartureDatetime(new Date(Date.now() + (5 * 60 * 60 * 1000)))
-        setTotalEmptySeats(3)
-    }
+    // const fillSampleData = () => {
+    //     setShowNoti(true);
+    //     setLocations({
+    //         [ID_RIDE_FROM]: {
+    //             "description": "Ahmedabad Railway Station, Sakar Bazzar, Kalupur, Ahmedabad, Gujarat, India",
+    //             "matched_substrings": [
+    //                 {
+    //                     "length": 4,
+    //                     "offset": 0
+    //                 }
+    //             ],
+    //             "place_id": "ChIJE98lnFyFXjkRgd4qrHpon2o",
+    //             "reference": "ChIJE98lnFyFXjkRgd4qrHpon2o",
+    //             "structured_formatting": {
+    //                 "main_text": "Ahmedabad Railway Station",
+    //                 "main_text_matched_substrings": [
+    //                     {
+    //                         "length": 4,
+    //                         "offset": 0
+    //                     }
+    //                 ],
+    //                 "secondary_text": "Sakar Bazzar, Kalupur, Ahmedabad, Gujarat, India"
+    //             },
+    //             "terms": [
+    //                 {
+    //                     "offset": 0,
+    //                     "value": "Ahmedabad Railway Station"
+    //                 },
+    //                 {
+    //                     "offset": 27,
+    //                     "value": "Sakar Bazzar"
+    //                 },
+    //                 {
+    //                     "offset": 41,
+    //                     "value": "Kalupur"
+    //                 },
+    //                 {
+    //                     "offset": 50,
+    //                     "value": "Ahmedabad"
+    //                 },
+    //                 {
+    //                     "offset": 61,
+    //                     "value": "Gujarat"
+    //                 },
+    //                 {
+    //                     "offset": 70,
+    //                     "value": "India"
+    //                 }
+    //             ],
+    //             "types": [
+    //                 "point_of_interest",
+    //                 "establishment"
+    //             ]
+    //         },
+    //         [ID_RIDE_TO]: {
+    //             "description": "Surat Railway Station, Railway Station Area, Varachha, Surat, Gujarat, India",
+    //             "matched_substrings": [
+    //                 {
+    //                     "length": 5,
+    //                     "offset": 0
+    //                 }
+    //             ],
+    //             "place_id": "ChIJ15BXB1xP4DsRbbuh8F31RrE",
+    //             "reference": "ChIJ15BXB1xP4DsRbbuh8F31RrE",
+    //             "structured_formatting": {
+    //                 "main_text": "Surat Railway Station",
+    //                 "main_text_matched_substrings": [
+    //                     {
+    //                         "length": 5,
+    //                         "offset": 0
+    //                     }
+    //                 ],
+    //                 "secondary_text": "Railway Station Area, Varachha, Surat, Gujarat, India"
+    //             },
+    //             "terms": [
+    //                 {
+    //                     "offset": 0,
+    //                     "value": "Surat Railway Station"
+    //                 },
+    //                 {
+    //                     "offset": 23,
+    //                     "value": "Railway Station Area"
+    //                 },
+    //                 {
+    //                     "offset": 45,
+    //                     "value": "Varachha"
+    //                 },
+    //                 {
+    //                     "offset": 55,
+    //                     "value": "Surat"
+    //                 },
+    //                 {
+    //                     "offset": 62,
+    //                     "value": "Gujarat"
+    //                 },
+    //                 {
+    //                     "offset": 71,
+    //                     "value": "India"
+    //                 }
+    //             ],
+    //             "types": [
+    //                 "lodging",
+    //                 "point_of_interest",
+    //                 "establishment"
+    //             ]
+    //         },
+    //     })
+    //     // setWaypoints([
+    //     //     {
+    //     //         place_id: crypto.randomUUID(),
+    //     //         location: { description: "Surat, Gujarat, India" },
+    //     //         price: 1500
+    //     //     },
+    //     // ])
+    //     setTotalPrice(5000);
+    //     setDepartureDatetime(new Date(Date.now() + (5 * 60 * 60 * 1000)))
+    //     setTotalEmptySeats(3)
+    // }
 
     // #################################################### USEEFFECTS ####################################################
 
@@ -508,7 +508,7 @@ function RideForm({ isNew = false }) {
                             <Box component={"span"} color={"secondary.main"}> a </Box>
                             Ride
                         </Typography>
-                        <Button onClick={fillSampleData} variant="outlined">Fill Sample Data</Button>
+                        {/* <Button onClick={fillSampleData} variant="outlined">Fill Sample Data</Button> */}
                         <Box width={'100%'} display={'flex'} gap={3} flexWrap={{ xs: 'wrap', sm: 'nowrap' }}>
                             <PlaceAutocomplete
                                 label='Pickup'

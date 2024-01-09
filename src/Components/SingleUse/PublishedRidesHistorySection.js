@@ -12,7 +12,7 @@ function PublishedRidesHistorySection() {
     const { loading, getRidesHistory } = useRideApi();
     const [publishedRides, setPublishedRides] = useState([]);
     const [rideWaypoints, setRideWaypoints] = useState([]);
-    
+
     useEffect(() => {
         getRidesHistory(API_RIDES_PUBLISHED).then(ridesHistory => {
             setPublishedRides(ridesHistory);
@@ -60,13 +60,8 @@ function PublishedRidesHistorySection() {
                                 <AvatarGroup max={3}>
                                     {ride.passengers
                                         .filter(p => PASSENGER_FILTER_STATUS.includes(p.status))
-                                        .map((passenger, i) => <Avatar key={i}>
-                                            {
-                                                (passenger.profilePicture && <img src={passenger.profilePicture} alt="" />)
-                                                ||
-                                                passenger.firstName?.[0]
-                                                || <EmojiPeople />
-                                            }
+                                        .map((passenger, i) => <Avatar key={i} src={passenger.profilePicture}>
+                                            {passenger.firstName?.[0]}
                                         </Avatar>)
                                     }
                                 </AvatarGroup>

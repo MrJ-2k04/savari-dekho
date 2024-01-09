@@ -324,8 +324,8 @@ function SearchResultsForm() {
                                                                 primaryText: result.departure?.primaryText || result.from.primaryText,
                                                                 secondaryText: result.departure?.secondaryText || result.from.secondaryText,
                                                                 distance: result.departure?.distance,
-                                                                date: format(new Date(result.departureDatetime),"MMM dd"),
-                                                                time: format(new Date(result.departureDatetime),"hh:mm a"),
+                                                                date: format(new Date(result.departureDatetime), "MMM dd"),
+                                                                time: format(new Date(result.departureDatetime), "hh:mm a"),
                                                                 // ...result.from,
                                                                 // primaryText: result.from,
                                                                 // time: result.fromTime,
@@ -351,8 +351,7 @@ function SearchResultsForm() {
                                             </CardContent>
                                             <CardActions>
                                                 <Stack direction={'row'} spacing={2} alignItems={'center'} width={'100%'} px={2} pb={1}>
-                                                    <Avatar>
-                                                        <img src={result.publisher.profilePicture} alt="Publisher Profile" />
+                                                    <Avatar src={result.publisher.profilePicture} alt="Publisher Profile">
                                                     </Avatar>
                                                     <Typography variant="subtitle1">{result.publisher.name}</Typography>
                                                     <Tooltip title={`Max ${result.availableSeats} seats available`}>

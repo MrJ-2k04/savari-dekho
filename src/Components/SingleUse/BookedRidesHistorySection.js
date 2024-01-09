@@ -152,8 +152,7 @@ function BookedRidesHistorySection() {
                         </CardContent>
                         <CardActions>
                             <Stack direction={'row'} spacing={2} alignItems={'center'} width={'100%'} px={2} pb={1}>
-                                <Avatar>
-                                    <img src={ride.publisher.profilePicture} alt="Publisher Profile" />
+                                <Avatar src={ride.publisher.profilePicture} alt="Publisher Profile">
                                 </Avatar>
                                 <Typography variant="subtitle1">{`${ride.publisher.firstName} ${ride.publisher.lastName}`}</Typography>
                                 <Tooltip title={`${ride.occupiedSeats} ${ride.occupiedSeats > 1 ? "seats" : "seat"} occupied`}>

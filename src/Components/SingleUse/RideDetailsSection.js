@@ -5,9 +5,10 @@ import { Avatar, Box, Button, Container, Divider, Grid, IconButton, LinearProgre
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";
-import { PASSENGER_STATUS, PASSENGER_STATUS_ICONS, PREFERENCES, RIDE_STATUS, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, STATUS_DESCRIPTION_FOR_DRIVER, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
+import { PASSENGER_STATUS, PASSENGER_STATUS_ICONS, PREFERENCES, RIDE_STATUS, ROUTE_LOGIN, ROUTE_RIDES, ROUTE_RIDE_EDIT, ROUTE_USER_DETAILS, ROUTE_WALLET, STATUS_DESCRIPTION_FOR_DRIVER, STATUS_DESCRIPTION_FOR_PASSENGER } from "Store/constants";
 import { selectUser } from "Store/selectors";
 import { calculateTotalDistance, capitalizeWords, formatDateForRide, haversineDistance, showConfirmationDialog, showError, showInfo, showOtpDialog, showSuccess } from "Utils";
+import { isToday } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -108,7 +109,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         if (!user) {
             nav(ROUTE_LOGIN, { state: { redirectUrl: `${window.location.pathname}${window.location.search}` } });
         }
-        console.log(ride);
+
         const payload = {
             occupiedSeats: requestedSeats,
             amount: Math.round(requestedSeats * ride.pricePerSeat),
@@ -159,7 +160,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const handleRideConfirm = async () => {
         const { isConfirmed } = await showConfirmationDialog({
             title: "Confirm Ride?",
-            message: `Agreeing will deduct ₹X from your wallet to confirm the ride booking`,
+            message: `Agreeing will deduct ₹${currentPassenger.amount} from your wallet to confirm the ride booking`,
             confirmBtnText: "Make Payment",
             cancelBtnText: "Go Back",
         });
@@ -173,7 +174,18 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                 return oldRide;
             })
             showSuccess({ message: msg });
-        }).catch(err => showError({ message: err.message }));
+        }).catch(err => window.Swal.fire({
+            title: "Error",
+            text: err.message,
+            icon: 'error',
+            customClass: {
+                container: 'swal-container',
+            },
+            showDenyButton: true,
+            denyButtonText: "Go to Wallet Page",
+            denyButtonColor: "#6E7881",
+            preDeny: () => setTimeout(() => nav(ROUTE_WALLET), 500),
+        }));
     }
     const handleRideBookingCancel = async () => {
         const { isConfirmed } = await showConfirmationDialog({
@@ -287,9 +299,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             showSuccess({ message: "Passenger rejected successfully." });
         }).catch(err => showError({ message: err.message }));
     }
-    const openOtpInputModal = () => {
-
-    };
     const handleVerifyOTP = (passengerId, otp) => {
         startPassengerRide(ride?._id, passengerId, otp).then((msg) => {
             showSuccess({ message: msg });
@@ -304,7 +313,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             window.Swal.showValidationMessage(err.message);
         });
     };
-
     const handleResendOtp = async (passengerId) => {
         try {
             await sendOtpToPassenger(ride?._id, passengerId);
@@ -313,7 +321,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
             window.Swal.showValidationMessage(error.message);
         }
     }
-
     const handleStartPassengerRide = async (passengerId) => {
         const { isConfirmed } = await showConfirmationDialog({
             message: "You will have to enter the OTP that is sent to the passenger",
@@ -322,7 +329,6 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
         });
         if (!isConfirmed) return;
 
-        openOtpInputModal();
         try {
             setOtpPassenger(passengerId);
             await sendOtpToPassenger(ride?._id, passengerId);
@@ -547,10 +553,10 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                             <ListItemButton
                                 LinkComponent={Link}
                                 to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
+                                target="_blank"
                                 sx={{ borderRadius: '16px', my: 1 }}>
                                 <ListItemIcon>
-                                    <Avatar>
-                                        <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={ride.publisher.profilePicture} alt="Driver avatar" />
+                                    <Avatar src={ride.publisher.profilePicture} alt="Driver avatar">
                                     </Avatar>
                                     {/* <History  /> */}
                                 </ListItemIcon>
@@ -575,6 +581,12 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                     <KeyboardArrowRight />
                                 </ListItemIcon>
                             </ListItemButton>
+                            <ListItem>
+                                <Box borderRadius={'50%'} bgcolor={ride.vehicle.color.value} height={'19px'} width={'19px'} mx={2} />
+                                <ListItemText secondary={ride.vehicle.brand}>
+                                    {ride.vehicle.model}
+                                </ListItemText>
+                            </ListItem>
                         </Box>
 
                         {ride.preferences && ride.preferences.length > 0 && <>
@@ -606,8 +618,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                 sx={{ borderRadius: '16px', my: 1, flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
                                                 <ListItemIcon>
                                                     <IconButton LinkComponent={Link} to={`${ROUTE_USER_DETAILS.replace(":userId", currentPassenger.passengerId)}`} target="_blank">
-                                                        <Avatar sx={{ height: '72px', width: '72px' }}>
-                                                            <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={currentPassenger.profilePicture} alt="My avatar" />
+                                                        <Avatar sx={{ height: '72px', width: '72px' }} src={currentPassenger.profilePicture} alt="My avatar" >
                                                         </Avatar>
                                                     </IconButton>
                                                     {/* <History  /> */}
@@ -697,8 +708,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                         to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
                                                         sx={{ borderRadius: '16px', my: 1 }}>
                                                         <ListItemIcon>
-                                                            <Avatar>
-                                                                <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
+                                                            <Avatar src={passenger.profilePicture} alt="Driver avatar">
                                                             </Avatar>
                                                             {/* <History  /> */}
                                                         </ListItemIcon>
@@ -743,8 +753,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                     sx={{ borderRadius: '16px', my: 1, flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2 }}>
                                                     <ListItemIcon>
                                                         <IconButton LinkComponent={Link} to={`${ROUTE_USER_DETAILS.replace(":userId", passenger.passengerId)}`} target="_blank">
-                                                            <Avatar sx={{ height: '72px', width: '72px' }}>
-                                                                <Box component={'img'} sx={{ WebkitTextStrokeWidth: '1px' }} src={passenger.profilePicture} alt="Driver avatar" />
+                                                            <Avatar sx={{ height: '72px', width: '72px' }} src={passenger.profilePicture} alt="Driver avatar">
                                                             </Avatar>
                                                         </IconButton>
                                                         {/* <History  /> */}
@@ -859,7 +868,9 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                             sx={{ borderRadius: '24px', px: 4, py: 1.5, fontSize: '16px !important' }}
                                             color="success"
                                             variant="contained"
-                                            endIcon={<PlayCircleOutline />}>
+                                            endIcon={<PlayCircleOutline />}
+                                            disabled={!isToday(new Date(ride.departureDatetime))}
+                                        >
                                             Start Ride
                                         </Button>
                                         <Button
