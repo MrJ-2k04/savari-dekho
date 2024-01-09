@@ -1,4 +1,4 @@
-import { AirlineSeatReclineExtra, EmojiPeople } from "@mui/icons-material";
+import { AirlineSeatReclineExtra } from "@mui/icons-material";
 import { Avatar, AvatarGroup, Box, Card, CardActionArea, CardActions, CardContent, LinearProgress, Stack, Tooltip, Typography } from "@mui/material";
 import RouteList from "Components/Common/RouteList";
 import useRideApi from "Components/Hooks/useRideApi";

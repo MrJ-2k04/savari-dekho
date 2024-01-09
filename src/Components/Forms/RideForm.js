@@ -8,9 +8,9 @@ import useRideApi from "Components/Hooks/useRideApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
 import RidePublishMapView from "Components/MapItems/RidePublishMapView";
-import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, MIN_DELAY_FOR_BOOKING, PREFERENCES, ROUTE_HOME, ROUTE_RIDES, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, MIN_DELAY_FOR_BOOKING, PREFERENCES, PRICE_SUGGESTIONS, ROUTE_HOME, ROUTE_RIDES, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { selectUser } from "Store/selectors";
-import { formatPlaceObj, isEmptyString, isFalsy, isNumeric, showError, showSuccess, unformatPlaceObj } from "Utils";
+import { calculatePriceRange, formatPlaceObj, getPriceFromDistance, isEmptyString, isFalsy, isNumeric, showError, showSuccess, unformatPlaceObj } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -33,6 +33,7 @@ const StyledBadge = styled(Badge)(({ isvisible }) => ({
     },
 }));
 
+const DEFAULT_PRICE_HELPER_TEXT = { color: 'text.secondary', text: "Please enter pickup and dropoff locations first" };
 
 function RideForm({ isNew = false }) {
 
@@ -47,6 +48,12 @@ function RideForm({ isNew = false }) {
     const nav = useNavigate();
     const [isMapVisible, setIsMapVisible] = useState(false);
     const [showNoti, setShowNoti] = useState(false);
+    const [priceRange, setPriceRange] = useState(null);
+    const [priceHelperText, setPriceHelperText] = useState(DEFAULT_PRICE_HELPER_TEXT);
+    // const range = [
+    //     7, 8.2, 9.4, 10.6, 11.8, 13
+    //     x-30%, x-18%, x-6%, x+6%, x+18%, x+30%
+    // ]
 
     // Ride States
     const [locations, setLocations] = useState({});
@@ -290,6 +297,14 @@ function RideForm({ isNew = false }) {
             if (isFalsy(totalPrice)) {
                 setJourneyPriceError('Please enter a valid journey price');
                 isValid = false;
+            } else if (totalPrice < priceRange[0] || totalPrice > priceRange[5]) {
+                if (totalPrice < priceRange[0]) {
+                    setPriceHelperText({ text: `Price too low. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+                }
+                else if (totalPrice > priceRange[5]) {
+                    setPriceHelperText({ text: `Price too high. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+                }
+                isValid = false;
             }
             if (!departureDatetime || new Date(departureDatetime).getTime() < minDateTime.getTime()) {
                 setDatetimeError('Please enter a valid departure datetime');
@@ -494,9 +509,47 @@ function RideForm({ isNew = false }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // useEffect(() => {
-    //     console.log(mapState);
-    // }, [mapState]);
+    useEffect(() => {
+        if (!mapState) {
+            setPriceRange(null);
+            setPriceHelperText(DEFAULT_PRICE_HELPER_TEXT);
+            return;
+        }
+
+        const distanceInMeters = mapState.legs.reduce((distance, leg) => distance + leg.distance.value, 0);
+        const pricePerKm = getPriceFromDistance(distanceInMeters / 1000);
+        const priceAnchor = pricePerKm * distanceInMeters / 1000;
+
+        const newPriceRange = calculatePriceRange(priceAnchor);
+        setPriceRange(newPriceRange);
+        setPriceHelperText({ text: `Enter between ${newPriceRange[0]} to ${newPriceRange[5]}` });
+    }, [mapState]);
+
+    useEffect(() => {
+        if (!priceRange || !totalPrice) return;
+
+        if (totalPrice < priceRange[0]) {
+            setPriceHelperText({ text: `Price too low. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+        }
+        else if (totalPrice > priceRange[5]) {
+            setPriceHelperText({ text: `Price too high. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+        } else {
+            let i = 0;
+            while (i < priceRange.length - 2 && !(totalPrice >= priceRange[i] && totalPrice < priceRange[i + 1])) {
+                i++;
+            }
+
+            if (i !== 2) {
+                const suggestions = {
+                    color: PRICE_SUGGESTIONS[i].color,
+                    text: `${PRICE_SUGGESTIONS[i].text}. Enter between ${priceRange[2]} to ${priceRange[3]}`
+                };
+                setPriceHelperText(suggestions);
+            } else {
+                setPriceHelperText({ ...PRICE_SUGGESTIONS[i] });
+            }
+        }
+    }, [totalPrice, priceRange]);
 
     return (<Box position={'absolute'} height={'100%'} width={'100%'}>
         <MapsApiLoader>
@@ -601,8 +654,10 @@ function RideForm({ isNew = false }) {
                         <TextField
                             label='Journey Price'
                             fullWidth
-                            helperText={journeyPriceError}
+                            helperText={journeyPriceError ||
+                                <Typography variant="body2" color={priceHelperText?.color}> {priceHelperText?.text}</Typography>}
                             error={!isEmptyString(journeyPriceError)}
+                            disabled={!Boolean(priceRange)}
                             value={totalPrice}
                             onChange={e => {
                                 if (isEmptyString(e.target.value)) {
@@ -686,7 +741,7 @@ function RideForm({ isNew = false }) {
                         />
 
                         <Box>
-                            <FormControl fullWidth required>
+                            <FormControl fullWidth>
                                 <InputLabel id="preferences">Preferences</InputLabel>
                                 <Select
                                     labelId="preferences"

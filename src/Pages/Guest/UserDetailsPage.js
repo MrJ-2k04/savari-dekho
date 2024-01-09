@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { CloudUpload, Hail, LocalTaxi, Verified } from "@mui/icons-material";
+import { Hail, LocalTaxi, Verified } from "@mui/icons-material";
 import { Avatar, Box, Container, Divider, LinearProgress, List, ListItem, ListItemIcon, ListItemText, Stack, Typography } from "@mui/material";
 import useApi from "Components/Hooks/useApi";
 import UserLayout from "Layout/User";
@@ -26,6 +26,7 @@ function UserDetailsPage() {
         getUserById(userId)
             .then(user => setUser(user))
             .catch(err => setError(err.message))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (<UserLayout>

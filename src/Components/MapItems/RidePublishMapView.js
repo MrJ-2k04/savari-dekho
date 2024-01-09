@@ -229,7 +229,7 @@ function RidePublishMapView({ from, to, waypoints, onChange: updateParentState }
     }, []);
 
     useEffect(() => {
-        if (!directionsResponse) return;
+        if (!directionsResponse) return updateParentState(null);
         const route = directionsResponse.routes[activeRouteIndex]
         updateParentState(route);
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -437,3 +437,11 @@ export const ID_RIDE_FROM = "from";
 export const ID_RIDE_TO = "to";
 export const ID_WAYP_LOCATION = "location";
 export const ID_WAYP_PRICE = "price";
+
+export const PRICE_SUGGESTIONS = [
+    { text: "Your price is very low, you can increase it", color: 'error' },
+    { text: "Your price is a bit low, you can slightly increase it", color: 'warning.main' },
+    { text: "Perfect Price, you will get passengers in no time", color: 'success.main' },
+    { text: "Your price is a bit high, you should slightly decrease it", color: 'warning.main' },
+    { text: "Your price is very high, you should decrease it", color: 'error' },
+]

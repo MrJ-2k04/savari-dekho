@@ -66,33 +66,46 @@ export function haversineDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-// export function getPriceFromDistance(distanceInKm) {
-//     // Define the range of distances and corresponding prices
-//     const minDistance = 100;
-//     const maxDistance = 4000;
-//     const minPrice = 2;
-//     const maxPrice = 1.7;
+export function getPriceFromDistance(distanceInKm) {
+    // Define the range of distances and corresponding prices
+    const minDistance = 100;
+    const maxDistance = 4000;
+    const minPrice = 2;
+    const maxPrice = 1.7;
 
-//     // Ensure the distance is within the specified range
-//     const clampedDistance = Math.min(Math.max(distanceInKm, minDistance), maxDistance);
+    // Ensure the distance is within the specified range
+    const clampedDistance = Math.min(Math.max(distanceInKm, minDistance), maxDistance);
 
-//     // Calculate the interpolation factor (a value between 0 and 1)
-//     const t = (clampedDistance - minDistance) / (maxDistance - minDistance);
+    // Calculate the interpolation factor (a value between 0 and 1)
+    const t = (clampedDistance - minDistance) / (maxDistance - minDistance);
 
-//     // Use linear interpolation formula to calculate the price
-//     const interpolatedPrice = minPrice + t * (maxPrice - minPrice);
+    // Use linear interpolation formula to calculate the price
+    const interpolatedPrice = minPrice + t * (maxPrice - minPrice);
 
-//     // Round the result to a desired precision
-//     const roundedPrice = parseFloat(interpolatedPrice.toFixed(3));
+    // Round the result to a desired precision
+    const roundedPrice = parseFloat(interpolatedPrice.toFixed(3));
 
-//     return roundedPrice;
-// }
+    return roundedPrice;
+}
 
 export function calculateTotalDistance(lineStringCoords = []) {
     return lineStringCoords.reduce((distance, [lng, lat], index) => {
         if (index === 0) return distance;
         return distance + haversineDistance(lineStringCoords[index - 1][1], lineStringCoords[index - 1][0], lat, lng);
     }, 0);
+}
+
+export function calculatePriceRange(priceAnchor) {
+    const percentages = [-30, -18, -6, 6, 18, 30];
+
+    // Calculate prices based on percentages
+    const priceRanges = percentages.map(percent => {
+        const adjustedPrice = priceAnchor + (priceAnchor * percent) / 100;
+        const roundedOffPrice = Math.ceil(adjustedPrice / 10) * 10;
+        return roundedOffPrice;
+    });
+
+    return priceRanges;
 }
 
 // export const getPlaceFromCoords = ([lng, lat]) => {
