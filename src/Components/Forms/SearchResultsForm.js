@@ -47,7 +47,7 @@ function SearchResultsForm() {
     // ############################################# States #############################################
 
     const [creatingRideAlert, setCreatingRideAlert] = useState(false);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    // const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([
         // {
         //     id: "sdfjfdgh33w4r",
@@ -190,8 +190,9 @@ function SearchResultsForm() {
                 date={searchParams.get("date")}
                 seats={params.seats}
             />
+
             <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} width={'100%'} gap={4}>
-                <MHidden width="mdDown">
+                {/* <MHidden width="mdDown">
 
                     <Stack width={'100%'} maxWidth={'400px'} spacing={2}>
                         <Box display={'flex'} alignItems={'center'} pl={3}>
@@ -263,19 +264,19 @@ function SearchResultsForm() {
                     </Stack>
                     <Divider orientation="vertical" flexItem />
 
-                </MHidden>
+                </MHidden>*/}
                 <MHidden width="mdUp">
                     <Box display={'flex'} alignItems={'center'} px={1}>
                         {!loading && <Typography variant="h4" color={'text.secondary'}>{searchResults.length} rides available</Typography>}
-                        <Button
+                        {/* <Button
                             onClick={() => setIsFilterOpen(true)}
                             variant="contained"
                             sx={{ width: 'fit-content', ml: 'auto' }}
                             endIcon={<FilterAlt />}
-                        >Apply Filters</Button>
+                        >Apply Filters</Button> */}
                     </Box>
-                </MHidden>
-                <Box width={'100%'}>
+                </MHidden> 
+                <Box width={'100%'} maxWidth={'700px'} mx={'auto'}>
                     {loading && !creatingRideAlert ? <>
                         <LinearProgress />
                     </>
@@ -370,7 +371,7 @@ function SearchResultsForm() {
                 </Box>
             </Box>
         </Stack>
-        <Modal open={isFilterOpen} onClose={() => setIsFilterOpen(false)} closeAfterTransition>
+        {/* <Modal open={isFilterOpen} onClose={() => setIsFilterOpen(false)} closeAfterTransition>
             <Slide direction="up" in={isFilterOpen}>
                 <Card sx={{ height: '85vh', position: 'absolute', bottom: 0, right: 0, left: 0, borderBottomRightRadius: 0, borderBottomLeftRadius: 0 }}>
                     <CardHeader
@@ -383,7 +384,7 @@ function SearchResultsForm() {
                     </CardContent>
                 </Card>
             </Slide>
-        </Modal>
+        </Modal> */}
     </>);
 }
 
