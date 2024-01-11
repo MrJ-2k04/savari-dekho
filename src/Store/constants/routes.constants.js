@@ -123,6 +123,7 @@ export const API_PAYMENT_CREATE = `${API_PAYMENT}/checkout`;
 export const API_PAYMENT_VALIDATE = `${API_PAYMENT}/verify`;
 export const API_PAYMENT_CANCEL = `${API_PAYMENT}/cancel`; // PUT
 export const API_TRANSACTION = `${API_PAYMENT}/transaction`;  // GET, POST
+export const API_WITHDRAW = `${API_PAYMENT}/withdraw`;
 
 // Bank Endpoint
 export const API_BANK = `${API_ENDPOINT}/bank`;  // GET, POST, PUT, DELETE

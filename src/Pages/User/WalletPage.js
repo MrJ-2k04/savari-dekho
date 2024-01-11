@@ -3,13 +3,13 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardA
 import { ReactComponent as Illustration } from "Assets/SVGs/Faq.svg";
 import EditAmountModal from "Components/Common/EditAmountModal";
 import WalletHistoryModal from "Components/Common/WalletHistoryModal";
+import useApi from "Components/Hooks/useApi";
 import UserLayout from "Layout/User";
 import { WALLET_FAQS } from "Store/constants";
 import { selectIsDarkMode, selectUser } from "Store/selectors";
 import { showError, showSuccess } from "Utils";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-
 
 const WalletCard = styled(Card)(({ theme }) => {
     const isDark = useSelector(selectIsDarkMode);
@@ -21,27 +21,94 @@ const WalletCard = styled(Card)(({ theme }) => {
 
 
 function WalletPage() {
+    const user = useSelector(selectUser);
+    const { requestPayment, validatePayment, cancelPayment, requestWithdrawal } = useApi();
+
+    // ################################################ States ################################################
+
     const [showAddFunds, setShowAddFunds] = useState(false);
+    const [showWithdrawFunds, setShowWithdrawFunds] = useState(false);
     const [showHisory, setShowHisory] = useState(false);
     const [activeFaq, setActiveFaq] = useState(-1);
-    const user = useSelector(selectUser);
 
-    const handleAddFundsOpen = e => setShowAddFunds(true);
-    const handleAddFundsClose = e => setShowAddFunds(false);
-
+    const showAddFundsModal = e => setShowAddFunds(true);
+    const hideAddFundsModal = e => setShowAddFunds(false);
+    const showWithdrawFundsModal = e => setShowWithdrawFunds(true);
+    const hideWithdrawFundsModal = e => setShowWithdrawFunds(false);
     const handleShowHistory = e => setShowHisory(true);
     const handleHideHistory = e => setShowHisory(false);
 
-    const handleAddFundsSuccess = (amount) => {
-        console.log(amount);
-        handleAddFundsClose();
-        showSuccess({ message: 'Funds Added Successfully' })
-    }
+    // ########################################## Add Funds Handler ##########################################
 
-    const handleAddFundsFailure = (e) => {
-        handleAddFundsClose();
+    const handleAddFundsSuccess = (resp) => {
+        // Send this response to the backend for verification
+        const credentials = {
+            razorpayPaymentId: resp.razorpay_payment_id,
+            razorpayOrderId: resp.razorpay_order_id,
+            razorpaySignature: resp.razorpay_signature,
+        }
+        // console.log("Payment success", resp);
+        validatePayment(credentials).then(msg => {
+            hideAddFundsModal();
+            showSuccess({ message: 'Funds Added Successfully' })
+        }).catch(err => {
+            console.error(err.message);
+            handleAddFundsFailure(err.message);
+        });
+    }
+    const handleAddFundsProceed = (amount) => {
+        // Request through Razorpay API
+        const description = "Add Funds to Wallet";
+        requestPayment(amount, description).then(data => {
+            const { order, key } = data;
+            const options = {
+                key,
+                amount: order.amount,
+                order_id: order.id,
+                name: "Savari Dekho Ltd.",
+                description,
+                image: 'https://savari-dekho.pages.dev/static/media/logo.6e86b5270fbf4e6d5ed6f431ace6eb54.svg',
+                prefill: {
+                    name: `${user.firstName} ${user.lastName}`,
+                    email: user.email,
+                    contact: user.mobileNumber.split("-")[1],
+                },
+                notes: {
+                    userId: user._id
+                },
+                handler: handleAddFundsSuccess,
+                "modal": {
+                    "ondismiss": () => {
+                        cancelPayment(order.id).then(msg => handleAddFundsFailure(msg)).catch(err => handleAddFundsFailure());
+                    },
+                },
+                theme: {
+                    color: '#27374D',
+                }
+            };
+            const razorpay = new window.Razorpay(options);
+
+            razorpay.open();
+        }).catch(err => {
+            console.error(err.message);
+            handleAddFundsFailure(err.message);
+        });
+    }
+    const handleAddFundsFailure = () => {
+        hideAddFundsModal();
         showError({ message: 'Failed to add funds!' });
     }
+
+    // ########################################## Add Funds Handler ##########################################
+
+    const handleWithdrawFunds = ()=>{
+        // Step 1 - Obtain Bank ID
+        // Step 2 - Obtain amount ✅
+    }
+    const handleWithdrawFundsProceed = (amount)=>{
+        
+    }
+
 
     return (
         <UserLayout>
@@ -59,8 +126,8 @@ function WalletPage() {
                         </Box>
                     </CardContent>
                     <CardActions sx={{ p: 2 }}>
-                        <Button sx={{ ml: "auto" }} variant="outlined">Withdraw Funds</Button>
-                        <Button variant="contained" onClick={handleAddFundsOpen}>Add Funds</Button>
+                        <Button sx={{ ml: "auto" }} onClick={showWithdrawFundsModal} variant="outlined">Withdraw Funds</Button>
+                        <Button variant="contained" onClick={showAddFundsModal}>Add Funds</Button>
                     </CardActions>
                 </WalletCard>
 
@@ -102,11 +169,19 @@ function WalletPage() {
             />}
 
             {showAddFunds && <EditAmountModal
-                onClose={handleAddFundsClose}
-                onSuccess={handleAddFundsSuccess}
-                onCancel={handleAddFundsFailure}
+                onClose={hideAddFundsModal}
+                onProceedClick={handleAddFundsProceed}
+                onCancelClick={hideAddFundsModal}
                 open={showAddFunds}
                 title="Add Funds"
+            />}
+
+            {showWithdrawFunds && <EditAmountModal
+                onClose={hideWithdrawFundsModal}
+                onProceedClick={handleWithdrawFundsProceed}
+                onCancelClick={hideWithdrawFundsModal}
+                open={showWithdrawFunds}
+                title="Withdraw Funds"
             />}
         </UserLayout>
     );

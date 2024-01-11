@@ -1,5 +1,5 @@
 
-import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_BY_ID, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, RES } from "Store/constants";
+import { API_ADMIN_DRIVER_REQUESTS, API_ADMIN_LIST_USERS, API_ADMIN_VEHICLE_REQUESTS, API_BANK, API_DRIVER, API_FORGOT_PASSWORD, API_GENERATE_OTP, API_LOGIN, API_PAYMENT_CANCEL, API_PAYMENT_CREATE, API_PAYMENT_VALIDATE, API_REFRESH_TOKEN, API_REGISTER, API_RESET_PASSWORD, API_SEARCH_HISTORY, API_TRANSACTION, API_USER_BY_ID, API_USER_ME, API_USER_UPDATE, API_VALIDATE_OTP, API_VEHICLES, API_WITHDRAW, RES } from "Store/constants";
 import { selectAccessToken, selectRefreshToken } from "Store/selectors";
 import { authActions } from "Store/slices";
 import { jsonToFormData, showError, showSuccess } from "Utils";
@@ -146,6 +146,7 @@ const useApi = () => {
     throw new Error(ack.message || "Cannot fetch transactions");
   }
 
+  // Razorpay Stuff Start
   const requestPayment = async (amount, description = "Unknown") => {
     const ack = await apiRequestWithReauth(API_PAYMENT_CREATE, jsonToFormData({ amount, description }));
     if (ack.type === 'success') {
@@ -172,6 +173,16 @@ const useApi = () => {
     const ack = await apiRequestWithReauth(API_PAYMENT_CANCEL, jsonToFormData({ orderId }), 'PUT');
     return ack.message;
   }
+
+  const requestWithdrawal = async (amount, bankId) => {
+    const ack = await apiRequestWithReauth(API_WITHDRAW, jsonToFormData({ amount, bankId }));
+    if (ack.type === RES.SUCCESS) {
+      return ack.message;
+    }
+    throw new Error(ack.message || "Failed to create withdrawal request. Please try again later.");
+  }
+
+  // Razorpay Stuff End
 
   const createBank = async (bankDetails) => {
     const ack = await apiRequestWithReauth(API_BANK, jsonToFormData(bankDetails), "POST");
@@ -420,6 +431,7 @@ const useApi = () => {
     requestPayment,
     validatePayment,
     cancelPayment,
+    requestWithdrawal,
 
     createBank,
     getBanks,
