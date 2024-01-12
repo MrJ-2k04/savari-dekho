@@ -1,15 +1,17 @@
 import { ExpandMore, History } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActions, CardContent, Container, Grid, IconButton, Stack, Typography, styled } from "@mui/material";
 import { ReactComponent as Illustration } from "Assets/SVGs/Faq.svg";
 import EditAmountModal from "Components/Common/EditAmountModal";
 import WalletHistoryModal from "Components/Common/WalletHistoryModal";
 import useApi from "Components/Hooks/useApi";
 import UserLayout from "Layout/User";
-import { WALLET_FAQS } from "Store/constants";
+import { ROUTE_BANK_ADD, ROUTE_WALLET, WALLET_FAQS } from "Store/constants";
 import { selectIsDarkMode, selectUser } from "Store/selectors";
-import { showError, showSuccess } from "Utils";
+import { showError, showSelectDialog, showSuccess, showWarning } from "Utils";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const WalletCard = styled(Card)(({ theme }) => {
     const isDark = useSelector(selectIsDarkMode);
@@ -22,7 +24,8 @@ const WalletCard = styled(Card)(({ theme }) => {
 
 function WalletPage() {
     const user = useSelector(selectUser);
-    const { requestPayment, validatePayment, cancelPayment, requestWithdrawal } = useApi();
+    const { requestPayment, validatePayment, cancelPayment, requestWithdrawal, getBanks, loading, syncUser } = useApi();
+    const nav = useNavigate();
 
     // ################################################ States ################################################
 
@@ -30,13 +33,14 @@ function WalletPage() {
     const [showWithdrawFunds, setShowWithdrawFunds] = useState(false);
     const [showHisory, setShowHisory] = useState(false);
     const [activeFaq, setActiveFaq] = useState(-1);
+    const [bank, setBank] = useState(null);
 
-    const showAddFundsModal = e => setShowAddFunds(true);
-    const hideAddFundsModal = e => setShowAddFunds(false);
-    const showWithdrawFundsModal = e => setShowWithdrawFunds(true);
-    const hideWithdrawFundsModal = e => setShowWithdrawFunds(false);
-    const handleShowHistory = e => setShowHisory(true);
-    const handleHideHistory = e => setShowHisory(false);
+    const showAddFundsModal = () => setShowAddFunds(true);
+    const hideAddFundsModal = () => setShowAddFunds(false);
+    const showWithdrawFundsModal = () => setShowWithdrawFunds(true);
+    const hideWithdrawFundsModal = () => setShowWithdrawFunds(false);
+    const handleShowHistory = () => setShowHisory(true);
+    const handleHideHistory = () => setShowHisory(false);
 
     // ########################################## Add Funds Handler ##########################################
 
@@ -97,16 +101,63 @@ function WalletPage() {
     const handleAddFundsFailure = () => {
         hideAddFundsModal();
         showError({ message: 'Failed to add funds!' });
+        setBank(null);
     }
 
     // ########################################## Add Funds Handler ##########################################
 
-    const handleWithdrawFunds = ()=>{
-        // Step 1 - Obtain Bank ID
-        // Step 2 - Obtain amount ✅
+    // Step 1 - Obtain Bank ID
+    const handleWithdrawFunds = () => {
+        getBanks().then(banks => {
+            if (banks.length === 0) {
+                showWarning({
+                    message: "You don't have any bank account added. Please add a bank account to proceed.",
+                    otherOptions: {
+                        allowOutsideClick: false,
+                        showCloseButton: true,
+                        showConfirmButton: true,
+                        confirmButtonText: "Add bank",
+                        preConfirm: () => {
+                            nav(ROUTE_BANK_ADD, {
+                                state: {
+                                    redirectUrl: ROUTE_WALLET
+                                }
+                            });
+                        }
+                    }
+                })
+                return;
+            }
+            const bankOptions = banks.map(bank => `${bank.ifsc} - ${bank.accountNumber}`);
+            showSelectDialog({
+                title: "Select bank",
+                message: "What bank would you like us to transfer funds to?",
+                inputOptions: bankOptions,
+                inputPlaceholder: "Select a bank account",
+                confirmButtonText: "Proceed",
+            }).then(result => {
+                const bankIndex = parseInt(result.value);
+                if (!bankIndex) {
+                    console.log("Unknown Error occured");
+                    return "Unknown Error"
+                };
+                setBank(banks[bankIndex]);
+                setTimeout(() => {
+                    showWithdrawFundsModal();
+                }, 250);
+            })
+        }).catch(err => showError({ message: err.message }));
     }
-    const handleWithdrawFundsProceed = (amount)=>{
-        
+
+    // Step 2 - Obtain amount & request withdrawal
+    const handleWithdrawFundsProceed = (amount) => {
+        if (!bank?._id) return;
+        requestWithdrawal(amount, bank._id).then(msg => {
+            showSuccess({ message: msg });
+            setBank(null);
+            setShowWithdrawFunds(false);
+            syncUser();
+        }).catch(err => showError({ message: err.message }));
     }
 
 
@@ -126,7 +177,7 @@ function WalletPage() {
                         </Box>
                     </CardContent>
                     <CardActions sx={{ p: 2 }}>
-                        <Button sx={{ ml: "auto" }} onClick={showWithdrawFundsModal} variant="outlined">Withdraw Funds</Button>
+                        <LoadingButton loading={showWithdrawFunds && loading} sx={{ ml: "auto" }} onClick={handleWithdrawFunds} variant="outlined">Withdraw Funds</LoadingButton>
                         <Button variant="contained" onClick={showAddFundsModal}>Add Funds</Button>
                     </CardActions>
                 </WalletCard>
@@ -182,6 +233,8 @@ function WalletPage() {
                 onCancelClick={hideWithdrawFundsModal}
                 open={showWithdrawFunds}
                 title="Withdraw Funds"
+                maxLimit={user.balance}
+                loading={showWithdrawFunds && loading}
             />}
         </UserLayout>
     );

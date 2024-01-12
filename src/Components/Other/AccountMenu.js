@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import useApi from 'Components/Hooks/useApi';
-import { ROUTE_ADMIN_PROFILE, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RIDES, ROUTE_WALLET } from 'Store/constants';
+import { ROUTE_ADMIN_DASHBOARD, ROUTE_LOGIN, ROUTE_PROFILE_DASHBOARD, ROUTE_REGISTER, ROUTE_RIDES, ROUTE_WALLET } from 'Store/constants';
 import { selectIsAuthenticated, selectUser } from 'Store/selectors';
 import { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -79,7 +79,11 @@ export default function AccountMenu({ children }) {
         if (isAuthenticated) {
             if (user.isAdmin) {
                 const adminMenuItems = [
-                    { icon: AccountCircle, label: `${user.firstName} ${user.lastName}`, to: ROUTE_ADMIN_PROFILE, },
+                    {
+                        icon: AccountCircle, label: `${user.firstName} ${user.lastName}`,
+                        // to: ROUTE_ADMIN_PROFILE,
+                        to: ROUTE_ADMIN_DASHBOARD,
+                    },
                 ]
                 setMenuItems(adminMenuItems)
             } else {

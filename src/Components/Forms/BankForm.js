@@ -114,8 +114,10 @@ function BankForm({ viewMode = false }) {
         } else {
             // ADD New Bank using API
             createBank(payload).then(ack => {
-                if (!state) {
+                if (!state?.redirectUrl) {
                     nav(ROUTE_PROFILE_DASHBOARD);
+                } else {
+                    nav(state.redirectUrl)
                 }
             }).catch(err => showError({ message: err.message }));
         }

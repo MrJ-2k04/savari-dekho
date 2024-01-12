@@ -33,14 +33,15 @@ export function showInfo({ title = "Info", message = "" }) {
     });
 }
 
-export function showWarning({ title = "Warning", message = "" }) {
+export function showWarning({ title = "Warning", message = "", otherOptions }) {
     return window.Swal.fire({
         title,
         text: message,
         icon: 'warning',
         customClass: {
             container: 'swal-container',
-        }
+        },
+        ...otherOptions,
     });
 }
 
@@ -105,4 +106,26 @@ export function showOtpDialog({
         // focusConfirm: false,
         // allowOutsideClick: false,
     });
+}
+
+export function showSelectDialog({
+    title = "",
+    message = "Select from given options",
+    inputPlaceholder = "Select an option",
+    inputOptions = {},
+    confirmButtonText = "Select",
+}) {
+    return window.Swal.fire({
+        title,
+        message,
+        input: "select",
+        inputValidator: (value) => {
+            if (!value) return "Please select a bank!";
+        },
+        inputPlaceholder,
+        inputOptions,
+        confirmButtonText,
+        showCloseButton: true,
+        allowOutsideClick: false,
+    })
 }
