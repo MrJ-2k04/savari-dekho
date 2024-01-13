@@ -16,7 +16,9 @@ import { useNavigate } from "react-router-dom";
 const WalletCard = styled(Card)(({ theme }) => {
     const isDark = useSelector(selectIsDarkMode);
     return ({
-        background: isDark ? `linear-gradient(0deg, rgb(25 31 36), rgb(255 255 255 / 0%)),linear-gradient(315deg, rgb(38 45 52) 0%, rgb(55 62 70) 50%, rgb(38 45 52) 50%, rgb(38 45 52) 100%)`
+        background: isDark ?
+            `linear-gradient(0deg, rgb(28 30 31), rgb(255 255 255 / 0%)),linear-gradient(315deg, rgb(80 84 89) 0%, rgb(64 67 70) 50%, rgb(47 50 52) 50%, rgb(31 30 30) 100%)`
+            // `linear-gradient(0deg, rgb(25 31 36), rgb(255 255 255 / 0%)),linear-gradient(315deg, rgb(38 45 52) 0%, rgb(55 62 70) 50%, rgb(38 45 52) 50%, rgb(38 45 52) 100%)`
             : `linear-gradient(0deg, rgb(246, 246, 246), rgba(255, 255, 255, 0.5)), linear-gradient(315deg, rgb(255, 255, 255) 0%, rgb(203, 203, 203) 50%, rgb(238, 238, 238) 50%, rgb(246, 246, 246) 100%)`,
     })
 });
@@ -201,7 +203,8 @@ function WalletPage() {
                                 {WALLET_FAQS.map((faq, index) => (
                                     <Accordion expanded={activeFaq === index} key={index} onChange={(e, exp) => setActiveFaq(exp ? index : -1)}>
                                         <AccordionSummary expandIcon={<ExpandMore />}>
-                                            <Typography variant="subtitle1">{faq.question}</Typography>
+                                            <Typography variant="subtitle1" color={'secondary'} mr={1}>Q:</Typography>
+                                            <Typography variant="subtitle1" color={'primary'}>{faq.question}</Typography>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>{faq.answer}</Typography>

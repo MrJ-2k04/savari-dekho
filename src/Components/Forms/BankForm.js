@@ -3,7 +3,7 @@ import { LoadingButton } from "@mui/lab";
 import { Box, Button, CircularProgress, FormControl, FormHelperText, Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import useApi from "Components/Hooks/useApi";
 import { BANK_ACCOUNT_TYPES, ROUTE_PROFILE_DASHBOARD } from "Store/constants";
-import { capitalizeWords, isEmptyString, showError, showSuccess } from "Utils";
+import { capitalizeWords, isEmptyString, showConfirmationDialog, showError, showSuccess } from "Utils";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -59,7 +59,7 @@ function BankForm({ viewMode = false }) {
             .catch(err => showError({ message: err.message }));
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -106,12 +106,28 @@ function BankForm({ viewMode = false }) {
         };
 
         if (viewMode) {
+            const { isConfirmed } = await showConfirmationDialog({
+                title: 'Update Bank?',
+                icon: 'info',
+                message: 'Are you sure you want to update this bank account?',
+                confirmBtnText: 'Update',
+                cancelBtnText: 'Cancel',
+            })
+            if (!isConfirmed) return;
             updateBankById(bankId, payload)
                 .then(ack => {
                     showSuccess({ message: ack.message });
                     syncBankDetails();
                 }).catch(err => showError({ message: err.message }))
         } else {
+            const { isConfirmed } = await showConfirmationDialog({
+                title: 'Add Bank?',
+                icon: 'info',
+                message: 'Are you sure you want to add this bank account?',
+                confirmBtnText: 'Add',
+                cancelBtnText: 'Cancel',
+            })
+            if (!isConfirmed) return;
             // ADD New Bank using API
             createBank(payload).then(ack => {
                 if (!state?.redirectUrl) {
@@ -123,7 +139,15 @@ function BankForm({ viewMode = false }) {
         }
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            title: 'Delete Bank?',
+            icon: 'warning',
+            message: 'Are you sure you want to delete this bank account?',
+            confirmBtnText: 'Delete',
+            cancelBtnText: 'Cancel',
+        })
+        if (!isConfirmed) return;
         deleteBankById(bankId).then(async (ack) => {
             await showSuccess({ message: ack.message || "Bank Deleted Successfully!" })
             nav(-1);
@@ -204,7 +228,6 @@ function BankForm({ viewMode = false }) {
                             helperText={ifscError}
                         />
                     </Grid>
-                    {/* <Grid item xs={12} /> */}
                     <Grid item xs={12} md={6}>
                         <TextField
                             label="Account Number"
@@ -300,14 +323,14 @@ function BankForm({ viewMode = false }) {
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             rows={4}
-                            multiline
+                            // multiline
                             fullWidth
                         />
                     </Grid>
                 </Grid>
             </Box>
 
-            <Stack direction={'row'} spacing={3} rowGap={3} width={'100%'} flexWrap={'wrap'} justifyContent={'space-between'}>
+            <Stack direction={'row'} spacing={3} rowGap={3} width={'100%'} flexWrap={'wrap'} justifyContent={{ xs: 'space-between', md: 'end' }}>
 
                 {viewMode &&
                     <>
@@ -327,7 +350,7 @@ function BankForm({ viewMode = false }) {
                             color="secondary"
                             variant="outlined"
                             onClick={e => nav(ROUTE_PROFILE_DASHBOARD)}
-                            sx={{ ml: "0 !important" }}
+                            sx={{ ml: { xs: "0 !important", md: "24px !important" } }}
                         >
                             Go Back
                         </Button>

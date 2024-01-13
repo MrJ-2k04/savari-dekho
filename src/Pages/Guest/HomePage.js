@@ -348,7 +348,7 @@ function HomePage() {
                         <Grid item xs={12} md={6}>
                             <Stack height={'100%'} justifyContent={'center'} direction={'column'} maxWidth={'400px'} mx={'auto'} spacing={2}>
                                 <Typography variant="h3">Drive Responsibly, Earn Rewards!</Typography>
-                                <Typography>Attention, Drivers! A thrilling opportunity is here – unlock rewards for your responsible driving! Introducing the Carpool Bonus: Drive with us, complete 3 carpools in 3 months, and dive into a world of benefits. Explore eligibility conditions below to get started on your rewarding journey.</Typography>
+                                <Typography>Attention, Drivers! A thrilling opportunity is here – unlock rewards for your responsible driving! Get started on your rewarding journey by clicking below button</Typography>
                                 <Box />
                                 <Button
                                     LinkComponent={Link}
@@ -388,7 +388,7 @@ function HomePage() {
                                 <CardContent>
                                     <Stack spacing={3} width={'100%'}>
                                         <Box width={'100%'} display={'flex'} justifyContent={'center'}>
-                                            <Avatar sx={{ mx: 'auto', width: 76, height: 76 }}><img src={testi.image} alt="" /></Avatar>
+                                            <Avatar sx={{ mx: 'auto', width: 76, height: 76 }} src={testi.image} alt="" />
                                         </Box>
                                         <Typography color={'text.secondary'} sx={{ fontStyle: 'italic' }}>"{testi.content}"</Typography>
                                         <Typography color={'primary'} sx={{ fontWeight: 700 }}>{testi.name} - {testi.role}</Typography>

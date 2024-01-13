@@ -7,7 +7,7 @@ function VerifyVehiclePage({
     viewMode = false
 }) {
     return (<UserLayout>
-        <Container sx={{ my: 3 }}>
+        <Container sx={{ pb: 6, pt: {xs: 2, md: 0} }}>
             <VehicleForm viewMode={viewMode} />
         </Container>
     </UserLayout>);

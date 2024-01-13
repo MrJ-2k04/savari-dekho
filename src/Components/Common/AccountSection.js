@@ -18,19 +18,26 @@ function AccountSection() {
     const user = useSelector(selectUser);
 
     const [vehicles, setVehicles] = useState([]);
+    const [fetchingVehicles, setFetchingVehicles] = useState(false);
     const [banks, setBanks] = useState([]);
-    const { loading, getVehicles, getBanks } = useApi();
+    const [fetchingBanks, setFetchingBanks] = useState(false);
+    const { getVehicles, getBanks } = useApi();
 
     const fetchVehicles = () => {
+        setFetchingVehicles(true);
+
         getVehicles()
             .then(newVehicles => setVehicles(newVehicles))
-            .catch(err => showError({ message: err.message }));
+            .catch(err => showError({ message: err.message }))
+            .finally(() => setFetchingVehicles(false));
     }
 
     const fetchBanks = () => {
+        setFetchingBanks(true);
         getBanks()
             .then(banks => setBanks(banks))
-            .catch(err => showError({ message: err.message }));
+            .catch(err => showError({ message: err.message }))
+            .finally(() => setFetchingBanks(false));
     }
 
     useEffect(() => {
@@ -45,7 +52,7 @@ function AccountSection() {
 
                 <Card>
                     <CardHeader title={"Bank Accounts"} />
-                    {loading && <LinearProgress />}
+                    {fetchingBanks && <LinearProgress />}
                     <CardContent sx={{ pt: 1 }}>
                         <Box>
                             <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
@@ -82,7 +89,7 @@ function AccountSection() {
                 {user.riderVerificationStatus && <>
                     <Card>
                         <CardHeader title={'Vehicles'} />
-                        {loading && <LinearProgress />}
+                        {fetchingVehicles && <LinearProgress />}
                         <CardContent sx={{ pt: 1 }}>
                             <Box>
                                 <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
