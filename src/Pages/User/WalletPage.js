@@ -139,7 +139,7 @@ function WalletPage() {
                 confirmButtonText: "Proceed",
             }).then(result => {
                 const bankIndex = parseInt(result.value);
-                if (!bankIndex) {
+                if (isNaN(bankIndex)) {
                     console.log("Unknown Error occured");
                     return "Unknown Error"
                 };
