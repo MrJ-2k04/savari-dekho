@@ -1,11 +1,11 @@
 
 import { LocationOn } from "@mui/icons-material";
-import { Autocomplete, Box, Grid, Popper, TextField, Typography, debounce } from "@mui/material";
+import { Autocomplete, Box, Grid, TextField, Typography, debounce } from "@mui/material";
 import { MAP_SEARCH_COUNTRY_RESTRICTION } from "Store/constants";
 import { selectIsMapLoaded } from "Store/selectors";
 import { combineObjects } from "Utils";
 import parse from "autosuggest-highlight/parse";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 const autocompleteService = { current: null };
@@ -15,7 +15,7 @@ function PlaceAutocomplete(props) {
     const isLoaded = useSelector(selectIsMapLoaded);
     const [inputValue, setInputValue] = useState('');
     const [options, setOptions] = useState([""]);
-    const { value, onChange, ...rest } = props;
+    const { value, onChange, noValidate, ...rest } = props;
 
     const fetch = useMemo(
         () =>
@@ -46,8 +46,13 @@ function PlaceAutocomplete(props) {
             input: inputValue,
             componentRestrictions: {
                 country: MAP_SEARCH_COUNTRY_RESTRICTION,
-            }
+            },
         }
+        if (!noValidate) {
+            reqParams.types = ["establishment"];
+        }
+
+        if (inputValue.length < 2) return;
 
         fetch(reqParams, (results) => {
             if (active) {
@@ -69,6 +74,7 @@ function PlaceAutocomplete(props) {
         return () => {
             active = false;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value, inputValue, fetch]);
 
     return (<>
@@ -83,7 +89,12 @@ function PlaceAutocomplete(props) {
             autoComplete
             includeInputInList
             filterSelectedOptions
-            isOptionEqualToValue={(option, value) => option.place_id === value.place_id}
+            isOptionEqualToValue={(option, value) => {
+                if (options.length === 1 && options[0] === "") {
+                    return true;
+                }
+                return option.place_id === value.place_id
+            }}
             value={value}
             noOptionsText="No locations"
             onChange={(event, newValue) => {
@@ -113,7 +124,7 @@ function PlaceAutocomplete(props) {
             }}
             renderOption={(props, option) => {
                 // console.log(props,option, a, b, options);
-                if (option === "") return <></>;
+                if (option === "") return;
                 const matches =
                     option.structured_formatting.main_text_matched_substrings || [];
 

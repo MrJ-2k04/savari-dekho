@@ -1,13 +1,13 @@
 import { useTheme } from "@emotion/react";
 import { AccountCircle } from "@mui/icons-material";
-import { Avatar, Box, Drawer, Link, List, Typography, alpha, styled } from "@mui/material";
+import { Avatar, Box, Drawer, List, Typography, alpha, styled } from "@mui/material";
 import { MHidden } from "Components/@Material-Extend";
 import LogoWithText from "Components/Common/LogoWithText";
 import NavSection, { NavItem } from "Components/Common/NavSection";
 import useApi from "Components/Hooks/useApi";
 import { DRAWER_WIDTH, ROUTE_ADMIN_DASHBOARD, ROUTE_ADMIN_PROFILE } from "Store/constants";
 import { useEffect } from "react";
-import { Link as RouterLink, matchPath, useLocation } from "react-router-dom";
+import { matchPath, useLocation } from "react-router-dom";
 import { dashboardLink, logoutLink, toolLinks } from "./AdminSidebarConfig";
 
 
@@ -24,9 +24,9 @@ const AccountStyle = styled("div")(({ theme }) => ({
     padding: theme.spacing(2, 2.5),
     borderRadius: theme.shape.borderRadiusSm,
     backgroundColor: theme.palette.background.default,
-    "&:hover": {
-        backgroundColor: theme.palette.action.hover,
-    },
+    // "&:hover": {
+    //     backgroundColor: theme.palette.action.hover,
+    // },
 }));
 
 function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
@@ -71,7 +71,7 @@ function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
             </Box>
 
             <Box mb={5}>
-                <Link underline="none" component={RouterLink} to={ROUTE_ADMIN_PROFILE}>
+                {/* <Link underline="none" component={RouterLink} to={ROUTE_ADMIN_PROFILE}> */}
                     <AccountStyle
                         sx={{
                             ...(isProfilePage && activeRootStyle),
@@ -87,7 +87,7 @@ function AdminSidebar({ isOpenSidebar, onCloseSidebar, user = {} }) {
                             </Typography>
                         </Box>
                     </AccountStyle>
-                </Link>
+                {/* </Link> */}
             </Box>
 
             <List disablePadding>

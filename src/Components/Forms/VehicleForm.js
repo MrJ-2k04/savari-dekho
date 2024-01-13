@@ -6,7 +6,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
 import { BOOLEAN_OPTIONS, ROUTE_PROFILE_DASHBOARD, VEHICLE_COLOR_OPTIONS, VEHICLE_FUEL_TYPES, VEHICLE_MANUFACTURERS, VEHICLE_MODELS, VEHICLE_TYPE_OPTIONS, VERIFICATION_STATUS } from "Store/constants";
 import { selectIsDarkMode } from "Store/selectors";
-import { isEmptyString, showError, showSuccess } from "Utils";
+import { isEmptyString, showConfirmationDialog, showError, showSuccess } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { MuiFileInput } from "mui-file-input";
 import { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ function VehicleForm({ viewMode = false }) {
     const nav = useNavigate();
     const { id } = useParams();
     const docsInputBorderColor = useSelector(selectIsDarkMode) ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
-    const { loading, uploadVehicleDocs, getVehicleDetails, updateVehicleById, deleteVehicleById } = useApi();
+    const { loading, createVehicle, getVehicleDetails, updateVehicleById, deleteVehicleById } = useApi();
 
 
 
@@ -201,7 +201,7 @@ function VehicleForm({ viewMode = false }) {
                 }).catch(err => showError({ message: err.message }))
         } else {
             // ADD New Vehicle using API
-            uploadVehicleDocs(payload).then(ack => {
+            createVehicle(payload).then(ack => {
                 if (!state) {
                     nav(ROUTE_PROFILE_DASHBOARD);
                 }
@@ -209,7 +209,15 @@ function VehicleForm({ viewMode = false }) {
         }
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        const { isConfirmed } = await showConfirmationDialog({
+            title: 'Delete Vehicle?',
+            icon: 'warning',
+            message: 'Are you sure you want to delete this vehicle?',
+            confirmBtnText: 'Delete',
+            cancelBtnText: 'Cancel',
+        })
+        if (!isConfirmed) return;
         deleteVehicleById(vehicleId).then(async (ack) => {
             await showSuccess({ message: ack.message || "Vehicle Deleted Successfully!" })
             nav(-1);
@@ -454,7 +462,6 @@ function VehicleForm({ viewMode = false }) {
                                 {VEHICLE_COLOR_OPTIONS.map(({ value, name }, index) => (
                                     <MenuItem key={index} value={index}>
                                         <Box display={'flex'} alignItems={'center'} columnGap={2}>
-                                            {/* <ListItemIcon sx={{ my: 'auto', height: '100%' }}><Palette sx={{ color: value }} /></ListItemIcon> */}
                                             <Box borderRadius={'50%'} bgcolor={value} height={'19px'} width={'19px'}></Box>
                                             {name}
                                         </Box>
@@ -556,7 +563,7 @@ function VehicleForm({ viewMode = false }) {
                 </Grid>
             </Box>
 
-            <Stack direction={'row'} spacing={3} rowGap={3} width={'100%'} flexWrap={'wrap'} justifyContent={'space-between'}>
+            <Stack direction={'row'} spacing={3} rowGap={3} width={'100%'} flexWrap={'wrap'} justifyContent={{ xs: 'space-between', md: 'end' }}>
 
                 {viewMode &&
                     <>
@@ -576,7 +583,7 @@ function VehicleForm({ viewMode = false }) {
                             color="secondary"
                             variant="outlined"
                             onClick={e => nav(ROUTE_PROFILE_DASHBOARD)}
-                            sx={{ ml: "0 !important" }}
+                            sx={{ ml: { xs: "0 !important", md: "24px !important" } }}
                         >
                             Go Back
                         </Button>

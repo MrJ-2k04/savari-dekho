@@ -1,3 +1,4 @@
+import { AcUnit, AccessibilityNew, AirlineSeatReclineExtra, Checkroom, ChildCare, DirectionsBus, Fastfood, MusicNote, Pets, PhotoSizeSelectLarge, SmokeFree, VolumeOff, Wifi } from "@mui/icons-material";
 
 
 
@@ -193,6 +194,22 @@ export const CITY_OPTIONS = {
         "Purulia", "South 24 Parganas", "Uttar Dinajpur"
     ],
 };
+
+export const PREFERENCES = [
+    { id: "NO_SMK", title: "No Smoking", Icon: SmokeFree },
+    { id: "NO_CHD", title: "No Child", Icon: ChildCare },
+    { id: "NO_PET", title: "Pets not allowed", Icon: Pets },
+    { id: "QT_RID", title: "Quiet Ride", Icon: VolumeOff },
+    { id: "MU_RID", title: "Music Allowed", Icon: MusicNote },
+    { id: "AC_RID", title: "Air Conditioning", Icon: AcUnit },
+    { id: "LG_SPC", title: "Luggage Space", Icon: Checkroom },
+    { id: "FLX_STP", title: "Flexible Stops", Icon: DirectionsBus },
+    { id: "CMF_ST", title: "Comfortable Seats", Icon: AirlineSeatReclineExtra },
+    { id: "WIFI", title: "Wi-Fi Available", Icon: Wifi },
+    { id: "ACS_DIS", title: "Accessible for Disabilities", Icon: AccessibilityNew },
+    { id: "FD_ALWD", title: "Food and Drinks Allowed", Icon: Fastfood },
+    { id: "WIN_SHD", title: "Window Shades", Icon: PhotoSizeSelectLarge },
+];
 
 
 export const VEHICLE_TYPE_OPTIONS = [
@@ -416,9 +433,15 @@ export const BANK_ACCOUNT_TYPES = [
 ]
 
 // Google Map Form IDs
-export const ID_RIDE_TO = "to";
 export const ID_RIDE_FROM = "from";
-export const ID_RIDE_PICKUP = "pickup";
-export const ID_RIDE_DROPOFF = "dropoff";
+export const ID_RIDE_TO = "to";
 export const ID_WAYP_LOCATION = "location";
 export const ID_WAYP_PRICE = "price";
+
+export const PRICE_SUGGESTIONS = [
+    { text: "Your price is very low, you can increase it", color: 'error' },
+    { text: "Your price is a bit low, you can slightly increase it", color: 'warning.main' },
+    { text: "Perfect Price, you will get passengers in no time", color: 'success.main' },
+    { text: "Your price is a bit high, you should slightly decrease it", color: 'warning.main' },
+    { text: "Your price is very high, you should decrease it", color: 'error' },
+]

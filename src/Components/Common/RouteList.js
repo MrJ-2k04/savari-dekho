@@ -1,26 +1,30 @@
+import { DirectionsWalk } from "@mui/icons-material";
 import { Box, List, ListItem, Typography } from "@mui/material";
 
 function RouteList({
     waypoints = [],
     startIndex = 0,
-    endIndex = waypoints.length,
+    endIndex = waypoints.length - 1,
     price,
 }) {
 
     const color = "secondary.main"
-
     return (<>
         <List
-            // sx={{ bgcolor: 'background.paper' }}
+        // sx={{ bgcolor: 'background.paper' }}
         >
             {waypoints.map((waypoint, index) => {
                 const isActive = index >= startIndex && index <= endIndex;
+                const distanceIconColor = waypoint.distance <= 5 ? "success.main" : waypoint.distance <= 10 ? "warning.main" : "error.main";
                 return <ListItem key={index} sx={{ py: 0, alignItems: "stretch" }} >
 
                     {/* Time Text */}
-                    <Box py={1} sx={{ width: "48px", minWidth: '48px' }}>
+                    <Box py={1} sx={{ width: "48px", minWidth: '60px' }}>
                         <Typography textAlign={'center'} fontWeight={500} color={!isActive && 'text.disabled'}>
-                            {waypoint?.location.time}
+                            {waypoint.date}
+                        </Typography>
+                        <Typography textAlign={'center'} fontWeight={500} variant="body2" color={!isActive ? 'text.disabled' : 'text.secondary'}>
+                            {waypoint.time}
                         </Typography>
                     </Box>
 
@@ -56,17 +60,31 @@ function RouteList({
 
                     {/* Place Text */}
                     <Box py={1} pr={3} flexGrow={1}>
-                        <Typography color={'primary'} fontWeight={'500'} sx={{ color: isActive ? "" : "text.disabled" }}>
-                            {waypoint.location?.primaryText}
-                        </Typography>
+                        {isActive ? <>
+                            <Typography color={'primary'} fontWeight={'500'}>
+                                {waypoint.primaryText}
+                            </Typography>
 
-                        {isActive && <Typography variant="body2" color="text.secondary">
-                            {waypoint.location?.secondaryText}
-                        </Typography>}
+                            <Typography variant="body2" color="text.secondary">
+                                {waypoint.secondaryText}
+                            </Typography>
+                        </> :
+                            <Typography color={'primary'} fontWeight={'500'} sx={{ color: 'text.disabled' }}>
+                                {waypoint.secondaryText}
+                            </Typography>
+                        }
+
+                        {[startIndex, endIndex].includes(index) && waypoint.distance && <Box display={'flex'} gap={1} alignItems={'center'}>
+                            <Box p={0.2} bgcolor={distanceIconColor} display={'flex'} justifyContent={'center'} alignItems={'center'} borderRadius={'50%'}>
+                                <DirectionsWalk fontSize="small" sx={{ color: 'white' }} />
+                            </Box>
+                            <Typography color={'text.secondary'}>{waypoint.distance?.toFixed(1)} km away from {startIndex === index ? "depature" : "destination"}</Typography>
+                        </Box>}
                     </Box>
+
                 </ListItem>
             })}
-        </List>
+        </List >
     </>);
 }
 

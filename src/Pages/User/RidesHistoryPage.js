@@ -1,41 +1,13 @@
 import { TabContext, TabPanel } from "@mui/lab";
 import { Box, Container, Tab, Tabs } from "@mui/material";
-import RideCard from "Components/Common/RideCard";
+import BookedRidesHistorySection from "Components/SingleUse/BookedRidesHistorySection";
+import PublishedRidesHistorySection from "Components/SingleUse/PublishedRidesHistorySection";
 import UserLayout from "Layout/User";
 import { useState } from "react";
-
-const defBookedRides = [
-    {
-        from: 'Point A',
-        to: 'Point B',
-        waypoints: [],
-        price: 1650,
-        departureDatetime: new Date().toLocaleDateString(),
-        emptySeats: 3
-    },
-    {
-        from: 'Point A',
-        to: 'Point B',
-        waypoints: [],
-        price: 1650,
-        departureDatetime: new Date().toLocaleDateString(),
-        emptySeats: 3
-    },
-    {
-        from: 'Point A',
-        to: 'Point B',
-        waypoints: [],
-        price: 1650,
-        departureDatetime: new Date().toLocaleDateString(),
-        emptySeats: 3
-    },
-]
 
 function RidesHistoryPage() {
 
     const [activeTab, setActiveTab] = useState("1");
-    const [publishedRides, setPublishedRides] = useState([]);
-    const [bookedRides, setBookedRides] = useState([...defBookedRides]);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
@@ -52,12 +24,10 @@ function RidesHistoryPage() {
                     </Box>
                     <Box>
                         <TabPanel value={"1"}>
-                            {bookedRides.map((ride, index) => (
-                                <RideCard ride={ride} key={index} />
-                            ))}
+                            <BookedRidesHistorySection />
                         </TabPanel>
                         <TabPanel value={"2"}>
-
+                            <PublishedRidesHistorySection />
                         </TabPanel>
                     </Box>
                 </TabContext>

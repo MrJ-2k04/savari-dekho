@@ -9,6 +9,7 @@ import v2 from "Assets/images/v2.jpg";
 import v3 from "Assets/images/v3.jpg";
 import v4 from "Assets/images/v4.jpg";
 import ImageCarousal from "Components/Common/ImageCarousal";
+import { ABOUT_US, SITE_TITLE } from "Store/constants";
 
 function AboutUsPage() {
   const circleImageStyle = {
@@ -24,9 +25,19 @@ function AboutUsPage() {
             <Typography variant="h1" align="center" color={'primary'}>
               Ab<Box component={"span"} color={"secondary.main"}>o</Box>ut Us
             </Typography>
-            <Typography variant="h6" align="center">
-              Save money, reduce your carbon footprint, and enjoy stress-free journeys.
-              Carpooling - Your Eco-Friendly Ride to a Greener Tomorrow!
+            <Typography variant="h6" fontWeight={500} align="center" textAlign={'justify'}>
+              At {SITE_TITLE}, we're more than just a carpooling company – we're a passionate team dedicated to providing
+              user-friendly and cost-effective platform for ride sharing. With a commitment to excellence, innovation, and
+              dedication, we strive to provide best possible service, ensure trust and safety.
+            </Typography>
+            <Typography variant="h4" align="center" color={'secondary'}>
+              Our journey began with a simple idea: <br />
+            </Typography>
+            <Typography variant="h6" align="center" color={'text.secondary'} textAlign={'center'} mx={'auto !important'}>
+              How to travel efficiently without <br /> 
+              hassle of public transport, without <br />
+              paying too much extra fees & without <br />
+              worrying about incidents arising from trust issue?
             </Typography>
           </Stack>
           <Box>
@@ -42,7 +53,7 @@ function AboutUsPage() {
             <Box>
               <Grid container columnSpacing={10} rowSpacing={3}>
                 <Grid item xs={12} sm={5.5}>
-                  <Box maxWidth={{ xs: "75%", md: '350px' }} mx={'auto'} my={"auto"}>
+                  <Box maxWidth={{ xs: "75%", md: '300px' }} mx={'auto'} my={"auto"}>
                     <img src={f1} alt="Founder" style={circleImageStyle} />
                   </Box>
                 </Grid>
@@ -50,11 +61,13 @@ function AboutUsPage() {
                 <Grid item xs={12} sm={6.5} maxWidth={'sm'}>
                   <Stack spacing={2} maxWidth={'md'} mx={"auto"} justifyContent={"center"} height={"100%"}>
                     <Typography color={"primary"} textAlign={"center"} variant="h3">
-                      Jay Soni
+                      {ABOUT_US.JAY_SONI.displayName}
                     </Typography>
-                    <Typography>
-                      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-                      Nemo enim ipsam voluptatem quia voluptas
+                    <Typography textAlign={'center'}>
+                      {ABOUT_US.JAY_SONI.description}
+                    </Typography>
+                    <Typography textAlign={'center'} color={'text.disabled'} variant="subtitle1">
+                      Experience of {ABOUT_US.JAY_SONI.experience}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -67,17 +80,19 @@ function AboutUsPage() {
                 <Grid item xs={12} sm={6.5} order={{ xs: 1, sm: -1 }} maxWidth={'sm'}>
                   <Stack spacing={2} maxWidth={'md'} mx={"auto"} justifyContent={"center"} height={"100%"}>
                     <Typography color={"primary"} textAlign={"center"} variant="h3">
-                      Nirali Sheta
+                      {ABOUT_US.NIRALI_SHETA.displayName}
                     </Typography>
-                    <Typography>
-                      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-                      Nemo enim ipsam voluptatem quia voluptas
+                    <Typography textAlign={'center'}>
+                      {ABOUT_US.NIRALI_SHETA.description}
+                    </Typography>
+                    <Typography textAlign={'center'} color={'text.disabled'} variant="subtitle1">
+                      Experience of {ABOUT_US.NIRALI_SHETA.experience}
                     </Typography>
                   </Stack>
                 </Grid>
 
                 <Grid item xs={12} sm={5.5} justifyContent={'flex-start'}> {/* Align Grid to the left */}
-                  <Box maxWidth={{ xs: "75%", md: '350px' }} mx={'auto'}>
+                  <Box maxWidth={{ xs: "75%", md: '300px' }} mx={'auto'}>
                     <img src={f2} alt="Founder" style={circleImageStyle} />
                   </Box>
                 </Grid>
@@ -88,7 +103,7 @@ function AboutUsPage() {
             <Box>
               <Grid container columnSpacing={10} rowSpacing={3}>
                 <Grid item xs={12} sm={5.5} justifyContent={'flex-start'}> {/* Align Grid to the left */}
-                  <Box maxWidth={{ xs: "75%", md: '350px' }} mx={'auto'}>
+                  <Box maxWidth={{ xs: "75%", md: '300px' }} mx={'auto'}>
                     <img src={f3} alt="Founder" style={circleImageStyle} />
                   </Box>
                 </Grid>
@@ -96,11 +111,13 @@ function AboutUsPage() {
                 <Grid item xs={12} sm={6.5} maxWidth={'sm'}>
                   <Stack spacing={2} maxWidth={'md'} mx={"auto"} justifyContent={"center"} height={"100%"}>
                     <Typography color={"primary"} textAlign={"center"} variant="h3">
-                      Diksha Rohera
+                      {ABOUT_US.DIKSHA_ROHERA.displayName}
                     </Typography>
-                    <Typography>
-                      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-                      Nemo enim ipsam voluptatem quia voluptas
+                    <Typography textAlign={'center'}>
+                      {ABOUT_US.DIKSHA_ROHERA.description}
+                    </Typography>
+                    <Typography textAlign={'center'} color={'text.disabled'} variant="subtitle1">
+                      Experience of {ABOUT_US.DIKSHA_ROHERA.experience}
                     </Typography>
                   </Stack>
                 </Grid>

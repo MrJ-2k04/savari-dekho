@@ -1,21 +1,25 @@
-import { Add, AirlineSeatReclineExtra, Close, CloudUpload, Delete, Route } from "@mui/icons-material";
+import { Add, AirlineSeatReclineExtra, Close, CloudSync, CloudUpload, Delete, Route } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Badge, Box, Button, Card, CardContent, CardHeader, Fab, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, Slide, Stack, TextField, Typography, Zoom, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Badge, Box, Button, Card, CardContent, CardHeader, Checkbox, Fab, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, Slide, Stack, TextField, Typography, Zoom, styled, useMediaQuery, useTheme } from "@mui/material";
 import { LocalizationProvider, MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useApi from "Components/Hooks/useApi";
+import useRideApi from "Components/Hooks/useRideApi";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
-import MyGoogleMap from "Components/MapItems/MyGoogleMap";
 import PlaceAutocomplete from "Components/MapItems/PlaceAutocomplete";
-import { ID_RIDE_DROPOFF, ID_RIDE_FROM, ID_RIDE_PICKUP, ID_RIDE_TO, ID_WAYP_LOCATION, ID_WAYP_PRICE, MIN_DELAY_FOR_BOOKING, ROUTE_VEHICLE_ADD } from "Store/constants";
-import { isEmptyString, isFalsy, isNumeric } from "Utils";
+import RidePublishMapView from "Components/MapItems/RidePublishMapView";
+import { ID_RIDE_FROM, ID_RIDE_TO, ID_WAYP_LOCATION, MIN_DELAY_FOR_BOOKING, PREFERENCES, PRICE_SUGGESTIONS, ROUTE_HOME, ROUTE_RIDES, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { selectUser } from "Store/selectors";
+import { calculatePriceRange, formatPlaceObj, getPriceFromDistance, isEmptyString, isFalsy, isNumeric, showError, showSuccess, unformatPlaceObj } from "Utils";
 import inLocale from "date-fns/locale/en-IN";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 
 
-const minDateTime = new Date(new Date().getTime() + (MIN_DELAY_FOR_BOOKING * 60 * 1000));
+// const minDateTime = new Date(new Date().getTime() + (MIN_DELAY_FOR_BOOKING * 60 * 1000));
+const minDateTime = new Date();
 
 const StyledBadge = styled(Badge)(({ isvisible }) => ({
     '& .MuiBadge-badge': {
@@ -29,6 +33,7 @@ const StyledBadge = styled(Badge)(({ isvisible }) => ({
     },
 }));
 
+const DEFAULT_PRICE_HELPER_TEXT = { color: 'text.secondary', text: "Please enter pickup and dropoff locations first" };
 
 function RideForm({ isNew = false }) {
 
@@ -36,19 +41,30 @@ function RideForm({ isNew = false }) {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { rideId } = useParams();
+    const user = useSelector(selectUser);
     const { loading, getVehicles } = useApi();
-    // const nav = useNavigate();
+    const { loading: updating, updateRide, getRideDetails, publishRide } = useRideApi();
+    const nav = useNavigate();
     const [isMapVisible, setIsMapVisible] = useState(false);
     const [showNoti, setShowNoti] = useState(false);
+    const [priceRange, setPriceRange] = useState(null);
+    const [priceHelperText, setPriceHelperText] = useState(DEFAULT_PRICE_HELPER_TEXT);
+    // const range = [
+    //     7, 8.2, 9.4, 10.6, 11.8, 13
+    //     x-30%, x-18%, x-6%, x+6%, x+18%, x+30%
+    // ]
 
     // Ride States
     const [locations, setLocations] = useState({});
     const [departureDatetime, setDepartureDatetime] = useState(null);
-    const [journeyPrice, setJourneyPrice] = useState('');
+    const [totalPrice, setTotalPrice] = useState('');
     const [waypoints, setWaypoints] = useState([]);
     const [vehicleId, setVehicleId] = useState('');
     const [vehicleOptions, setVehicleOptions] = useState([]);
-    const [emptySeats, setEmptySeats] = useState('');
+    const [totalEmptySeats, setTotalEmptySeats] = useState('');
+    const [mapState, setMapState] = useState(null);
+    const [preferences, setPreferences] = useState([]);
 
     // Error States
     const [locationErrors, setLocationErrors] = useState({});
@@ -69,11 +85,130 @@ function RideForm({ isNew = false }) {
         setIsMapVisible(false);
     }
 
-    // #################################################### MAP HANDLERS ####################################################
+    // #################################################### RIDE EDIT HANDLERS ####################################################
 
     const syncRide = () => {
-
+        getRideDetails(rideId).then(rideDetails => {
+            if (rideDetails.publisher._id !== user._id) {
+                showError({ message: "You do not have access to modify this ride" }).then(() => nav(ROUTE_HOME));
+                return;
+            }
+            setTotalPrice(rideDetails.totalPrice);
+            setDepartureDatetime(new Date(rideDetails.departureDatetime));
+            setTotalEmptySeats(rideDetails.totalEmptySeats);
+            setVehicleId(rideDetails.vehicle._id);
+            setPreferences(rideDetails.preferences || []);
+            setLocations({
+                [ID_RIDE_FROM]: unformatPlaceObj(rideDetails.from),
+                [ID_RIDE_TO]: unformatPlaceObj(rideDetails.to),
+            })
+            if (rideDetails.waypoints.length > 0) {
+                const oldWaypoints = rideDetails.waypoints.map(wayp => {
+                    wayp = unformatPlaceObj(wayp);
+                    wayp = { location: { ...wayp }, place_id: wayp.place_id };
+                    return wayp;
+                });
+                setWaypoints(oldWaypoints);
+            }
+        }).catch(err => showError({ message: err.message }));
     }
+    const handleUpdate = () => {
+        let isValid = true;
+
+        // Validations
+        {
+            // Locations
+            const newLocationErrors = { ...locationErrors };
+            if (isFalsy(locations[ID_RIDE_FROM])) {
+                newLocationErrors[ID_RIDE_FROM] = 'Please enter a valid departure location';
+                isValid = false;
+            }
+            if (isFalsy(locations[ID_RIDE_TO])) {
+                newLocationErrors[ID_RIDE_TO] = 'Please enter a valid destination location';
+                isValid = false;
+            }
+            setLocationErrors(newLocationErrors);
+
+            // Waypoints
+            const newWaypointErrors = { ...waypointErrors };
+            waypoints.forEach((waypoint, index) => {
+                if (isFalsy(waypoint[ID_WAYP_LOCATION])) {
+                    newWaypointErrors[index][ID_WAYP_LOCATION] = 'Please enter a valid stopover point';
+                    isValid = false;
+                }
+                // if (isFalsy(waypoint[ID_WAYP_PRICE])) {
+                //     newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
+                //     isValid = false;
+                // }
+            })
+            setWaypointErrors(newWaypointErrors);
+
+
+            // Other Validations
+            if (!mapState) {
+                isValid = false;
+            } else {
+                // Extra Imp info like distance and duration from state
+            }
+            if (isFalsy(totalPrice)) {
+                setJourneyPriceError('Please enter a valid journey price');
+                isValid = false;
+            }
+            if (!departureDatetime || new Date(departureDatetime).getTime() < minDateTime.getTime()) {
+                setDatetimeError('Please enter a valid departure datetime');
+                isValid = false;
+            }
+            if (isEmptyString(vehicleId)) {
+                setVehicleError('Please select a vehicle');
+                isValid = false;
+            }
+            if (isEmptyString(totalEmptySeats)) {
+                setEmptySeatsError('You must carry atleast 1 passenger');
+                isValid = false;
+            }
+        }
+
+
+        if (!isValid) return;
+        const from = formatPlaceObj(locations[ID_RIDE_FROM]);
+        from.geometry = mapState.legs[0].start_location.toJSON();
+        const to = formatPlaceObj(locations[ID_RIDE_TO]);
+        to.geometry = mapState.legs[mapState.legs.length - 1].end_location.toJSON();
+
+        const payload = {
+            from: JSON.stringify(from),
+            to: JSON.stringify(to),
+            departureDatetime,
+            totalPrice,
+            vehicleId,
+            totalEmptySeats,
+            polyline: mapState.overview_polyline,
+            preferences: JSON.stringify(preferences),
+        }
+        if (waypoints.length > 0) {
+            const formattedWaypoints = waypoints.map(waypoint => (formatPlaceObj(waypoint.location)));
+            mapState.legs.forEach((leg, legIndex) => {
+                if (legIndex === 0) return;
+                formattedWaypoints[legIndex - 1].geometry = leg.start_location.toJSON();
+            })
+            payload['waypoints'] = JSON.stringify(formattedWaypoints);
+        }
+        const distanceInMeters = mapState.legs.reduce((distance, leg) => distance + leg.distance.value, 0);
+        payload.totalDistance = parseFloat((distanceInMeters / 1000).toFixed(2));
+        payload.totalDuration = mapState.legs.reduce((durationInSec, leg) => durationInSec + leg.duration.value, 0);
+        payload.bounds = JSON.stringify(mapState.bounds);
+        // console.log(payload);
+        // Submit the Form
+        updateRide(rideId, payload).then(ack => {
+            showSuccess({ message: ack.message }).then(() =>
+                nav(`${ROUTE_RIDES}/${rideId}`)
+            )
+        }).catch(err => {
+            showError({ message: err.message })
+        })
+    }
+
+    // #################################################### HANDLERS ####################################################
 
     const handleLocationChange = (newLocation, field) => {
         if (!isEmptyString(newLocation)) {
@@ -102,7 +237,7 @@ function RideForm({ isNew = false }) {
         setWaypointErrors({ ...waypointErrors, [waypoints.length]: {} });
     }
     const handleDeleteWaypoint = (index) => {
-        console.log(waypoints[index]);
+        // console.log(waypoints[index]);
         if (waypoints[index]["location"]) {
             setShowNoti(true);
         }
@@ -118,7 +253,7 @@ function RideForm({ isNew = false }) {
                 delete newWaypointErrors[i];
             }
         }
-        console.log(waypointErrors, newWaypointErrors);
+        // console.log(waypointErrors, newWaypointErrors);
         setWaypointErrors(newWaypointErrors);
     }
     const handleSubmit = () => {
@@ -132,21 +267,12 @@ function RideForm({ isNew = false }) {
                 newLocationErrors[ID_RIDE_FROM] = 'Please enter a valid departure location';
                 isValid = false;
             }
-            if (isFalsy(locations[ID_RIDE_PICKUP])) {
-                newLocationErrors[ID_RIDE_PICKUP] = 'Please enter a valid pickup location';
-                isValid = false;
-            }
             if (isFalsy(locations[ID_RIDE_TO])) {
                 newLocationErrors[ID_RIDE_TO] = 'Please enter a valid destination location';
                 isValid = false;
             }
-            if (isFalsy(locations[ID_RIDE_DROPOFF])) {
-                newLocationErrors[ID_RIDE_DROPOFF] = 'Please enter a valid dropoff location';
-                isValid = false;
-            }
             setLocationErrors(newLocationErrors);
 
-            // !!!!!!!!!!!!!!!!! CHANGE VALIDATION !!!!!!!!!!!!!!!
             // Waypoints
             const newWaypointErrors = { ...waypointErrors };
             waypoints.forEach((waypoint, index) => {
@@ -154,17 +280,30 @@ function RideForm({ isNew = false }) {
                     newWaypointErrors[index][ID_WAYP_LOCATION] = 'Please enter a valid stopover point';
                     isValid = false;
                 }
-                if (isFalsy(waypoint[ID_WAYP_PRICE])) {
-                    newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
-                    isValid = false;
-                }
+                // if (isFalsy(waypoint[ID_WAYP_PRICE])) {
+                //     newWaypointErrors[index][ID_WAYP_PRICE] = 'Please enter a valid price';
+                //     isValid = false;
+                // }
             })
             setWaypointErrors(newWaypointErrors);
 
 
             // Other Validations
-            if (isFalsy(journeyPrice)) {
+            if (!mapState) {
+                isValid = false;
+            } else {
+                // Extra Imp info like distance and duration from state
+            }
+            if (isFalsy(totalPrice)) {
                 setJourneyPriceError('Please enter a valid journey price');
+                isValid = false;
+            } else if (totalPrice < priceRange[0] || totalPrice > priceRange[5]) {
+                if (totalPrice < priceRange[0]) {
+                    setPriceHelperText({ text: `Price too low. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+                }
+                else if (totalPrice > priceRange[5]) {
+                    setPriceHelperText({ text: `Price too high. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+                }
                 isValid = false;
             }
             if (!departureDatetime || new Date(departureDatetime).getTime() < minDateTime.getTime()) {
@@ -175,7 +314,7 @@ function RideForm({ isNew = false }) {
                 setVehicleError('Please select a vehicle');
                 isValid = false;
             }
-            if (isEmptyString(emptySeats)) {
+            if (isEmptyString(totalEmptySeats)) {
                 setEmptySeatsError('You must carry atleast 1 passenger');
                 isValid = false;
             }
@@ -183,46 +322,166 @@ function RideForm({ isNew = false }) {
 
 
         if (!isValid) return;
+        const from = formatPlaceObj(locations[ID_RIDE_FROM]);
+        from.geometry = mapState.legs[0].start_location.toJSON();
+        const to = formatPlaceObj(locations[ID_RIDE_TO]);
+        to.geometry = mapState.legs[mapState.legs.length - 1].end_location.toJSON();
 
         const payload = {
-            ...locations,
+            from: JSON.stringify(from),
+            to: JSON.stringify(to),
             departureDatetime,
-            price: journeyPrice,
+            totalPrice,
             vehicleId,
-            emptySeats,
+            totalEmptySeats,
+            polyline: mapState.overview_polyline,
+            // mapState: JSON.stringify(mapState.legs),
+            preferences: JSON.stringify(preferences),
         }
         if (waypoints.length > 0) {
-            // payload['waypoints'] = JSON.stringify(waypoints);
-            payload['waypoints'] = waypoints;
+            // const formattedWaypoints = waypoints.map(waypoint => ({ ...formatPlaceObj(waypoint.location), price: waypoint.price }));
+            const formattedWaypoints = waypoints.map(waypoint => formatPlaceObj(waypoint.location));
+            mapState.legs.forEach((leg, legIndex) => {
+                if (legIndex === 0) return;
+                formattedWaypoints[legIndex - 1].geometry = leg.start_location.toJSON();
+            })
+            payload['waypoints'] = JSON.stringify(formattedWaypoints);
         }
-        console.log(payload);
+        const distanceInMeters = mapState.legs.reduce((distance, leg) => distance + leg.distance.value, 0);
+        payload.totalDistance = parseFloat((distanceInMeters / 1000).toFixed(2));
+        payload.totalDuration = mapState.legs.reduce((durationInSec, leg) => durationInSec + leg.duration.value, 0);
+        payload.bounds = JSON.stringify(mapState.bounds);
+
+
         // Submit the Form
-        // publishRide(payload).then(ack => {
-        //     showSuccess({ message: ack.message }).then(() => nav(`${ROUTE_RIDES}/${ack.payload}`))
-        // }).catch(err => {
-        //     showError({ message: err.message })
-        // })
+        // console.log(payload);
+        publishRide(payload).then(ack => {
+            showSuccess({ message: ack.message }).then(() =>
+                nav(ROUTE_RIDES)
+            )
+        }).catch(err => {
+            showError({ message: err.message })
+        })
     }
 
-    const fillSampleData = () => {
-        setShowNoti(true);
-        setLocations({
-            [ID_RIDE_FROM]: { description: 'Ahmedabad, Gujarat, India' },
-            [ID_RIDE_PICKUP]: { description: 'C-101, Kanak Kala 2' },
-            [ID_RIDE_TO]: { description: 'Mumbai, Maharashtra, India' },
-            [ID_RIDE_DROPOFF]: { description: 'Jai bhavani, Mumbai' },
-        })
-        setWaypoints([
-            {
-                place_id: crypto.randomUUID(),
-                location: { description: "Surat, Gujarat, India" },
-                price: 1500
-            },
-        ])
-        setJourneyPrice(5000);
-        setDepartureDatetime(new Date(Date.now() + (5 * 60 * 60 * 1000)))
-        setEmptySeats(3)
-    }
+    // const fillSampleData = () => {
+    //     setShowNoti(true);
+    //     setLocations({
+    //         [ID_RIDE_FROM]: {
+    //             "description": "Ahmedabad Railway Station, Sakar Bazzar, Kalupur, Ahmedabad, Gujarat, India",
+    //             "matched_substrings": [
+    //                 {
+    //                     "length": 4,
+    //                     "offset": 0
+    //                 }
+    //             ],
+    //             "place_id": "ChIJE98lnFyFXjkRgd4qrHpon2o",
+    //             "reference": "ChIJE98lnFyFXjkRgd4qrHpon2o",
+    //             "structured_formatting": {
+    //                 "main_text": "Ahmedabad Railway Station",
+    //                 "main_text_matched_substrings": [
+    //                     {
+    //                         "length": 4,
+    //                         "offset": 0
+    //                     }
+    //                 ],
+    //                 "secondary_text": "Sakar Bazzar, Kalupur, Ahmedabad, Gujarat, India"
+    //             },
+    //             "terms": [
+    //                 {
+    //                     "offset": 0,
+    //                     "value": "Ahmedabad Railway Station"
+    //                 },
+    //                 {
+    //                     "offset": 27,
+    //                     "value": "Sakar Bazzar"
+    //                 },
+    //                 {
+    //                     "offset": 41,
+    //                     "value": "Kalupur"
+    //                 },
+    //                 {
+    //                     "offset": 50,
+    //                     "value": "Ahmedabad"
+    //                 },
+    //                 {
+    //                     "offset": 61,
+    //                     "value": "Gujarat"
+    //                 },
+    //                 {
+    //                     "offset": 70,
+    //                     "value": "India"
+    //                 }
+    //             ],
+    //             "types": [
+    //                 "point_of_interest",
+    //                 "establishment"
+    //             ]
+    //         },
+    //         [ID_RIDE_TO]: {
+    //             "description": "Surat Railway Station, Railway Station Area, Varachha, Surat, Gujarat, India",
+    //             "matched_substrings": [
+    //                 {
+    //                     "length": 5,
+    //                     "offset": 0
+    //                 }
+    //             ],
+    //             "place_id": "ChIJ15BXB1xP4DsRbbuh8F31RrE",
+    //             "reference": "ChIJ15BXB1xP4DsRbbuh8F31RrE",
+    //             "structured_formatting": {
+    //                 "main_text": "Surat Railway Station",
+    //                 "main_text_matched_substrings": [
+    //                     {
+    //                         "length": 5,
+    //                         "offset": 0
+    //                     }
+    //                 ],
+    //                 "secondary_text": "Railway Station Area, Varachha, Surat, Gujarat, India"
+    //             },
+    //             "terms": [
+    //                 {
+    //                     "offset": 0,
+    //                     "value": "Surat Railway Station"
+    //                 },
+    //                 {
+    //                     "offset": 23,
+    //                     "value": "Railway Station Area"
+    //                 },
+    //                 {
+    //                     "offset": 45,
+    //                     "value": "Varachha"
+    //                 },
+    //                 {
+    //                     "offset": 55,
+    //                     "value": "Surat"
+    //                 },
+    //                 {
+    //                     "offset": 62,
+    //                     "value": "Gujarat"
+    //                 },
+    //                 {
+    //                     "offset": 71,
+    //                     "value": "India"
+    //                 }
+    //             ],
+    //             "types": [
+    //                 "lodging",
+    //                 "point_of_interest",
+    //                 "establishment"
+    //             ]
+    //         },
+    //     })
+    //     // setWaypoints([
+    //     //     {
+    //     //         place_id: crypto.randomUUID(),
+    //     //         location: { description: "Surat, Gujarat, India" },
+    //     //         price: 1500
+    //     //     },
+    //     // ])
+    //     setTotalPrice(5000);
+    //     setDepartureDatetime(new Date(Date.now() + (5 * 60 * 60 * 1000)))
+    //     setTotalEmptySeats(3)
+    // }
 
     // #################################################### USEEFFECTS ####################################################
 
@@ -230,6 +489,7 @@ function RideForm({ isNew = false }) {
         if (isNew) return;
 
         syncRide();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isNew])
 
     useEffect(() => {
@@ -249,6 +509,47 @@ function RideForm({ isNew = false }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        if (!mapState) {
+            setPriceRange(null);
+            setPriceHelperText(DEFAULT_PRICE_HELPER_TEXT);
+            return;
+        }
+
+        const distanceInMeters = mapState.legs.reduce((distance, leg) => distance + leg.distance.value, 0);
+        const pricePerKm = getPriceFromDistance(distanceInMeters / 1000);
+        const priceAnchor = pricePerKm * distanceInMeters / 1000;
+
+        const newPriceRange = calculatePriceRange(priceAnchor);
+        setPriceRange(newPriceRange);
+        setPriceHelperText({ text: `Enter between ${newPriceRange[0]} to ${newPriceRange[5]}` });
+    }, [mapState]);
+
+    useEffect(() => {
+        if (!priceRange || !totalPrice) return;
+
+        if (totalPrice < priceRange[0]) {
+            setPriceHelperText({ text: `Price too low. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+        }
+        else if (totalPrice > priceRange[5]) {
+            setPriceHelperText({ text: `Price too high. Enter between ₹${priceRange[0]} to ₹${priceRange[5]}`, color: 'error' });
+        } else {
+            let i = 0;
+            while (i < priceRange.length - 2 && !(totalPrice >= priceRange[i] && totalPrice < priceRange[i + 1])) {
+                i++;
+            }
+
+            if (i !== 2) {
+                const suggestions = {
+                    color: PRICE_SUGGESTIONS[i].color,
+                    text: `${PRICE_SUGGESTIONS[i].text}. Enter between ${priceRange[2]} to ${priceRange[3]}`
+                };
+                setPriceHelperText(suggestions);
+            } else {
+                setPriceHelperText({ ...PRICE_SUGGESTIONS[i] });
+            }
+        }
+    }, [totalPrice, priceRange]);
 
     return (<Box position={'absolute'} height={'100%'} width={'100%'}>
         <MapsApiLoader>
@@ -260,25 +561,16 @@ function RideForm({ isNew = false }) {
                             <Box component={"span"} color={"secondary.main"}> a </Box>
                             Ride
                         </Typography>
-                        <Button onClick={fillSampleData} variant="outlined">Fill Sample Data</Button>
+                        {/* <Button onClick={fillSampleData} variant="outlined">Fill Sample Data</Button> */}
                         <Box width={'100%'} display={'flex'} gap={3} flexWrap={{ xs: 'wrap', sm: 'nowrap' }}>
                             <PlaceAutocomplete
-                                label='From'
-                                placeholder="From State/City"
+                                label='Pickup'
+                                placeholder="Exact Starting Location"
                                 fullWidth
                                 value={locations[ID_RIDE_FROM] || ''}
                                 onChange={newValue => handleLocationChange(newValue, ID_RIDE_FROM)}
                                 error={!isFalsy(locationErrors[ID_RIDE_FROM])}
                                 helperText={locationErrors[ID_RIDE_FROM]}
-                            />
-                            <PlaceAutocomplete
-                                label='Pickup Location'
-                                placeholder="Exact Starting Location"
-                                fullWidth
-                                value={locations[ID_RIDE_PICKUP] || ''}
-                                onChange={newValue => handleLocationChange(newValue, ID_RIDE_PICKUP)}
-                                error={!isFalsy(locationErrors[ID_RIDE_PICKUP])}
-                                helperText={locationErrors[ID_RIDE_PICKUP]}
                             />
                         </Box>
                         <Button
@@ -299,10 +591,11 @@ function RideForm({ isNew = false }) {
                                         onChange={newValue => handleWaypointDetailsChange(newValue, ID_WAYP_LOCATION, index)}
                                         error={!isFalsy(waypointErrors[index]?.[ID_WAYP_LOCATION])}
                                         helperText={waypointErrors[index]?.[ID_WAYP_LOCATION]}
+                                        noValidate
                                     />
                                 </Box>
 
-                                <Stack width={'100%'} direction={'row'} alignItems={'center'} spacing={{ xs: 1, sm: 2 }}>
+                                {/* <Stack width={'100%'} direction={'row'} alignItems={'center'} spacing={{ xs: 1, sm: 2 }}>
                                     <TextField
                                         label='Price'
                                         type="number"
@@ -319,30 +612,21 @@ function RideForm({ isNew = false }) {
                                         error={!isFalsy(waypointErrors[index]?.[ID_WAYP_PRICE])}
                                         helperText={waypointErrors[index]?.[ID_WAYP_PRICE]}
                                     />
-                                    <IconButton onClick={e => handleDeleteWaypoint(index)} size="small">
-                                        <Delete />
-                                    </IconButton>
-                                </Stack>
+                                </Stack> */}
+                                <IconButton onClick={e => handleDeleteWaypoint(index)} size="small">
+                                    <Delete />
+                                </IconButton>
                             </Box>
                         )}
                         <Box width={'100%'} display={'flex'} gap={3} flexWrap={{ xs: 'wrap', sm: 'nowrap' }}>
                             <PlaceAutocomplete
-                                label='To'
-                                placeholder="Destination State/City"
+                                label='Dropoff location'
+                                placeholder="Exact Ending Location"
                                 fullWidth
                                 value={locations[ID_RIDE_TO] || ''}
                                 onChange={newValue => handleLocationChange(newValue, ID_RIDE_TO)}
                                 error={!isFalsy(locationErrors[ID_RIDE_TO])}
                                 helperText={locationErrors[ID_RIDE_TO]}
-                            />
-                            <PlaceAutocomplete
-                                label='Dropoff location'
-                                placeholder="Exact Ending Location"
-                                fullWidth
-                                value={locations[ID_RIDE_DROPOFF] || ''}
-                                onChange={newValue => handleLocationChange(newValue, ID_RIDE_DROPOFF)}
-                                error={!isFalsy(locationErrors[ID_RIDE_DROPOFF])}
-                                helperText={locationErrors[ID_RIDE_DROPOFF]}
                             />
                         </Box>
                         <LocalizationProvider adapterLocale={inLocale} dateAdapter={AdapterDateFns}>
@@ -370,17 +654,19 @@ function RideForm({ isNew = false }) {
                         <TextField
                             label='Journey Price'
                             fullWidth
-                            helperText={journeyPriceError}
+                            helperText={journeyPriceError ||
+                                <Typography variant="body2" color={priceHelperText?.color}> {priceHelperText?.text}</Typography>}
                             error={!isEmptyString(journeyPriceError)}
-                            value={journeyPrice}
+                            disabled={!Boolean(priceRange)}
+                            value={totalPrice}
                             onChange={e => {
                                 if (isEmptyString(e.target.value)) {
-                                    setJourneyPrice('');
+                                    setTotalPrice('');
                                     return;
                                 }
                                 const price = parseInt(e.target.value);
                                 if (isNumeric(price)) {
-                                    setJourneyPrice(price);
+                                    setTotalPrice(price);
                                     setJourneyPriceError('');
                                 }
                             }}
@@ -431,15 +717,15 @@ function RideForm({ isNew = false }) {
                             fullWidth
                             helperText={emptySeatsError}
                             error={!isEmptyString(emptySeatsError)}
-                            value={emptySeats}
+                            value={totalEmptySeats}
                             onChange={e => {
                                 if (isEmptyString(e.target.value)) {
-                                    setEmptySeats('');
+                                    setTotalEmptySeats('');
                                     return;
                                 }
                                 const seats = parseInt(e.target.value);
                                 if (isNumeric(seats) && seats > 0) {
-                                    setEmptySeats(seats);
+                                    setTotalEmptySeats(seats);
                                     setEmptySeatsError('');
                                 }
                             }}
@@ -454,29 +740,75 @@ function RideForm({ isNew = false }) {
                             }}
                         />
 
+                        <Box>
+                            <FormControl fullWidth>
+                                <InputLabel id="preferences">Preferences</InputLabel>
+                                <Select
+                                    labelId="preferences"
+                                    label="Preferences"
+                                    value={preferences}
+                                    multiple
+                                    multiline
+                                    onChange={(e) => {
+                                        setPreferences(e.target.value);
+                                    }}
+                                    renderValue={(selected) => selected.map((p, pIdx) => {
+                                        const title = PREFERENCES.find(pf => pf.id === p).title;
+                                        return <Box key={pIdx}>•	{title}</Box>
+                                    })}
+                                >
+                                    {PREFERENCES.map((pref, index) => (
+                                        <MenuItem key={index} value={pref.id}>
+                                            <Checkbox checked={preferences.indexOf(pref.id) > -1} />
+                                            <Box display={'flex'} alignItems={'center'} columnGap={2}>
+                                                <pref.Icon />
+                                                {/* <Box borderRadius={'50%'} bgcolor={pref.color?.value} height={'19px'} width={'19px'}></Box> */}
+                                                {pref.title}
+                                            </Box>
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+
                         <Box flexGrow={1} width={'100%'} display={'flex'}>
-                            <LoadingButton
-                                variant="contained"
-                                endIcon={<CloudUpload />}
-                                sx={{ mt: 'auto' }}
-                                fullWidth
-                                onClick={handleSubmit}
-                                loading={loading}
-                                size="large"
-                            >
-                                Publish Ride
-                            </LoadingButton>
+                            {isNew ?
+                                <LoadingButton
+                                    variant="contained"
+                                    endIcon={<CloudUpload />}
+                                    sx={{ mt: 'auto' }}
+                                    fullWidth
+                                    onClick={handleSubmit}
+                                    loading={loading}
+                                    size="large"
+                                >
+                                    Publish Ride
+                                </LoadingButton>
+                                :
+                                <LoadingButton
+                                    variant="contained"
+                                    endIcon={<CloudSync />}
+                                    sx={{ mt: 'auto' }}
+                                    fullWidth
+                                    onClick={handleUpdate}
+                                    loading={updating}
+                                    size="large"
+                                >
+                                    Update Ride
+                                </LoadingButton>
+                            }
                         </Box>
 
                     </Stack>
                 </Box>
                 {!isMobile ? <Box width={'100%'}>
-                    <MyGoogleMap
+                    <RidePublishMapView
                         from={locations[ID_RIDE_FROM]}
                         to={locations[ID_RIDE_TO]}
                         waypoints={waypoints}
-                        pickup={locations[ID_RIDE_PICKUP]}
-                        dropoff={locations[ID_RIDE_DROPOFF]}
+                        onChange={setMapState}
+                    // pickup={locations[ID_RIDE_PICKUP]}
+                    // dropoff={locations[ID_RIDE_DROPOFF]}
                     />
                 </Box>
                     : <>
@@ -499,12 +831,13 @@ function RideForm({ isNew = false }) {
                                         </IconButton>}
                                     />
                                     <CardContent sx={{ flexGrow: 1, px: 0, py: "0 !important" }}>
-                                        <MyGoogleMap
+                                        <RidePublishMapView
                                             from={locations[ID_RIDE_FROM]}
                                             to={locations[ID_RIDE_TO]}
                                             waypoints={waypoints}
-                                            pickup={locations[ID_RIDE_PICKUP]}
-                                            dropoff={locations[ID_RIDE_DROPOFF]}
+                                            onChange={setMapState}
+                                        // pickup={locations[ID_RIDE_PICKUP]}
+                                        // dropoff={locations[ID_RIDE_DROPOFF]}
                                         />
                                     </CardContent>
                                 </Box>
@@ -514,7 +847,7 @@ function RideForm({ isNew = false }) {
                 }
             </Box>
         </MapsApiLoader>
-    </Box >);
+    </Box>);
 }
 
 export default RideForm;

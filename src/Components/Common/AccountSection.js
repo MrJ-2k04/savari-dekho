@@ -1,8 +1,8 @@
 
 
-import { AccountBalance, AddCircle, ArrowForwardIos, Delete, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
+import { AccountBalance, AddCircle, ArrowForwardIos, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from "@mui/material";
-import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_RESET_PASSWORD_PAGE, ROUTE_VEHICLE_ADD } from "Store/constants";
+import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -18,19 +18,26 @@ function AccountSection() {
     const user = useSelector(selectUser);
 
     const [vehicles, setVehicles] = useState([]);
+    const [fetchingVehicles, setFetchingVehicles] = useState(false);
     const [banks, setBanks] = useState([]);
-    const { loading, getVehicles, getBanks } = useApi();
+    const [fetchingBanks, setFetchingBanks] = useState(false);
+    const { getVehicles, getBanks } = useApi();
 
     const fetchVehicles = () => {
+        setFetchingVehicles(true);
+
         getVehicles()
             .then(newVehicles => setVehicles(newVehicles))
-            .catch(err => showError({ message: err.message }));
+            .catch(err => showError({ message: err.message }))
+            .finally(() => setFetchingVehicles(false));
     }
 
     const fetchBanks = () => {
+        setFetchingBanks(true);
         getBanks()
             .then(banks => setBanks(banks))
-            .catch(err => showError({ message: err.message }));
+            .catch(err => showError({ message: err.message }))
+            .finally(() => setFetchingBanks(false));
     }
 
     useEffect(() => {
@@ -45,7 +52,7 @@ function AccountSection() {
 
                 <Card>
                     <CardHeader title={"Bank Accounts"} />
-                    {loading && <LinearProgress />}
+                    {fetchingBanks && <LinearProgress />}
                     <CardContent sx={{ pt: 1 }}>
                         <Box>
                             <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
@@ -82,7 +89,7 @@ function AccountSection() {
                 {user.riderVerificationStatus && <>
                     <Card>
                         <CardHeader title={'Vehicles'} />
-                        {loading && <LinearProgress />}
+                        {fetchingVehicles && <LinearProgress />}
                         <CardContent sx={{ pt: 1 }}>
                             <Box>
                                 <Stack spacing={1} maxWidth={'400px'} mx={'auto'}>
@@ -162,7 +169,7 @@ function AccountSection() {
                                         Logout
                                     </Typography>
                                 </Button>
-                                <Button
+                                {/* <Button
                                     size="large"
                                     color="error"
                                     sx={{ mt: "32px !important" }}
@@ -170,7 +177,7 @@ function AccountSection() {
                                     <Typography flexGrow={1} variant="button" textAlign={'left'}>
                                         Delete Account
                                     </Typography>
-                                </Button>
+                                </Button> */}
                             </Stack>
                         </Box>
                     </CardContent>

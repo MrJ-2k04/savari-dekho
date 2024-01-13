@@ -3,7 +3,7 @@ import { Box, Container, Divider, List, ListItemButton, ListItemIcon, ListItemTe
 import SearchBar from "Components/Common/SearchBar";
 import useApi from "Components/Hooks/useApi";
 import UserLayout from "Layout/User";
-import { ROUTE_RIDES, ROUTE_SEARCH_RESULT } from "Store/constants";
+import { ROUTE_SEARCH_RESULT } from "Store/constants";
 import { selectIsAuthenticated } from "Store/selectors";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
@@ -41,6 +41,10 @@ function SearchPage() {
                             fromPlaceId: item.fromPlaceId,
                             toPlaceId: item.toPlaceId,
                             seats: item.seats,
+                            fLng: item.fromCoords[0],
+                            fLat: item.fromCoords[1],
+                            tLng: item.toCoords[0],
+                            tLat: item.toCoords[1],
                         }
                         if (item.date) {
                             params["date"] = format(new Date(item.date), "dd-MM-yyyy");
@@ -89,9 +93,6 @@ function SearchPage() {
                         </React.Fragment>
                     })}
                 </List>
-
-
-                <Link to={`${ROUTE_RIDES}/65436b97e278c64189bae00d`}>Details</Link>
             </Stack>
         </Container>
     </UserLayout>);
