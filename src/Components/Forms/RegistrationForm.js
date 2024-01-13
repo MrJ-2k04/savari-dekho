@@ -2,7 +2,7 @@
 import { useTheme } from '@emotion/react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { CardContent, Divider, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { CardContent, Divider, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Step from '@mui/material/Step';
@@ -11,6 +11,7 @@ import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { MHidden } from 'Components/@Material-Extend';
 import ValidationText from 'Components/Common/ValidationText';
 import useApi from 'Components/Hooks/useApi';
 import { CITY_OPTIONS, GENDER_OPTIONS, ROUTE_LOGIN, STATE_OPTIONS } from 'Store/constants';
@@ -23,7 +24,7 @@ import MobileNumberOTP from './MobileNumberOTP';
 
 const steps = ['Mobile Verfication', 'Basic Details', 'Location Details', 'Create Password'];
 
-export default function RegistrationStepper() {
+export default function RegistrationForm() {
     const theme = useTheme();
     const { registerUser, loading: submitting } = useApi();
     const location = useLocation();
@@ -98,11 +99,11 @@ export default function RegistrationStepper() {
             setStateError('Please select a state');
             isValid = false;
         }
-        if(isEmptyString(address)){
+        if (isEmptyString(address)) {
             setAddressError('Please enter a valid address');
             isValid = false;
         }
-        
+
         if (!isValidDateObject(dateOfBirth)) {
             setDobError('Please enter a valid birth date');
             isValid = false;
@@ -122,9 +123,13 @@ export default function RegistrationStepper() {
             city,
             state,
             address,
-            zipcode,
+            // zipcode,
             profilePicture,
             password
+        }
+
+        if (!isEmptyString(zipcode)) {
+            userObj.zipcode = zipcode;
         }
 
         if (!isValid) {
@@ -490,13 +495,27 @@ export default function RegistrationStepper() {
         <Box sx={{ width: '100%' }} maxWidth={"600px"} mx={"auto"}>
             <>
                 <CardContent>
-                    <Stepper activeStep={activeStep} alternativeLabel>
-                        {steps.map(label => (
-                            <Step key={label}>
-                                <StepLabel>{label}</StepLabel>
-                            </Step>
-                        ))}
-                    </Stepper>
+                    <MHidden width='mdDown'>
+                        <Stepper activeStep={activeStep} alternativeLabel>
+                            {steps.map(label => (
+                                <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+                    </MHidden>
+                    <MHidden width='mdUp'>
+                        <Stack>
+                            <Box display={'flex'} justifyContent={'space-between'}>
+                                <Typography variant="body1" color="text.secondary">{steps[activeStep]}</Typography>
+                                <Typography variant="body1" color="text.secondary">{`Step ${activeStep + 1} of ${steps.length}`}</Typography>
+                            </Box>
+                            <LinearProgress
+                                variant="determinate"
+                                value={Math.round(((activeStep + 1) * 100) / steps.length)}
+                            />
+                        </Stack>
+                    </MHidden>
 
                     <Box py={4} overflow={"auto"}>
                         {renderStepContent(activeStep)}
@@ -545,11 +564,9 @@ export default function RegistrationStepper() {
                         </LoadingButton>
                     </Box>}
 
-                    <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button>
+                    {/* <Button onClick={e => setActiveStep(prev => prev + 1)}>Next</Button> */}
                 </CardContent>
             </>
-
-
         </Box>
     );
 }

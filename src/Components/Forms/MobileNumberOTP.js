@@ -51,7 +51,6 @@ function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile"
             return;
         }
         setIsVerifying(true);
-
         validateOtp(value, formattedMobileNumber).then(res => {
             setIsVerifying(false);
             onSuccess(formattedMobileNumber);

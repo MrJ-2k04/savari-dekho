@@ -1,6 +1,6 @@
 
 
-import { AccountBalance, AddCircle, ArrowForwardIos, Delete, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
+import { AccountBalance, AddCircle, ArrowForwardIos, LockReset, Logout, PendingActions, Verified } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from "@mui/material";
 import { ROUTE_BANK, ROUTE_BANK_ADD, ROUTE_RESET_PASSWORD, ROUTE_VEHICLE_ADD } from "Store/constants";
 import { useSelector } from "react-redux";
@@ -169,7 +169,7 @@ function AccountSection() {
                                         Logout
                                     </Typography>
                                 </Button>
-                                <Button
+                                {/* <Button
                                     size="large"
                                     color="error"
                                     sx={{ mt: "32px !important" }}
@@ -177,7 +177,7 @@ function AccountSection() {
                                     <Typography flexGrow={1} variant="button" textAlign={'left'}>
                                         Delete Account
                                     </Typography>
-                                </Button>
+                                </Button> */}
                             </Stack>
                         </Box>
                     </CardContent>
