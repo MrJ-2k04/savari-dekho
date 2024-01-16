@@ -108,6 +108,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
     const handleRequestRide = () => {
         if (!user) {
             nav(ROUTE_LOGIN, { state: { redirectUrl: `${window.location.pathname}${window.location.search}` } });
+            return;
         }
 
         const payload = {

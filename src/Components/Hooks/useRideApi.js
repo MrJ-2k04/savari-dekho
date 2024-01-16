@@ -177,6 +177,9 @@ const useRideApi = () => {
             } catch (error) {
                 if (error.code === 'AUTH_EXPIRED' || error.code === 'AUTH_INVALID') {
                     try {
+                        if (!refreshToken) {
+                            throw new Error("Token Expired. Please login again!");
+                        }
                         // Generate new Access Token using Refresh Token
                         const ack = await apiRequest(API_REFRESH_TOKEN, jsonToFormData({ refreshToken }))
                         if (ack.type !== 'success') throw new Error(ack.message);

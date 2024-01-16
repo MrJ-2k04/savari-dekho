@@ -54,8 +54,10 @@ const getTargetRoute = (isAuthenticated, user, route, state) => {
             }
         } else if (route.includes(ROUTE_USER)) {
             return targetRoute;
+        } else if (route.includes(ROUTE_SEARCH_RESULT)) {
+            return targetRoute;
         }
-        
+
         if ((!PUBLIC_ROUTES.includes(route)) && (!GUEST_ONLY_ROUTES.includes(route))) {
             targetRoute.path = ROUTE_LOGIN;
             targetRoute.state = state || { redirectUrl: route };
