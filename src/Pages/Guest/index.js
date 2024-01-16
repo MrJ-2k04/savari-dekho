@@ -1,0 +1,9 @@
+export { default as HomePage } from './HomePage';
+export { default as LoginPage } from './LoginPage';
+export { default as NotFoundPage } from './NotFoundPage';
+export { default as RegisterPage } from './RegisterPage';
+export { default as ResetPasswordPage } from './ResetPasswordPage';
+export { default as RideDetailsPage } from './RideDetailsPage';
+export { default as SearchPage } from './SearchPage';
+export { default as SearchResultsPage } from './SearchResultsPage';
+export { default as UserDetailsPage } from './UserDetailsPage';

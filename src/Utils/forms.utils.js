@@ -4,6 +4,25 @@
 
 export const isNumeric = (value) => /^\d+$/.test(value)
 export const isEmptyString = (obj) => (obj === null || obj === undefined) ? false : obj.toString().trim().length === 0;
+export function isFalsy(value) {
+    if (value === null || value === undefined) {
+        return true;
+    }
+
+    if (typeof value === "string" && value.trim() === "") {
+        return true;
+    }
+
+    if (Array.isArray(value) && value.length === 0) {
+        return true;
+    }
+
+    if (typeof value === "object" && Object.keys(value).length === 0) {
+        return true;
+    }
+
+    return false;
+}
 
 export function isValidDateObject(dObj) {
     return (
@@ -55,24 +74,82 @@ export function formatMobileNumber(mobileNumber) {
     const phoneNumber = formattedNumber.slice(index + 1).replace(/\s/g, ""); // Extract the phone number and remove all spaces
     const finalMobileNumber = `${countryCode}-${phoneNumber}`;
     const validMobileNumberLength = 10;
-    if (finalMobileNumber.length < (countryCode.length + validMobileNumberLength + 1)) {
+    // console.log(finalMobileNumber.length,countryCode.length,validMobileNumberLength);
+    if (
+        finalMobileNumber.length !== (countryCode.length + validMobileNumberLength + 1)
+        // finalMobileNumber.length < (countryCode.length + validMobileNumberLength + 1)
+        // ||
+        // finalMobileNumber.length > (countryCode.length + validMobileNumberLength + 3)
+    ) {
         return "";
     }
     return finalMobileNumber;
 };
 
+export function unformatMobileNumber(mobileNumber) {
+    if (isEmptyString(mobileNumber)) return "";
+    if (mobileNumber.includes("+")) return mobileNumber;
+
+    const splittedNumber = mobileNumber.split('-');
+    const result = `+${splittedNumber[0]} ${splittedNumber[1]}`;
+    return result;
+}
+
+export function getPricePrediction(distance) {
+    // const response = {};
+    // const priceList = [
+    //     [0, 0],
+    //     [500]
+    //     [Infinity, 1.75]
+    // ]
+}
+
+export async function sleep(delayMs) {
+    return new Promise((res, rej) => setTimeout(() => res(), delayMs))
+}
+
+export function calculateAge(dateOfBirth) {
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+
+    // Adjust age if the birthday hasn't occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+
+    return age;
+}
 
 // -------------------------------------------------------- CONVERSION FUNCTIONS --------------------------------------------------------
 
+export function combineObjects(obj1, obj2) {
+    const result = {};
+    if (!(obj1 && obj2)) return obj1 ?? obj2 ?? {}
+
+    for (const key of Object.keys(obj1)) {
+        result[key] = obj1[key] !== undefined ? obj1[key] : obj2[key];
+    }
+
+    for (const key of Object.keys(obj2)) {
+        if (obj1[key] === undefined) {
+            result[key] = obj2[key];
+        }
+    }
+
+    return result;
+}
 
 export function parseFormData(targetForm) {
-    if (typeof targetForm === 'object') {
-        const formData = new FormData();
-        Object.entries(targetForm).forEach(([k, v]) => {
-            formData.append(k, v);
-        })
-        return
-    }
+    // if (typeof targetForm === 'object') {
+    //     const formData = new FormData();
+    //     Object.entries(targetForm).forEach(([k, v]) => {
+    //         formData.append(k, v);
+    //     })
+    //     return formData;
+    // }
     const formData = new FormData(targetForm);
     const data = {};
     for (let [key, value] of formData.entries()) {

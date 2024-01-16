@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
 import { SendToMobile } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Box } from '@mui/material';
+import useApi from 'Components/Hooks/useApi';
+import { formatMobileNumber, isEmptyString } from 'Utils';
 import { MuiOtpInput } from 'mui-one-time-password-input';
 import { MuiTelInput } from 'mui-tel-input';
-import { formatMobileNumber, isEmptyString } from 'Utils';
-import useFetch from 'Components/Hooks/useFetch';
+import { useEffect, useState } from 'react';
 
 
 const COOLDOWN = 60 * 1; // 1 minute
@@ -13,7 +13,7 @@ const COOLDOWN = 60 * 1; // 1 minute
 
 function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile", label = "Mobile Number", onSuccess }) {
 
-    const { validateOtp, generateOtp, loading: otpSending } = useFetch();
+    const { validateOtp, generateOtp, loading: otpSending } = useApi();
     const [mobileNumber, setMobileNumber] = useState('');
     const [formattedMobileNumber, setFormattedMobileNumber] = useState('');
 
@@ -51,7 +51,6 @@ function MobileNumberOTP({ maxWidth = "500px", placeholder = "Enter your mobile"
             return;
         }
         setIsVerifying(true);
-
         validateOtp(value, formattedMobileNumber).then(res => {
             setIsVerifying(false);
             onSuccess(formattedMobileNumber);

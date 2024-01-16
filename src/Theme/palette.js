@@ -3,8 +3,8 @@ const PRIMARY = {
   contrastText: "#fff",
 };
 const SECONDARY = {
-  main: "#37b6b6",
-  contrastText: "#000",
+  main: "#eaa62b",
+  contrastText: "#fff",
 };
 
 const palette = {

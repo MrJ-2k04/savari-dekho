@@ -1,17 +1,17 @@
 import { useTheme } from "@emotion/react";
 import { Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
-import Logo from "Components/Common/Logo";
-import useFetch from "Components/Hooks/useFetch";
-import { ROUTE_HOME, ROUTE_REGISTER } from "Store/constants";
-import { formatMobileNumber, isEmptyString } from "Utils";
+import { Box, Button, CardActions, CardContent, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import useApi from "Components/Hooks/useApi";
+import { ROUTE_REGISTER } from "Store/constants";
+import { isEmptyString } from "Utils";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function LoginForm() {
     const theme = useTheme();
-    const { loginUser, loading } = useFetch();
+    const { state } = useLocation();
+    const { loginUser, forgotPassword, loading } = useApi();
 
     const [credential, setCredential] = useState('');
     const [password, setPassword] = useState('');
@@ -35,7 +35,9 @@ function LoginForm() {
         return "";
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
         var isValid = true;
         const inputType = getInputType(credential);
 
@@ -60,13 +62,30 @@ function LoginForm() {
         if (!isValid) return;
 
         // Submit to Backend API
-        loginUser(payload).then(user => {
-
-        }).catch(err => console.log(err.message))
+        loginUser(payload);
     };
 
+    const handleForgotPassword = () => {
+        var isValid = true;
+        const inputType = getInputType(credential);
+
+        // Credential Type check
+        if (isEmptyString(inputType)) {
+            setCredentialError('Please enter a valid mobile number or email');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        const payload = {
+            type: inputType,
+            value: credential,
+        };
+        forgotPassword(payload)
+    }
+
     return (
-        <>
+        <form onSubmit={handleSubmit}>
             <Box height={'100%'} display={'flex'} flexDirection={'column'} justifyContent={'center'} maxWidth={'500px'} mx={'auto'}>
                 {/* <CardHeader
                     // title={<Typography variant="h3" textAlign={'center'}>Login</Typography>}
@@ -112,7 +131,7 @@ function LoginForm() {
                                         </InputAdornment>,
                                     }}
                                 />
-                                <Button sx={{ width: 'fit-content' }} color="secondary">
+                                <Button sx={{ width: 'fit-content' }} color="secondary" onClick={handleForgotPassword}>
                                     <Typography>
                                         Forgot Password?
                                     </Typography>
@@ -120,6 +139,7 @@ function LoginForm() {
                             </Stack>
                             <LoadingButton
                                 onClick={handleSubmit}
+                                type="submit"
                                 loading={loading}
                                 startIcon={<Login />}
                                 // sx={{ maxWidth: '16rem', mx: 'auto' }}
@@ -133,11 +153,11 @@ function LoginForm() {
                 <CardActions sx={{ p: 2, justifyContent: 'center' }}>
                     <Stack direction={'row'} spacing={1} justifyContent={'center'}>
                         <Typography>Don't have an account?</Typography>
-                        <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_REGISTER}>Sign up</Typography>
+                        <Typography color={theme.palette.text.primary} component={Link} to={ROUTE_REGISTER} state={state}>Sign up</Typography>
                     </Stack>
                 </CardActions>
             </Box>
-        </>
+        </form>
     );
 }
 

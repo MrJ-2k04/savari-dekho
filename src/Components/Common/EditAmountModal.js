@@ -1,5 +1,6 @@
 import { Close, CurrencyRupee } from "@mui/icons-material";
-import { Box, Button, CardActions, CardContent, CardHeader, Chip, IconButton, InputAdornment, Modal, Stack, TextField, Typography, Card } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Chip, IconButton, InputAdornment, Modal, Stack, TextField } from "@mui/material";
 import { ADD_FUND_AMOUNTS } from "Store/constants";
 import { useState } from "react";
 
@@ -8,18 +9,31 @@ function EditAmountModal({
     onClose,
     title = "Edit Amount",
     btnTitle = "Proceed",
-    onSubmit,
-    onCancel,
+    onProceedClick,
+    onCancelClick,
     maxLimit = Infinity,
     helperText = '',
-    inputLabel = 'Enter amount',
+    inputLabel = `Enter amount${maxLimit !== Infinity ? ` upto ${maxLimit}` : ""}`,
+    loading = false
 }) {
 
     const [amount, setAmount] = useState(0);
 
+    const handleAddChipAmount = (chipAmount) => {
+        let newAmount = amount;
+        if (typeof amount === 'string') {
+            newAmount = parseInt(newAmount);
+        }
+        if (chipAmount + newAmount > maxLimit) return;
+        setAmount(newAmount + chipAmount);
+    }
+
+    const handleProceed = () => {
+        onProceedClick(amount);
+    }
+
     return (
-        <Modal open={open} onClose={onClose}>
-            
+        open && <Modal open={open} onClose={onClose}>
             <Box display={"flex"} alignItems={"center"} height={"100%"} maxHeight={"100vh"} width={"90%"} maxWidth={'460px'} mx={"auto"}>
                 <Card sx={{ width: '100%' }}>
                     <CardHeader
@@ -31,7 +45,17 @@ function EditAmountModal({
                             <Box>
                                 <TextField
                                     value={amount}
-                                    onChange={e=>setAmount(parseInt(e.target.value))}
+                                    onChange={e => {
+                                        const amount = parseInt(e.target.value);
+                                        if (amount > maxLimit) return;
+                                        setAmount(amount || 0);
+                                    }}
+                                    onBlur={e => {
+                                        const amount = parseInt(e.target.value);
+                                        if (typeof amount === "number" && amount > maxLimit) {
+                                            setAmount(maxLimit);
+                                        }
+                                    }}
                                     inputProps={{
                                         min: 0,
                                         max: maxLimit,
@@ -48,20 +72,20 @@ function EditAmountModal({
                             </Box>
                             <Box display={"flex"} width={"100%"} gap={1} flexWrap={'wrap'}>
                                 {ADD_FUND_AMOUNTS.map(amt => (
-                                    <Chip
+                                    amt <= maxLimit && <Chip
                                         color="primary"
                                         variant="filled"
                                         key={amt}
                                         label={`+₹${amt}`}
-                                        onClick={e => { }}
+                                        onClick={() => handleAddChipAmount(amt)}
                                     />
                                 ))}
                             </Box>
                         </Stack>
                     </CardContent>
                     <CardActions sx={{ p: 2 }}>
-                        <Button sx={{ ml: "auto" }} onClick={onSubmit} variant="contained">{btnTitle}</Button>
-                        <Button sx={{ ml: "auto" }} onClick={onCancel} variant="contained">Cancel</Button>
+                        <Button sx={{ ml: "auto" }} onClick={onCancelClick} variant="outlined">Cancel</Button>
+                        <LoadingButton loading={loading} sx={{ ml: "auto" }} onClick={handleProceed} variant="contained">{btnTitle}</LoadingButton>
                     </CardActions>
                 </Card>
             </Box>

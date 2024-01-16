@@ -1,9 +1,12 @@
+import { AcUnit, AccessibilityNew, AirlineSeatReclineExtra, Checkroom, ChildCare, DirectionsBus, Fastfood, MusicNote, Pets, PhotoSizeSelectLarge, SmokeFree, VolumeOff, Wifi } from "@mui/icons-material";
 
 
 
 export const GENDER_OPTIONS = ["Male", "Female", "Other"];
 export const ADD_FUND_AMOUNTS = [100, 500, 1000, 2000];
+export const SEARCH_BAR_SIZE = 'small';
 
+export const BOOLEAN_OPTIONS = ["Yes", "No"];
 
 export const STATE_OPTIONS = [
     "Andhra Pradesh",
@@ -191,3 +194,254 @@ export const CITY_OPTIONS = {
         "Purulia", "South 24 Parganas", "Uttar Dinajpur"
     ],
 };
+
+export const PREFERENCES = [
+    { id: "NO_SMK", title: "No Smoking", Icon: SmokeFree },
+    { id: "NO_CHD", title: "No Child", Icon: ChildCare },
+    { id: "NO_PET", title: "Pets not allowed", Icon: Pets },
+    { id: "QT_RID", title: "Quiet Ride", Icon: VolumeOff },
+    { id: "MU_RID", title: "Music Allowed", Icon: MusicNote },
+    { id: "AC_RID", title: "Air Conditioning", Icon: AcUnit },
+    { id: "LG_SPC", title: "Luggage Space", Icon: Checkroom },
+    { id: "FLX_STP", title: "Flexible Stops", Icon: DirectionsBus },
+    { id: "CMF_ST", title: "Comfortable Seats", Icon: AirlineSeatReclineExtra },
+    { id: "WIFI", title: "Wi-Fi Available", Icon: Wifi },
+    { id: "ACS_DIS", title: "Accessible for Disabilities", Icon: AccessibilityNew },
+    { id: "FD_ALWD", title: "Food and Drinks Allowed", Icon: Fastfood },
+    { id: "WIN_SHD", title: "Window Shades", Icon: PhotoSizeSelectLarge },
+];
+
+
+export const VEHICLE_TYPE_OPTIONS = [
+    "Sedan",
+    "SUV",
+    "Compact",
+    'Hatchback',
+    "Van",
+    "Crossover",
+    "Convertible",
+    "Sports Car",
+    "Other",
+    "Unknown",
+]
+
+export const VEHICLE_FUEL_TYPES = [
+    "Gasoline/Petrol",
+    "Diesel",
+    "Electric",
+    "Hybrid",
+    "Natural Gas",
+    "Propane",
+    "Other"
+]
+
+export const VEHICLE_COLOR_OPTIONS = [
+    { name: "Black", value: "#000000" },
+    { name: "White", value: "#FFFFFF" },
+    { name: "Dark gray", value: "#555555" },
+    { name: "Gray", value: "#AAAAAA" },
+    { name: "Burgundy", value: "#9b0004" },
+    { name: "Red", value: "#FF0000" },
+    { name: "Dark blue", value: "#0b2742" },
+    { name: "Blue", value: "#1a7cbd" },
+    { name: "Dark green", value: "#008000" },
+    { name: "Green", value: "#00FF00" },
+    { name: "Brown", value: "#4e301c" },
+    { name: "Beige", value: "#F5F5DC" },
+    { name: "Orange", value: "#FFA500" },
+    { name: "Yellow", value: "#FFFF00" },
+    { name: "Purple", value: "#800080" },
+    { name: "Pink", value: "#FFC0CB" }
+];
+
+export const VEHICLE_MANUFACTURERS = [
+    "Maruti Suzuki India Limited",
+    "Hyundai Motor India Limited",
+    "Tata Motors",
+    "Mahindra & Mahindra",
+    "Kia India",
+    "Honda Cars India Ltd",
+    "Toyota Kirloskar Motor",
+    "Ford India Private Limited",
+    "Volkswagen India Private Limited",
+    "Skoda Auto India Private Limited",
+    "Renault India Private Limited",
+    "Nissan Motor India Private Limited",
+    "MG Motor India",
+    "Jeep India",
+    "BMW India Private Limited",
+    "Mercedes-Benz India",
+    "Audi India",
+    "Volvo Car India",
+    "Jaguar Land Rover India",
+    "Porsche India",
+    "Lamborghini India",
+    "Ferrari India",
+    "Rolls-Royce India",
+    "Bentley Motors India",
+    "Mini India",
+    "General Motors India",
+    "Fiat India",
+    "Ford India",
+    "Chevrolet India",
+    "Opel India",
+    "Mahindra Renault",
+    "Swaraj Mazda",
+    "Tesla",
+    "Unknown",
+]
+
+export const VEHICLE_MODELS = {
+    "Maruti Suzuki India Limited": [
+        "Maruti Alto",
+        "Maruti Swift",
+        "Maruti Baleno",
+        "Maruti Dzire",
+        "Maruti Wagon R",
+        "Maruti Vitara Brezza",
+        "Maruti Ertiga",
+        "Maruti S-Presso",
+        "Maruti Celerio",
+        "Maruti Ignis",
+        "Maruti Ciaz",
+        "Maruti XL6",
+        "Maruti S-Cross",
+    ],
+    "Hyundai Motor India Limited": [
+        "Hyundai Venue",
+        "Hyundai Creta",
+        "Hyundai i20",
+        "Hyundai Grand i10 Nios",
+        "Hyundai Verna",
+        "Hyundai Aura",
+        "Hyundai Santro",
+        "Hyundai Elantra",
+        "Hyundai Tucson",
+        "Hyundai Kona Electric",
+        "Hyundai Palisade",
+    ],
+    "Tata Motors": [
+        "Tata Tiago",
+        "Tata Nexon",
+        "Tata Harrier",
+        "Tata Altroz",
+        "Tata Tigor",
+        "Tata Safari",
+        "Tata Zest",
+        "Tata Hexa",
+        "Tata Sumo",
+        "Tata Nano",
+        "Tata Indigo",
+        "Tata Indica",
+    ],
+    "Mahindra & Mahindra": [
+        "Mahindra Bolero",
+        "Mahindra Scorpio",
+        "Mahindra XUV300",
+        "Mahindra Thar",
+        "Mahindra XUV500",
+        "Mahindra TUV300",
+        "Mahindra Alturas G4",
+        "Mahindra KUV100",
+        "Mahindra Verito",
+    ],
+    "Kia India": [
+        "Kia Seltos",
+        "Kia Sonet",
+        "Kia Carnival",
+    ],
+    "Honda Cars India Ltd": [
+        "Honda City",
+        "Honda Amaze",
+        "Honda WR-V",
+        "Honda Jazz",
+        "Honda Civic",
+        "Honda CR-V",
+    ],
+    "Toyota Kirloskar Motor": [
+        "Toyota Innova Crysta",
+        "Toyota Fortuner",
+        "Toyota Glanza",
+        "Toyota Urban Cruiser",
+        "Toyota Camry",
+        "Toyota Vellfire",
+    ],
+    "Ford India Private Limited": [
+        "Ford EcoSport",
+        "Ford Figo",
+        "Ford Aspire",
+        "Ford Endeavour",
+        "Ford Mustang",
+    ],
+    "Volkswagen India Private Limited": [
+        "Volkswagen Polo",
+        "Volkswagen Vento",
+        "Volkswagen T-Roc",
+        "Volkswagen Tiguan Allspace",
+    ],
+    "Skoda Auto India Private Limited": [
+        "Skoda Rapid",
+        "Skoda Octavia",
+        "Skoda Superb",
+        "Skoda Kodiaq",
+    ],
+    "Renault India Private Limited": [
+        "Renault Kwid",
+        "Renault Triber",
+        "Renault Duster",
+    ],
+    "Nissan Motor India Private Limited": [
+        "Nissan Magnite",
+        "Nissan Kicks",
+    ],
+    "MG Motor India": [
+        "MG Hector",
+        "MG ZS EV",
+    ],
+    "Jeep India": ["Jeep Compass", "Jeep Wrangler"],
+    "BMW India Private Limited": ["BMW 3 Series", "BMW 5 Series", "BMW X1", "BMW X3", "BMW X5", "BMW X7", "BMW Z4"],
+    "Mercedes-Benz India": ["Mercedes-Benz A-Class", "Mercedes-Benz C-Class", "Mercedes-Benz E-Class", "Mercedes-Benz GLC", "Mercedes-Benz GLE", "Mercedes-Benz GLS"],
+    "Audi India": ["Audi A3", "Audi A4", "Audi A6", "Audi Q2", "Audi Q3", "Audi Q5", "Audi Q7", "Audi Q8"],
+    "Volvo Car India": ["Volvo S60", "Volvo S90", "Volvo XC40", "Volvo XC60", "Volvo XC90"],
+    "Jaguar Land Rover India": ["Jaguar XE", "Jaguar XF", "Jaguar F-PACE", "Land Rover Discovery Sport", "Land Rover Range Rover Evoque", "Land Rover Range Rover Velar", "Land Rover Range Rover Sport", "Land Rover Range Rover"],
+    "Porsche India": ["Porsche 911", "Porsche Panamera", "Porsche Cayenne", "Porsche Macan", "Porsche 718"],
+    "Lamborghini India": ["Lamborghini Huracán", "Lamborghini Aventador", "Lamborghini Urus"],
+    "Ferrari India": ["Ferrari Portofino", "Ferrari Roma", "Ferrari F8 Tributo", "Ferrari SF90 Stradale"],
+    "Rolls-Royce India": ["Rolls-Royce Ghost", "Rolls-Royce Dawn", "Rolls-Royce Wraith", "Rolls-Royce Phantom"],
+    "Bentley Motors India": ["Bentley Bentayga", "Bentley Continental GT", "Bentley Flying Spur"],
+    "Mini India": ["Mini 3-Door", "Mini 5-Door", "Mini Countryman"],
+    "General Motors India": ["Chevrolet Beat", "Chevrolet Sail", "Chevrolet Enjoy", "Chevrolet Cruze", "Chevrolet Tavera", "Chevrolet Trailblazer"],
+    "Fiat India": ["Fiat Punto Evo", "Fiat Linea", "Fiat Avventura", "Fiat Urban Cross"],
+    "Ford India": ["Ford Classic", "Ford Fiesta"],
+    "Chevrolet India": ["Chevrolet Spark", "Chevrolet UVA", "Chevrolet Aveo", "Chevrolet Aveo U-VA", "Chevrolet Optra", "Chevrolet Optra Magnum", "Chevrolet Captiva"],
+    "Opel India": ["Opel Corsa", "Opel Astra"],
+    "Mahindra Renault": ["Renault Logan"],
+    "Swaraj Mazda": ["Swaraj Mazda SD 550"],
+    "Tesla": ["Tesla Model 3", "Tesla Model S", "Tesla Model X", "Tesla Model Y"],
+    "Unknown": ["Unknown"],
+};
+
+export const VERIFICATION_STATUS = {
+    PENDING: "pending",
+    VERIFIED: "verified",
+    NOT_VERIFIED: "not verified"
+}
+
+export const BANK_ACCOUNT_TYPES = [
+    "savings",
+    "current",
+]
+
+// Google Map Form IDs
+export const ID_RIDE_FROM = "from";
+export const ID_RIDE_TO = "to";
+export const ID_WAYP_LOCATION = "location";
+export const ID_WAYP_PRICE = "price";
+
+export const PRICE_SUGGESTIONS = [
+    { text: "Your price is very low, you can increase it", color: 'error' },
+    { text: "Your price is a bit low, you can slightly increase it", color: 'warning.main' },
+    { text: "Perfect Price, you will get passengers in no time", color: 'success.main' },
+    { text: "Your price is a bit high, you should slightly decrease it", color: 'warning.main' },
+    { text: "Your price is very high, you should decrease it", color: 'error' },
+]
