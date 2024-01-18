@@ -1,13 +1,13 @@
 
-import { AirlineSeatReclineExtra, Close, FilterAlt } from "@mui/icons-material";
+import { AirlineSeatReclineExtra } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, LinearProgress, Modal, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Card, CardActionArea, CardActions, CardContent, LinearProgress, Stack, Tooltip, Typography } from "@mui/material";
 import searchSvg from "Assets/SVGs/Search.svg";
 import { MHidden } from "Components/@Material-Extend";
 import RouteList from "Components/Common/RouteList";
 import SearchBar from "Components/Common/SearchBar";
 import useRideApi from "Components/Hooks/useRideApi";
-import { ROUTE_RIDES, ROUTE_SEARCH, VEHICLE_FUEL_TYPES, VEHICLE_TYPE_OPTIONS } from "Store/constants";
+import { ROUTE_RIDES, ROUTE_SEARCH } from "Store/constants";
 import { showError, showSuccess } from "Utils";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";

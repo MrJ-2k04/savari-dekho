@@ -1,6 +1,6 @@
-import { Box, Container, Stack, Typography, List, ListItem, ListItemText } from "@mui/material";
-import StaticPageLayout from "Layout/Other/StaticPageLayout";
 import { useTheme } from "@emotion/react";
+import { Container, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import StaticPageLayout from "Layout/Other/StaticPageLayout";
 
 function PrivacyPolicyPage() {
     const theme = useTheme();

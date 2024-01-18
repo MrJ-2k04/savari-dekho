@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import UsersTable from "Components/Admin/UsersTable";
 import AdminLayout from "Layout/Admin";
 

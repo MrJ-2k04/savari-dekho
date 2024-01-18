@@ -4,17 +4,18 @@ import f2 from "Assets/images/f2.jpg";
 import f3 from "Assets/images/f3.jpg";
 import StaticPageLayout from "Layout/Other/StaticPageLayout";
 
-import v1 from "Assets/images/v1.jpg";
-import v2 from "Assets/images/v2.jpg";
-import v3 from "Assets/images/v3.jpg";
-import v4 from "Assets/images/v4.jpg";
-import ImageCarousal from "Components/Common/ImageCarousal";
+// import v1 from "Assets/images/v1.jpg";
+// import v2 from "Assets/images/v2.jpg";
+// import v3 from "Assets/images/v3.jpg";
+// import v4 from "Assets/images/v4.jpg";
+// import ImageCarousal from "Components/Common/ImageCarousal";
 import { ABOUT_US, SITE_TITLE } from "Store/constants";
 
 function AboutUsPage() {
   const circleImageStyle = {
     borderRadius: '50%',
     overflow: 'hidden',
+    border: '2px solid',
   };
 
   return (
@@ -34,20 +35,20 @@ function AboutUsPage() {
               Our journey began with a simple idea: <br />
             </Typography>
             <Typography variant="h6" align="center" color={'text.secondary'} textAlign={'center'} mx={'auto !important'}>
-              How to travel efficiently without <br /> 
+              How to travel efficiently without <br />
               hassle of public transport, without <br />
               paying too much extra fees & without <br />
               worrying about incidents arising from trust issue?
             </Typography>
           </Stack>
-          <Box>
+          {/* <Box>
             <ImageCarousal>
               <img src={v1} alt="Visit" />
               <img src={v2} alt="Visit" />
               <img src={v3} alt="Visit" />
               <img src={v4} alt="Visit" />
             </ImageCarousal>
-          </Box>
+          </Box> */}
           <Stack spacing={10}>
             {/* founder 1*/}
             <Box>
@@ -103,7 +104,7 @@ function AboutUsPage() {
             <Box>
               <Grid container columnSpacing={10} rowSpacing={3}>
                 <Grid item xs={12} sm={5.5} justifyContent={'flex-start'}> {/* Align Grid to the left */}
-                  <Box maxWidth={{ xs: "75%", md: '300px' }} mx={'auto'}>
+                  <Box maxWidth={{ xs: "75%", md: '300px' }} height={{ xs: '75%', md: '300px' }} mx={'auto'}>
                     <img src={f3} alt="Founder" style={circleImageStyle} />
                   </Box>
                 </Grid>

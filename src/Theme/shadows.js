@@ -1,6 +1,5 @@
 // material
 import { alpha } from "@mui/material/styles";
-import palette from "./palette";
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +40,7 @@ const createShadow = (color) => {
 };
 
 const createCustomShadow = (color) => {
-  const transparent = alpha(color, 0.24);
+  // const transparent = alpha(color, 0.24);
 
   return {
     // z1: `0 1px 2px 0 ${transparent}`,

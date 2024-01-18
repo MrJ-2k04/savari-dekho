@@ -1,8 +1,7 @@
 import { TabContext, TabPanel } from "@mui/lab";
-import { Box, Container, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 import RiderRequests from "Components/Admin/RiderRequests";
 import VehicleRequests from "Components/Admin/VehicleRequests";
-import RideCard from "Components/Common/RideCard";
 import AdminLayout from "Layout/Admin";
 import { useState } from "react";
 

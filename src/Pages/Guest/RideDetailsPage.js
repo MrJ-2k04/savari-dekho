@@ -1,9 +1,8 @@
-import { TabContext, TabPanel } from "@mui/lab";
-import { Box, Container, Tab, Tabs, Typography } from "@mui/material";
+import { TabContext } from "@mui/lab";
+import { Box, Container, Tab, Tabs } from "@mui/material";
 import MapsApiLoader from "Components/MapItems/MapsApiLoader";
 import RideDetailsSection from "Components/SingleUse/RideDetailsSection";
 import RideRouteSection from "Components/SingleUse/RideRouteSection";
-import MapPageLayout from "Layout/Other/MapPageLayout";
 import UserLayout from "Layout/User";
 import { useState } from "react";
 

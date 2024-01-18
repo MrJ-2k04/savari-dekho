@@ -3,7 +3,6 @@ import { Box, styled } from "@mui/material";
 import Animate from "Components/Other/Animate";
 import { APP_BAR_MOBILE } from "Store/constants";
 import MinimalNavbar from "./MinimalNavbar";
-import MinimalFooter from "./MinimalFooter";
 
 
 const MinimalLayout = ({ children }) => {
