@@ -706,7 +706,7 @@ function RideDetailsSection({ ride: parentRideState, onChange: setParentRideStat
                                                     return <ListItemButton
                                                         key={passenger.passengerId}
                                                         LinkComponent={Link}
-                                                        to={ROUTE_USER_DETAILS.replace(":userId", ride.publisher._id)}
+                                                        to={ROUTE_USER_DETAILS.replace(":userId", passenger.passengerId)}
                                                         sx={{ borderRadius: '16px', my: 1 }}>
                                                         <ListItemIcon>
                                                             <Avatar src={passenger.profilePicture} alt="Driver avatar">
