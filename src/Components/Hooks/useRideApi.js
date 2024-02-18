@@ -214,6 +214,7 @@ const useRideApi = () => {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
             'Authorization': `Bearer ${accessToken}`,
+            "ngrok-skip-browser-warning": "true",
             ...headerOptions,
         };
 
